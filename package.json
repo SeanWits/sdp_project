@@ -14,9 +14,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "coverage": "npm test -- --coverage a"
+    "test": "react-scripts test",
+    "coverage": "react-scripts test --coverage --watchAll=false --collectCoverageFrom='src/**/*.{js,jsx}' --collectCoverageFrom='!src/index.js' --collectCoverageFrom='!src/reportWebVitals.js' --collectCoverageFrom='!src/setupTests.js'"
   },
   "eslintConfig": {
     "extends": [
