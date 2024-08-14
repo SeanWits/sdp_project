@@ -1,6 +1,8 @@
 <<<<<<< HEAD
 # sdp_project
 =======
+[![codecov](https://codecov.io/gh/SeanWits/sdp_project/graph/badge.svg?token=APVS915DYE)](https://codecov.io/gh/SeanWits/sdp_project)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
