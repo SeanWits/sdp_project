@@ -1,0 +1,16 @@
+Meeting: Sunday 18th
+
+None absent
+Prototypes still work in progress. Menu Prototype done, Reservations done.
+APIs: 
+Meal credit: preliminary **done**
+Menu: **done**
+Need to confirm how to do financial account and payment details. Proposal: mock under assumption that payments handled by Wits.
+Ongoing discussion about public APIs. Ensure this discussion is recorded in case other group asks for APIs late.
+Investigation into collaboration on Swagger.
+APIs for dietary requirements: GET by dietary tag.
+API for reservation: GET restaurant details, GET availability, DELETE reservation, etc
+User stories: Menu, Feedback, **done**. Dietary requirements, reservations to complete
+
+Dietary requirements core feature: Menu items must have tags.
+Additional features: Search menu items and automatically assign tags. Make custom orders during reservation.
