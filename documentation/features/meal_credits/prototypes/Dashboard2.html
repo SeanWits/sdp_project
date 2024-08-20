@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Credit Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .dashboard {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .balance {
+            background-color: #f8f8f8;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .balance h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .balance p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 10px 0 0;
+        }
+        .transactions {
+            margin-bottom: 20px;
+        }
+        .transaction {
+            margin-bottom: 10px;
+        }
+        .debit {
+            color: #e74c3c;
+        }
+        .credit {
+            color: #2ecc71;
+        }
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #addToWallet {
+            display: none;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        #addToWallet > div {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #cardDetails {
+            display: none;
+        }
+        #cardDetails > div {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <h1>Meal Credit Dashboard</h1>
+
+        <div class="balance">
+            <h2>Account Balance</h2>
+            <p>R150.75</p>
+        </div>
+
+        <div class="transactions">
+            <h2>Recent Transactions</h2>
+            <div class="transaction">
+                Lunch at Cafeteria <span class="debit">-R8.50</span>
+            </div>
+            <div class="transaction">
+                Dinner at Grill <span class="debit">-R12.25</span>
+            </div>
+            <div class="transaction">
+                Cash Deposit <span class="credit">+R50.00</span>
+            </div>
+        </div>
+
+        <button onclick="location.href='#'">View Transaction History</button>
+        <button id="toggleWalletBtn" onclick="toggleAddToWallet()">Add to Wallet</button>
+
+        <div id="addToWallet">
+            <h2>Add to Wallet</h2>
+            <div>
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" placeholder="Enter amount">
+            </div>
+            <button onclick="showCardDetails()">Deposit with Card</button>
+            <div id="cardDetails">
+                <div>
+                    <label for="card">Card Number:</label>
+                    <input type="text" id="card" placeholder="1234 5678 9012 3456">
+                </div>
+                <div>
+                    <label for="expiry">Expiry Date:</label>
+                    <input type="text" id="expiry" placeholder="MM/YY">
+                </div>
+                <div>
+                    <label for="cvv">CVV:</label>
+                    <input type="text" id="cvv" placeholder="123">
+                </div>
+                <button onclick="depositWithCard()">Confirm Deposit</button>
+            </div>
+            <div>
+                <label for="voucher">Voucher:</label>
+                <input type="text" id="voucher" placeholder="Enter voucher code">
+            </div>
+            <button onclick="redeemVoucher()">Redeem Voucher</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleAddToWallet() {
+            var addToWallet = document.getElementById('addToWallet');
+            var toggleBtn = document.getElementById('toggleWalletBtn');
+            if (addToWallet.style.display === 'none' || addToWallet.style.display === '') {
+                addToWallet.style.display = 'block';
+                toggleBtn.textContent = 'Hide Add to Wallet';
+            } else {
+                addToWallet.style.display = 'none';
+                toggleBtn.textContent = 'Add to Wallet';
+            }
+        }
+
+        function showCardDetails() {
+            document.getElementById('cardDetails').style.display = 'block';
+        }
+
+        function depositWithCard() {
+            const amount = document.getElementById('amount').value;
+            const card = document.getElementById('card').value;
+            const expiry = document.getElementById('expiry').value;
+            const cvv = document.getElementById('cvv').value;
+            
+            if (amount && card && expiry && cvv) {
+                alert(`Depositing R${amount} with card ending in ${card.slice(-4)}. (This is a simulation)`);
+                // Here you would typically send this data to your server for processing
+            } else {
+                alert('Please fill in all card details.');
+            }
+        }
+
+        function redeemVoucher() {
+            const voucher = document.getElementById('voucher').value;
+            if (voucher) {
+                alert(`Redeeming voucher: ${voucher}. (This is a simulation)`);
+                // Here you would typically send this data to your server for processing
+            } else {
+                alert('Please enter a voucher code.');
+            }
+        }
+    </script>
+</body>
+</html>

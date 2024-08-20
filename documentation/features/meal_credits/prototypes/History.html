@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Purchase History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .purchase-list {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .purchase-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .purchase-item:last-child {
+            border-bottom: none;
+        }
+
+        .purchase-info {
+            flex-grow: 1;
+        }
+
+        .purchase-date {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        .purchase-amount {
+            font-weight: bold;
+            color: #2ecc71;
+        }
+
+        .purchase-status {
+            font-size: 0.9em;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background-color: #3498db;
+            color: white;
+        }
+
+        .status-collected {
+            background-color: #2ecc71;
+        }
+
+        .status-preparing {
+            background-color: #f39c12;
+        }
+
+        .status-cancelled {
+            background-color: #e74c3c;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Food Purchase History</h1>
+    <div class="purchase-list">
+        <div class="purchase-item">
+            <div class="purchase-info">
+                <h3>Grilled Chicken Salad</h3>
+                <p class="purchase-date">Purchased on: August 17, 2024</p>
+            </div>
+            <span class="purchase-amount">R12.99</span>
+            <span class="purchase-status status-collected">Collected</span>
+        </div>
+        <div class="purchase-item">
+            <div class="purchase-info">
+                <h3>Margherita Pizza</h3>
+                <p class="purchase-date">Purchased on: August 15, 2024</p>
+            </div>
+            <span class="purchase-amount">R14.50</span>
+            <span class="purchase-status status-collected">Collected</span>
+        </div>
+        <div class="purchase-item">
+            <div class="purchase-info">
+                <h3>Vegetable Stir Fry</h3>
+                <p class="purchase-date">Purchased on: August 18, 2024</p>
+            </div>
+            <span class="purchase-amount">R11.75</span>
+            <span class="purchase-status status-preparing">Preparing</span>
+        </div>
+        <div class="purchase-item">
+            <div class="purchase-info">
+                <h3>Beef Burrito</h3>
+                <p class="purchase-date">Purchased on: August 10, 2024</p>
+            </div>
+            <span class="purchase-amount">R9.99</span>
+            <span class="purchase-status status-collected">Collected</span>
+        </div>
+        <div class="purchase-item">
+            <div class="purchase-info">
+                <h3>Tuna Sandwich</h3>
+                <p class="purchase-date">Purchased on: August 16, 2024</p>
+            </div>
+            <span class="purchase-amount">R7.50</span>
+            <span class="purchase-status status-cancelled">Cancelled</span>
+        </div>
+    </div>
+</body>
+
+</html>

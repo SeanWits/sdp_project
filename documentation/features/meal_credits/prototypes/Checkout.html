@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Service Checkout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .order-summary {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .meal-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .meal-item:last-child {
+            border-bottom: none;
+        }
+        .total {
+            font-weight: bold;
+            text-align: right;
+            margin-top: 10px;
+        }
+        form {
+            display: grid;
+            gap: 15px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .payment-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .payment-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .payment-option.selected {
+            background-color: #e7f3ff;
+            border-color: #3498db;
+        }
+        #cardDetails {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Checkout</h1>
+        
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            <div class="meal-item">
+                <span>Grilled Chicken Salad</span>
+                <span>R12.99</span>
+            </div>
+            <div class="meal-item">
+                <span>Vegetarian Pasta (x2)</span>
+                <span>R21.98</span>
+            </div>
+            <div class="total">
+                <span>Total: R34.97</span>
+            </div>
+        </div>
+        
+        <form id="checkoutForm">
+            <h2>Payment Method</h2>
+            <div class="payment-options">
+                <div class="payment-option selected" onclick="selectPayment('wallet')">
+                    Pay from Wallet
+                </div>
+                <div class="payment-option" onclick="selectPayment('card')">
+                    Pay with Card
+                </div>
+            </div>
+            
+            <div id="walletDetails">
+                <p>Current Wallet Balance: R150.75</p>
+            </div>
+
+            <div id="cardDetails">
+                <div>
+                    <label for="card">Card Number:</label>
+                    <input type="text" id="card" placeholder="1234 5678 9012 3456">
+                </div>
+                <div>
+                    <label for="expiry">Expiry Date:</label>
+                    <input type="text" id="expiry" placeholder="MM/YY">
+                </div>
+                <div>
+                    <label for="cvv">CVV:</label>
+                    <input type="text" id="cvv" placeholder="123">
+                </div>
+            </div>
+            
+            <button type="submit">Confirm Purchase</button>
+        </form>
+    </div>
+
+    <script>
+        function selectPayment(method) {
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            
+            if (method === 'wallet') {
+                document.getElementById('walletDetails').style.display = 'block';
+                document.getElementById('cardDetails').style.display = 'none';
+            } else {
+                document.getElementById('walletDetails').style.display = 'none';
+                document.getElementById('cardDetails').style.display = 'block';
+            }
+        }
+
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Purchase confirmed! Thank you for your order.');
+        });
+    </script>
+</body>
+</html>
