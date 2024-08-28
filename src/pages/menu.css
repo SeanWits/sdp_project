@@ -1,0 +1,10 @@
+.restaurant-details {
+    border: 1px solid;
+    margin-top: 2%;
+    padding-left: 5%;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
