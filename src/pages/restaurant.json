@@ -20,6 +20,18 @@
             "description": "Three-egg omelette with seasonal vegetables",
             "price": 28.99,
             "is_available": true
+          },
+          {
+            "name": "French Toast",
+            "description": "Basically toast with some egg innit",
+            "price": 17.99,
+            "is_available": true
+          },
+          {
+            "name": "Flapjacks",
+            "description": "Flapjack, Flapjack... Come with me, we'll go and see a place called candy island...",
+            "price": 20.00,
+            "is_available": true
           }
         ]
       },
@@ -35,6 +47,23 @@
           {
             "name": "Caesar Salad",
             "description": "Crisp romaine lettuce, croutons, parmesan cheese, and Caesar dressing",
+            "price": 27.99,
+            "is_available": true
+          }
+        ]
+      },
+      {
+        "name": "Burgers",
+        "menu_items": [
+          {
+            "name": "Cheese Burger",
+            "description": "Cheese burger with real meat",
+            "price": 35.99,
+            "is_available": true
+          },
+          {
+            "name": "Chilli Burger",
+            "description": "A burger with chillis",
             "price": 27.99,
             "is_available": true
           }
