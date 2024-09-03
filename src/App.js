@@ -1,15 +1,22 @@
-import logo from './logo.svg';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import firebase from "firebase/compat/app";
 // Required for side-effects
 import "firebase/firestore";
+import Restaurant from './pages/Restaurant/Restaurant';
+import Test from './Test';
 
 function App() {
   return (
-    
-    <div className="App">
-      O(n) Site
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Restaurant />} />
+          {/* Add more routes here as needed */}
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
