@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './Checkout.css';
-import { db, doc, getDoc, updateDoc } from '../../firebase';
+import { db, doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from '../../firebase';
 
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [selectedPayment, setSelectedPayment] = useState('wallet');
-  const [walletBalance, setWalletBalance] = useState(150.75); // Mocked wallet balance
+  const [walletBalance, setWalletBalance] = useState(0);
   const [voucherCode, setVoucherCode] = useState('');
 
   const restaurantID = "wet34yeuerueu";
@@ -14,6 +14,7 @@ const Checkout = () => {
 
   useEffect(() => {
     fetchCart();
+    fetchWalletBalance();
   }, []);
 
   const fetchCart = async () => {
@@ -23,6 +24,15 @@ const Checkout = () => {
       const cartData = cartSnap.data();
       setCartItems(cartData.items || []);
       calculateTotal(cartData.items || []);
+    }
+  };
+
+  const fetchWalletBalance = async () => {
+    const userRef = doc(db, 'users', userID);
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists()) {
+      const userData = userSnap.data();
+      setWalletBalance(userData.wallet || 0);
     }
   };
 
@@ -40,9 +50,9 @@ const Checkout = () => {
   };
 
   const applyVoucher = () => {
-    // Here you would implement the logic to validate and apply the voucher
+    // implement the logic for apply the voucher
     console.log('Applying voucher:', voucherCode);
-    // For now, we'll just log the voucher code
+    // For now, log the voucher code
   };
 
   const deleteItem = async (productId) => {
@@ -55,6 +65,59 @@ const Checkout = () => {
       await updateDoc(cartRef, { items: updatedItems });
       setCartItems(updatedItems);
       calculateTotal(updatedItems);
+    }
+  };
+
+  const confirmPurchase = async () => {
+    if (selectedPayment === 'wallet' && total > walletBalance) {
+      alert('Insufficient funds in wallet');
+      return;
+    }
+
+    try {
+      // Create new order document
+      const orderRef = await addDoc(collection(db, "orders"), {
+        userId: userID,
+        restaurantId: restaurantID,
+        status: "preparing",
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        completedAt: null,
+        items: cartItems.map(item => ({
+          productId: item.productId,
+          name: item.name,
+          quantity: item.quantity,
+          priceAtPurchase: item.priceAtPurchase,
+          imageSrc: item.imageSrc
+        })),
+        totalAmount: total,
+        paymentMethod: selectedPayment,
+        voucherCode: selectedPayment === 'voucher' ? voucherCode : null,
+        notes: "" // You could add a notes field in your UI if needed
+      });
+
+      console.log("Order created with ID: ", orderRef.id);
+
+      // Update user's wallet balance if paid from wallet
+      if (selectedPayment === 'wallet') {
+        const userRef = doc(db, 'users', userID);
+        await updateDoc(userRef, {
+          wallet: walletBalance - total
+        });
+        setWalletBalance(walletBalance - total);
+      }
+
+      // Clear the cart
+      const cartRef = doc(db, `users/${userID}/carts/${restaurantID}`);
+      await updateDoc(cartRef, { items: [] });
+      setCartItems([]);
+      setTotal(0);
+
+      alert('Purchase confirmed! Order ID: ' + orderRef.id);
+      // redirect to the next page here
+    } catch (error) {
+      console.error("Error creating order: ", error);
+      alert('An error occurred while processing your order. Please try again.');
     }
   };
 
@@ -129,7 +192,7 @@ const Checkout = () => {
         </section>
       )}
 
-      <button className="confirm-purchase">Confirm Purchase</button>
+      <button className="confirm-purchase" onClick={confirmPurchase}>Confirm Purchase</button>
     </main>
   );
 };

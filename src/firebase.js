@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, collection } from "firebase/firestore";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 // console.log('REACT_APP_FIREBASE_API_KEY:', process.env.REACT_APP_FIREBASE_API_KEY);
 // console.log('REACT_APP_FIREBASE_AUTH_DOMAIN:', process.env.REACT_APP_FIREBASE_AUTH_DOMAIN);
@@ -33,6 +33,6 @@ setPersistence(auth, browserLocalPersistence)
 const db = getFirestore(app);
 const imgDB = getStorage(app);
 
-export { auth, db, doc, getDoc, setDoc, updateDoc, arrayUnion, imgDB, collection };
+export { auth, db, doc, getDoc, setDoc, updateDoc, arrayUnion, imgDB, collection, addDoc, serverTimestamp };
 
  
