@@ -6,13 +6,14 @@ import firebase from "firebase/compat/app";
 import "firebase/firestore";
 import Restaurant from './pages/Restaurant/Restaurant';
 import Test from './Test';
+import Checkout from './pages/Checkout/Checkout';
 
 function App() {
   return (
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={<Restaurant />} />
+          <Route path="/" element={<Checkout />} />
           {/* Add more routes here as needed */}
         </Routes>
       </div>
