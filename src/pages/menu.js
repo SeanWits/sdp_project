@@ -8,7 +8,7 @@ import ReactDOM from "react-dom/client";
 
 //Function that is called in App.js to render the menu
 function Menu() {
-//Setting the states for the menu API (mocked for now)
+  //Setting the states for the menu API (mocked for now)
   const [restaurant, setRestaurant] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,18 +39,28 @@ function Menu() {
     //This is for displaying the menu info in a list, one after the other
     //Calling the API contents recursively
     <div className="restaurant-list">
-    
+      <header>Restaurant/Dining Hall Name</header>
       {restaurant.map((restaurant) => (
-        <a href="#">
+        
         <article key={restaurant.id} className="restaurant-details">
-          <h2>{restaurant.name}</h2>
-          <p>Location: {restaurant.location}</p>
-          <p>
-            Hours: {restaurant.opening_time} - {restaurant.closing_time}
-          </p>
-
-        </article>
-        </a>
+        <section id="main-section">
+          <div>
+            <h2>{restaurant.name}</h2>
+            <p>Location: {restaurant.location}</p>
+            <p>
+              Hours: {restaurant.opening_time} - {restaurant.closing_time}
+            </p>
+            <p>Rating:</p>
+          </div>
+          <div>
+            <ul>
+            <li><button className="menuButton">Menu</button></li>
+            <li><button className="menuButton">More Info</button></li>
+            </ul>
+          </div>
+        </section>
+      </article>
+        
       ))}
     </div>
   );
