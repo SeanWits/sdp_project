@@ -15,6 +15,7 @@ const Cart = ({ isOpen, onClose, restaurantID, userID }) => {
   const fetchCart = async () => {
     const cartRef = doc(db, `users/${userID}/carts/${restaurantID}`);
     const cartSnap = await getDoc(cartRef);
+    console.log("read"); // Log read operation
     if (cartSnap.exists()) {
       const cartData = cartSnap.data();
       setItems(cartData.items || []);
@@ -30,6 +31,7 @@ const Cart = ({ isOpen, onClose, restaurantID, userID }) => {
   const updateItemQuantity = async (productId, newQuantity) => {
     const cartRef = doc(db, `users/${userID}/carts/${restaurantID}`);
     const cartSnap = await getDoc(cartRef);
+    console.log("read"); // Log read operation
     if (cartSnap.exists()) {
       const cartData = cartSnap.data();
       const updatedItems = cartData.items.map(item => 
@@ -37,6 +39,7 @@ const Cart = ({ isOpen, onClose, restaurantID, userID }) => {
       ).filter(item => item.quantity > 0);
 
       await updateDoc(cartRef, { items: updatedItems });
+      console.log("write"); // Log write operation
       setItems(updatedItems);
       calculateTotal(updatedItems);
     }
@@ -45,11 +48,13 @@ const Cart = ({ isOpen, onClose, restaurantID, userID }) => {
   const deleteItem = async (productId) => {
     const cartRef = doc(db, `users/${userID}/carts/${restaurantID}`);
     const cartSnap = await getDoc(cartRef);
+    console.log("read"); // Log read operation
     if (cartSnap.exists()) {
       const cartData = cartSnap.data();
       const updatedItems = cartData.items.filter(item => item.productId !== productId);
 
       await updateDoc(cartRef, { items: updatedItems });
+      console.log("write"); // Log write operation
       setItems(updatedItems);
       calculateTotal(updatedItems);
     }
