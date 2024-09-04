@@ -25,6 +25,7 @@ const Restaurant = () => {
   const fetchCart = async () => {
     const cartRef = doc(db, `users/${userID}/carts/${restaurantID}`);
     const cartSnap = await getDoc(cartRef);
+    console.log("read"); // Log read operation
     if (cartSnap.exists()) {
       setCartItems(cartSnap.data().items || []);
     }
@@ -33,6 +34,7 @@ const Restaurant = () => {
   const handleAddToCart = async () => {
     const cartRef = doc(db, `users/${userID}/carts/${restaurantID}`);
     const cartSnap = await getDoc(cartRef);
+    console.log("read"); // Log read operation
 
     const newItem = {
       productId: product.productId,
@@ -48,6 +50,7 @@ const Restaurant = () => {
         restaurantID: restaurantID,
         items: [newItem]
       });
+      console.log("write"); // Log write operation
     } else {
       // Update existing cart document
       const existingItems = cartSnap.data().items || [];
@@ -57,11 +60,13 @@ const Restaurant = () => {
         // Update quantity if item already exists
         existingItems[existingItemIndex].quantity += quantity;
         await updateDoc(cartRef, { items: existingItems });
+        console.log("write"); // Log write operation
       } else {
         // Add new item if it doesn't exist
         await updateDoc(cartRef, {
           items: arrayUnion(newItem)
         });
+        console.log("write"); // Log write operation
       }
     }
 
