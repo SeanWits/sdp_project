@@ -1,0 +1,160 @@
+.checkout-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h1, h2 {
+  color: #333;
+}
+
+.order-summary {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.meal-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+.meal-info {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-right: 10px;
+}
+
+.meal-name {
+  flex-grow: 1;
+}
+
+.meal-price {
+  font-weight: bold;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trash-icon {
+  width: 20px;
+  height: 20px;
+  color: #dc3545;
+  transition: color 0.3s;
+}
+
+.delete-btn:hover .trash-icon {
+  color: #bd2130;
+}
+
+.item-divider {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 10px 0;
+}
+
+.total {
+  font-weight: bold;
+  font-size: 18px;
+  margin-top: 15px;
+  text-align: center;
+}
+
+.payment-method {
+  margin-bottom: 20px;
+}
+
+.payment-options {
+  display: flex;
+  gap: 10px;
+}
+
+.payment-option {
+  padding: 10px 15px;
+  border: 2px solid #007bff;
+  background-color: #fff;
+  color: #007bff;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.payment-option:hover {
+  background-color: #e6f2ff;
+}
+
+.payment-option.selected {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.payment-details {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.payment-details div {
+  margin-bottom: 10px;
+}
+
+.payment-details label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.payment-details input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.apply-voucher {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.apply-voucher:hover {
+  background-color: #218838;
+}
+
+.confirm-purchase {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.confirm-purchase:hover {
+  background-color: #0056b3;
+}
