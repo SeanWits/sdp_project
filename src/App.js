@@ -7,13 +7,14 @@ import "firebase/firestore";
 import Restaurant from './pages/Restaurant/Restaurant';
 import Test from './Test';
 import Checkout from './pages/Checkout/Checkout';
+import Orders from './pages/Orders/Orders';
 
 function App() {
   return (
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={<Checkout />} />
+          <Route path="/" element={<Orders />} />
           {/* Add more routes here as needed */}
         </Routes>
       </div>
