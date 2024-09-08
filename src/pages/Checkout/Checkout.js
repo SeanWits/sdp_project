@@ -9,7 +9,7 @@ const Checkout = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const [voucherCode, setVoucherCode] = useState('');
 
-  const restaurantID = "wet34yeuerueu";
+  const restaurantID = "rest001";
   const userID = "GUuNErry035Y9L5q5fqa";
 
   useEffect(() => {
@@ -88,7 +88,8 @@ const Checkout = () => {
           name: item.name,
           quantity: item.quantity,
           priceAtPurchase: item.priceAtPurchase,
-          imageSrc: item.imageSrc
+          imageSrc: item.imageSrc,
+          prepTime: item.prepTime
         })),
         totalAmount: total,
         paymentMethod: selectedPayment,
