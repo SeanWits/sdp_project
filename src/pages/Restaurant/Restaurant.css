@@ -82,11 +82,27 @@
   font-weight: bold;
 }
 
-.cart-icon {
+.cart-icon-container {
   position: fixed;
   top: 20px;
   right: 20px;
   font-size: 24px;
   cursor: pointer;
   z-index: 1001;
+}
+
+.cart-icon {
+  color: #007bff;
+}
+
+.cart-counter {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: bold;
 }
