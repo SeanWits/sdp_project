@@ -6,7 +6,7 @@
     
 }
 
-header {
+.menuHeader {
     height: 60px;
     background-color: #003B5C;
     color: white;
@@ -55,7 +55,12 @@ li {
     color: white;
     cursor: pointer;
     border-radius: 15px;
-    
+    border: none;
+    cursor: pointer;
+}
+
+.menuButton:hover {
+  background-color: #0056b3;
 }
 
 
