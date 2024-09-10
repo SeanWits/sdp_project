@@ -16,8 +16,8 @@ function App() {
                 <Routes>
                     
                     <Route path="/menu" element={<Menu />} />
-                    <Route path="/menu2" element={<Menu2 />} />
-                    
+                    <Route path="/menu2" element={<Menu2 />} /> {/* Remove this */}
+                    <Route path="/menu/:restaurantId" element={<Menu2 />} />
                 </Routes>
             </Router>
         </UserContext.Provider>
