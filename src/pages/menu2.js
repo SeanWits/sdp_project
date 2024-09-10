@@ -1,6 +1,6 @@
 import "./menu2.css";
 import restaurantData from "./restaurant.json"; // Mock API for testing
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 
 function Menu2() {
@@ -30,10 +30,11 @@ function Menu2() {
 
   return (
     <div className="menu-container">
+      <header className="menuHeader">Restaurant/Dining Hall Name</header>
       {/* Row for displaying categories */}
-      <div className="categories-row">
+      <section className="categories-row">
         {restaurant.categories.map((category) => (
-          <div
+          <section
             key={category.name}
             className={`category-item ${
               selectedCategory.name === category.name ? "active" : ""
@@ -41,27 +42,37 @@ function Menu2() {
             onClick={() => setSelectedCategory(category)}
           >
             {category.name}
-          </div>
+          </section>
         ))}
-      </div>
+      </section>
       <div className="separator-line"></div>
 
+      <section id="menuFoodBanner">
+        <h1>Food Category</h1>
+        <p>Enter food category here</p>
+      </section>
+
       {/* Displaying food items */}
-      <div className="food-grid">
+      <article className="food-grid">
         {selectedCategory.menu_items.map((item) => (
-          <div key={item.name} className="food-item">
+          <section key={item.name} className="food-item">
+            <section className="foodDetails">
             <h3>{item.name}</h3>
             <p>{item.description}</p>
             <p>Price: R{item.price.toFixed(2)}</p>
             <p>{item.is_available ? "Available" : "Out of stock"}</p>
-          </div>
+            </section>
+            <section className="foodPics">
+
+            </section>
+          </section>
         ))}
-      </div>
+      </article>
     </div>
   );
 }
 
-const container = document.getElementById("root");
+/*const container = document.getElementById("root");
 const root = ReactDOM.createRoot(container);
-root.render(<Menu2 />);
+root.render(<Menu2 />);*/
 export default Menu2;
