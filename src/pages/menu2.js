@@ -2,8 +2,10 @@ import "./menu2.css";
 import restaurantData from "./restaurant.json"; // Mock API for testing
 import { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
+import { useParams } from "react-router-dom";
 
 function Menu2() {
+  const { restaurantId } = useParams();
   const [restaurant, setRestaurant] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,9 +14,16 @@ function Menu2() {
   useEffect(() => {
     const loadRestaurant = () => {
       try {
-        setRestaurant(restaurantData[0]); // Default to the first restaurant for simplicity
-        setSelectedCategory(restaurantData[0].categories[0]); // Default to the first category
-        setLoading(false);
+        const selectedRestaurant = restaurantData.find(r => r.id === restaurantId);
+        
+        if (selectedRestaurant) {
+          setRestaurant(selectedRestaurant);
+          setSelectedCategory(selectedRestaurant.categories[0]);
+          setLoading(false);
+        } else {
+          setError("Restaurant not found");
+          setLoading(false);
+        }
       } catch (err) {
         setError("Failed to load restaurant data");
         setLoading(false);
@@ -30,7 +39,7 @@ function Menu2() {
 
   return (
     <div className="menu-container">
-      <header className="menuHeader">Restaurant/Dining Hall Name</header>
+      <header className="menuHeader">{restaurant.name}</header>
       {/* Row for displaying categories */}
       <section className="categories-row">
         {restaurant.categories.map((category) => (
