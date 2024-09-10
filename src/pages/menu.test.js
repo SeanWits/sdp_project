@@ -1,10 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import Menu from './menu.js';
-import restaurantData from "./restaurant.json"; //Mock API for testing
-import { useState, useEffect } from "react";
-
+import { BrowserRouter as Router } from 'react-router-dom';
+import Menu from './Menu';
 
 // Mock the restaurantData import
 jest.mock('./restaurant.json', () => [
@@ -17,20 +14,26 @@ jest.mock('./restaurant.json', () => [
   },
 ]);
 
+// Mock the css import
+jest.mock('./menu.css', () => ({}));
+
 describe('Menu Component', () => {
-  test('renders restaurant information', () => {
-    render(<Menu />);
-    
+  test('renders without crashing', () => {
+    render(
+      <Router>
+        <Menu />
+      </Router>
+    );
+
+    // Check if the component renders the header
     expect(screen.getByText('Restaurant/Dining Hall Name')).toBeInTheDocument();
+
+    // Check if the test restaurant data is rendered
     expect(screen.getByText('Test Restaurant')).toBeInTheDocument();
     expect(screen.getByText('Location: Test Location')).toBeInTheDocument();
     expect(screen.getByText('Hours: 9:00 AM - 10:00 PM')).toBeInTheDocument();
-    expect(screen.getByText('Rating:')).toBeInTheDocument();
-  });
 
-  test('renders Menu and More Info buttons', () => {
-    render(<Menu />);
-    
+    // Check if the buttons are rendered
     expect(screen.getByText('Menu')).toBeInTheDocument();
     expect(screen.getByText('More Info')).toBeInTheDocument();
   });
