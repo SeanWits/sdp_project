@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import "./menu3.css";
+import "./menuInfo.css";
 import restaurantData from "./restaurant.json"; //Mock API for testing
 
-function Menu3() {
+function MenuInfo() {
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,25 +27,37 @@ function Menu3() {
   if (!restaurants.length) return <div>No restaurant data available</div>;
 
   return (
-    <div className="restaurant-list">
+    <div className="restaurant-info">
       <header className="menuHeader">Restaurant/Dining Hall Name</header>
-      <h1>Meal Name</h1>
-      <div className="separator-line"></div>
-      <section id="mainThing">
-        <article>
-          <div className="menu3DivBox" id="longerThings">
-            A description
-          </div>
-        </article>
-        <article>
-          <div className="menu3DivBox">Customise order</div>
-          Total: <button>Add to cart</button>
-        </article>
-      </section>
-      <div className="separator-line"></div>
+      
+      
 
-      <section>
+      <section className="resDeets">
         <section id="reviews">
+          <section id="reviewsReviews">
+            <h2>Restaurant Details</h2>
+          </section>
+
+          <section id="reviewsRating">
+            <article id = "nameRes">
+              <ul>
+                <li>Name: </li>
+                <li>Location: </li>
+                <li>Operating Hours: </li>
+                <li>Contact details: </li>
+                <li>Telephone: </li>
+                <li>Email: </li>
+                <li>rating: </li>
+              </ul>
+            </article>
+            <article>
+              {/*Picture here */}
+            </article>
+          </section>
+        </section>
+      </section>
+
+      <section id="reviews">
           <section id="reviewsReviews">
             <h2>Reviews</h2>
           </section>
@@ -59,9 +71,10 @@ function Menu3() {
             </article>
           </section>
         </section>
-      </section>
+    
     </div>
+    
   );
 }
 
-export default Menu3;
+export default MenuInfo;
