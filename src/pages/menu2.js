@@ -1,7 +1,6 @@
 import "./menu2.css";
-import restaurantData from "./restaurant.json"; // Mock API for testing
+import restaurantData from "./restaurant.json";
 import { useState, useEffect } from "react";
-import ReactDOM from "react-dom/client";
 import { useParams } from "react-router-dom";
 
 function Menu2() {
@@ -31,7 +30,7 @@ function Menu2() {
     };
 
     loadRestaurant();
-  }, []);
+  }, [restaurantId]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -40,7 +39,6 @@ function Menu2() {
   return (
     <div className="menu-container">
       <header className="menuHeader">{restaurant.name}</header>
-      {/* Row for displaying categories */}
       <section className="categories-row">
         {restaurant.categories.map((category) => (
           <section
@@ -54,32 +52,40 @@ function Menu2() {
           </section>
         ))}
       </section>
+      
       <div className="separator-line"></div>
 
       <section id="menuFoodBanner">
-        <h1>Food Category</h1>
-        <p>Enter food category here</p>
+        <h1>{selectedCategory.name}</h1>
+        <p>{selectedCategory.description || `Delicious ${selectedCategory.name} options`}</p>
       </section>
 
-      {/* Displaying food items */}
       <article className="food-grid">
         {selectedCategory.menu_items.map((item) => (
+          <a href="#"> {/* Make a reference to menu3*/}
           <section key={item.name} className="food-item">
+            
             <section className="foodDetails">
-            <h3>{item.name}</h3>
-            <p>{item.description}</p>
-            <p>Price: R{item.price.toFixed(2)}</p>
-            <p>{item.is_available ? "Available" : "Out of stock"}</p>
+              <h3>{item.name}</h3>
+              <p className="description">{item.description}</p>
+              <p>Price: R{item.price.toFixed(2)}</p>
+              <p>{item.is_available ? "Available" : "Out of stock"}</p>
             </section>
+            
+            
             <section className="foodPics">
-
+              {item.image_url && (
+                <img src={item.image_url} alt={item.name} className="food-image" />
+              )}
             </section>
           </section>
+          </a>
         ))}
       </article>
     </div>
   );
 }
+
 
 /*const container = document.getElementById("root");
 const root = ReactDOM.createRoot(container);
