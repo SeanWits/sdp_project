@@ -9,13 +9,25 @@ function Header() {
             />
 
             <header id="Header">
-                <section id="logo_on_header">
-                    <img id="logo" src={require("../assets/logo outline transparent.png")} alt = "Campus Bites Logo"/>
+                <section id="logo_on_header" onClick={() => navigate("/")}>
+                    <img
+                        id="logo"
+                        src={require("../assets/logo outline transparent.png")}
+                        alt="Campus Bites Logo"
+                    />
                     <p id="logo_label">Campus Bites</p>
                 </section>
                 <section id="icons_on_header">
-                    <span className="material-symbols-outlined">receipt</span>
-                    <span className="material-symbols-outlined">
+                    <span
+                        className="material-symbols-outlined"
+                        onClick={() => navigate("/Orders")}
+                    >
+                        receipt
+                    </span>
+                    <span
+                        className="material-symbols-outlined"
+                        onClick={() => navigate("/")}
+                    >
                         shopping_basket
                     </span>
                 </section>
