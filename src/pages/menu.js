@@ -35,6 +35,8 @@ function Menu() {
   if (!restaurants.length) return <div>No restaurant data available</div>;
 
   return (
+    <>
+    <Header/>
     <div className="restaurant-list">
       <header className="menuHeader">Restaurant/Dining Hall Name</header>
       {restaurants.map((restaurant) => (
@@ -71,6 +73,7 @@ function Menu() {
         </article>
       ))}
     </div>
+    </>
   );
 }
 

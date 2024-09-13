@@ -1,0 +1,59 @@
+#logo {
+  width: 70px;
+  height: 57.45px;
+}
+
+body {
+  margin: 0;
+}
+
+#Header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-image: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 1),
+      rgba(255, 255, 255, 1),
+      rgba(252, 176, 64, 1),
+      rgba(252, 176, 64, 1),
+      rgba(252, 176, 64, 1),
+      rgba(252, 176, 64, 1),
+      rgba(252, 176, 64, 1),
+      rgba(252, 176, 64, 1),
+      rgba(252, 176, 64, 1)
+  );
+  height: 80px;
+  align-items: center;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.icon {
+  font-size: 50px;
+  color: #003b5c;
+}
+
+#logo_on_header {
+  padding-left: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 150px;
+}
+
+#logo_label {
+  text-wrap: wrap;
+  width: 70px;
+  font-size: 15px;
+}
+
+#icons_on_header {
+  padding-right: 30px;
+  width: 130px;
+  display: flex;
+  justify-content: space-between;
+}
