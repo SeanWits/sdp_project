@@ -1,6 +1,8 @@
 import "./Header.css";
+import { useNavigate } from "react-router-dom";
 
 function Header() {
+    const navigate = useNavigate();
     return (
         <>
             <link
@@ -19,13 +21,13 @@ function Header() {
                 </section>
                 <section id="icons_on_header">
                     <span
-                        className="material-symbols-outlined"
+                        className="material-symbols-outlined icon"
                         onClick={() => navigate("/Orders")}
                     >
                         receipt
                     </span>
                     <span
-                        className="material-symbols-outlined"
+                        className="material-symbols-outlined icon"
                         onClick={() => navigate("/")}
                     >
                         shopping_basket
