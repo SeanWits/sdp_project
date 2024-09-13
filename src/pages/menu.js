@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./menu.css";
 import restaurantData from "./restaurant.json"; //Mock API for testing
+import Header from "../components/Header";
 
 function Menu() {
   const [restaurants, setRestaurants] = useState([]);
@@ -27,6 +28,8 @@ function Menu() {
   if (!restaurants.length) return <div>No restaurant data available</div>;
 
   return (
+    <>
+    <Header/>
     <div className="restaurant-list">
       <header className="menuHeader">Restaurant/Dining Hall Name</header>
       {restaurants.map((restaurant) => (
@@ -54,6 +57,7 @@ function Menu() {
         </article>
       ))}
     </div>
+    </>
   );
 }
 
