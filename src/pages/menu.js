@@ -5,9 +5,9 @@ import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 
 function Menu() {
-  const [restaurants, setRestaurants] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const [restaurants, setRestaurants] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -30,9 +30,9 @@ function Menu() {
     fetchRestaurants();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!restaurants.length) return <div>No restaurant data available</div>;
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
+    if (!restaurants.length) return <div>No restaurant data available</div>;
 
   return (
     <>
