@@ -47,7 +47,11 @@ function Menu() {
                     <button className="menuButton">Menu</button>
                   </Link>
                 </li>
-                <li><button className="menuButton">More Info</button></li>
+                <li>
+                  <Link to={`/restaurant-info/${restaurant.id}`}>
+                <button className="menuButton">More Info</button>
+              </Link>
+              </li>
               </ul>
             </div>
           </section>
