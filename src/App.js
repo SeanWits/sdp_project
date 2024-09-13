@@ -5,7 +5,7 @@ import Menu from "./pages/menu";
 import Menu2 from "./pages/menu2";
 import Menu3 from "./pages/menu3";
 import MenuInfo from "./pages/menuInfo";
-import Test from "./pages/Test";
+import Test from "./pages/test";
 
 export const UserContext = createContext(null);
 import firebase from "firebase/compat/app";
@@ -29,7 +29,7 @@ function App() {
                     
                     <Route path="/menu" element={<Menu />} />
                     <Route path="/menu3" element={<Menu3 />} />
-                    {/*<Route path="/Test" element={<Test />} />*/}
+                    {/*<Route path="/test" element={<Test />} />*/}
                     {/*<Route path="/menuInfo" element={<MenuInfo />} />*/}
                     <Route path="/restaurant-info/:id" element={<MenuInfo />} />
                     {/*<Route path="/menu2" element={<Menu2 />} />  Remove this */}
