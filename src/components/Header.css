@@ -34,6 +34,7 @@ body {
 .icon {
   font-size: 50px;
   color: #003b5c;
+  cursor: pointer;
 }
 
 #logo_on_header {
@@ -43,6 +44,7 @@ body {
   align-items: center;
   justify-content: space-between;
   width: 150px;
+  cursor: pointer;
 }
 
 #logo_label {
