@@ -3,62 +3,73 @@ import { Link } from "react-router-dom";
 import "./menu.css";
 import restaurantData from "./restaurant.json"; //Mock API for testing
 import Header from "../components/Header";
+import { Footer } from "../components/Footer";
 
 function Menu() {
-  const [restaurants, setRestaurants] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const [restaurants, setRestaurants] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const loadRestaurants = () => {
-      try {
-        setRestaurants(restaurantData);
-        setLoading(false);
-      } catch (err) {
-        setError("Failed to load restaurant data");
-        setLoading(false);
-      }
-    };
+    useEffect(() => {
+        const loadRestaurants = () => {
+            try {
+                setRestaurants(restaurantData);
+                setLoading(false);
+            } catch (err) {
+                setError("Failed to load restaurant data");
+                setLoading(false);
+            }
+        };
 
-    loadRestaurants();
-  }, []);
+        loadRestaurants();
+    }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!restaurants.length) return <div>No restaurant data available</div>;
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
+    if (!restaurants.length) return <div>No restaurant data available</div>;
 
-  return (
-    <>
-    <Header/>
-    <div className="restaurant-list">
-      <header className="menuHeader">Restaurant/Dining Hall Name</header>
-      {restaurants.map((restaurant) => (
-        <article key={restaurant.id} className="restaurant-details">
-          <section id="main-section">
-            <div>
-              <h2>{restaurant.name}</h2>
-              <p>Location: {restaurant.location}</p>
-              <p>
-                Hours: {restaurant.opening_time} - {restaurant.closing_time}
-              </p>
-              <p>Rating:</p>
+    return (
+        <>
+            <Header />
+            <div className="restaurant-list">
+                <header className="menuHeader">
+                    Restaurant/Dining Hall Name
+                </header>
+                {restaurants.map((restaurant) => (
+                    <article key={restaurant.id} className="restaurant-details">
+                        <section id="main-section">
+                            <div>
+                                <h2>{restaurant.name}</h2>
+                                <p>Location: {restaurant.location}</p>
+                                <p>
+                                    Hours: {restaurant.opening_time} -{" "}
+                                    {restaurant.closing_time}
+                                </p>
+                                <p>Rating:</p>
+                            </div>
+                            <div>
+                                <ul>
+                                    <li>
+                                        <Link to={`/menu/${restaurant.id}`}>
+                                            <button className="menuButton">
+                                                Menu
+                                            </button>
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <button className="menuButton">
+                                            More Info
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </section>
+                    </article>
+                ))}
             </div>
-            <div>
-              <ul>
-                <li>
-                  <Link to={`/menu/${restaurant.id}`}>
-                    <button className="menuButton">Menu</button>
-                  </Link>
-                </li>
-                <li><button className="menuButton">More Info</button></li>
-              </ul>
-            </div>
-          </section>
-        </article>
-      ))}
-    </div>
-    </>
-  );
+            <Footer />
+        </>
+    );
 }
 
 export default Menu;
