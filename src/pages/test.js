@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { db, doc, getDoc, setDoc, collection } from './firebase';
+//import { db, doc, getDoc, setDoc, collection } from './firebase';
 
 function Test() {
   const [userData, setUserData] = useState(null);
