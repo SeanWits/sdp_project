@@ -1,91 +1,103 @@
 import "./menu2.css";
-import restaurantData from "./restaurant.json";
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
+import { db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 function Menu2() {
   const { restaurantId } = useParams();
-  const [restaurant, setRestaurant] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const [restaurant, setRestaurant] = useState(location.state?.restaurant || null);
+  const [loading, setLoading] = useState(!restaurant);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
+
   useEffect(() => {
-    const loadRestaurant = () => {
-      try {
-        const selectedRestaurant = restaurantData.find(r => r.id === restaurantId);
-        
-        if (selectedRestaurant) {
-          setRestaurant(selectedRestaurant);
-          setSelectedCategory(selectedRestaurant.categories[0]);
-          setLoading(false);
-        } else {
-          setError("Restaurant not found");
-          setLoading(false);
+    const fetchRestaurant = async () => {
+      if (!restaurant) {
+        try {
+          const restaurantDoc = await getDoc(doc(db, 'restaurants', restaurantId));
+          if (restaurantDoc.exists()) {
+            const restaurantData = { id: restaurantDoc.id, ...restaurantDoc.data() };
+            setRestaurant(restaurantData);
+            if (restaurantData.categories && restaurantData.categories.length > 0) {
+              setSelectedCategory(restaurantData.categories[0]);
+            }
+          } else {
+            setError("Restaurant not found");
+          }
+        } catch (err) {
+          console.error("Error fetching restaurant:", err);
+          setError("Failed to load restaurant data");
         }
-      } catch (err) {
-        setError("Failed to load restaurant data");
         setLoading(false);
+      } else if (restaurant.categories && restaurant.categories.length > 0 && !selectedCategory) {
+        setSelectedCategory(restaurant.categories[0]);
       }
     };
 
-    loadRestaurant();
-  }, [restaurantId]);
+    fetchRestaurant();
+  }, [restaurantId, restaurant, selectedCategory]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!restaurant) return <div>No restaurant data available</div>;
+  if (!restaurant.categories || restaurant.categories.length === 0) return <div>No menu categories available</div>;
 
   return (
     <div className="menu-container">
       <header className="menuHeader">
-         <Link to="/" className="back-arrow">&#8592;</Link>
+        <Link to="/" className="back-arrow">&#8592;</Link>
         {restaurant.name}
       </header>
       <section className="categories-row">
         {restaurant.categories.map((category) => (
           <section
             key={category.name}
-            className={`category-item ${
-              selectedCategory.name === category.name ? "active" : ""
-            }`}
+            className={`category-item ${selectedCategory && selectedCategory.name === category.name ? "active" : ""
+              }`}
             onClick={() => setSelectedCategory(category)}
           >
             {category.name}
           </section>
         ))}
       </section>
-      
-      <div className="separator-line"></div>
 
-      <section id="menuFoodBanner">
-        <h1>{selectedCategory.name}</h1>
-        <p>{selectedCategory.description || `Delicious ${selectedCategory.name} options`}</p>
-      </section>
+      {selectedCategory && (
+        <>
+          <div className="separator-line"></div>
 
-      <article className="food-grid">
-        {selectedCategory.menu_items.map((item) => (
-          <Link 
-            to={`/menu3/${item.name}`} 
-            state={{ item }} 
-            key={item.name}
-          >
-            <section className="food-item">
-              <section className="foodDetails">
-                <h3>{item.name}</h3>
-                <p className="description">{item.description}</p>
-                <p>Price: R{item.price.toFixed(2)}</p>
-                <p>{item.is_available ? "Available" : "Out of stock"}</p>
-              </section>
-              <section className="foodPics">
-                {item.image_url && (
-                  <img src={item.image_url} alt={item.name} className="food-image" />
-                )}
-              </section>
-            </section>
-          </Link>
-        ))}
-      </article>
+          <section id="menuFoodBanner">
+            <h1>{selectedCategory.name}</h1>
+            <p>{selectedCategory.description || `Delicious ${selectedCategory.name} options`}</p>
+          </section>
+
+          <article className="food-grid">
+            {selectedCategory.menu_items.map((item) => (
+              <Link 
+                to={`/menu/${restaurantId}/${encodeURIComponent(item.name)}`} 
+                state={{ item, restaurantName: restaurant.name }} 
+                key={item.name}
+              >
+                <section className="food-item">
+                  <section className="foodDetails">
+                    <h3>{item.name}</h3>
+                    <p className="description">{item.description}</p>
+                    <p>Price: R{item.price.toFixed(2)}</p>
+                    <p>{item.is_available ? "Available" : "Out of stock"}</p>
+                  </section>
+                  <section className="foodPics">
+                    {item.image_url && (
+                      <img src={item.image_url} alt={item.name} className="food-image" />
+                    )}
+                  </section>
+                </section>
+              </Link>
+            ))}
+          </article>
+        </>
+      )}
     </div>
   );
 }
