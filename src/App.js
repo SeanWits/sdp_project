@@ -19,7 +19,8 @@ function App() {
                 <Routes>
                     
                     <Route path="/" element={<Menu />} />
-                    <Route path="/menu3" element={<Menu3 />} />
+                    {/*<Route path="/menu3" element={<Menu3 />} />*/}
+                    <Route path="/menu3/:itemName" element={<Menu3 />} />
                     {/*<Route path="/test" element={<Test />} />*/}
                     {/*<Route path="/menuInfo" element={<MenuInfo />} />*/}
                     <Route path="/restaurant-info/:id" element={<MenuInfo />} />
