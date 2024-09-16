@@ -1,18 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './Restaurant.css';
 import Cart from '../../components/Cart/Cart';
 import { db, doc, getDoc, setDoc, updateDoc, arrayUnion } from '../../firebase';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
+import UserStatus from '../../utils/userStatus';
+import { logoutUser } from '../../utils/authFunctions';
+import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../../utils/userContext';
 
 const Restaurant = () => {
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [cartItemCount, setCartItemCount] = useState(0);
+  const { user } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const restaurantID = "rest001";
-  const userID = "GUuNErry035Y9L5q5fqa";
+  const userID = user ? user.uid : null;;
 
   const product = {
     productId: "05032",
@@ -23,8 +29,10 @@ const Restaurant = () => {
   };
 
   useEffect(() => {
-    fetchCart();
-  }, []);
+    if (userID) {
+      fetchCart();
+    }
+  }, [userID]);
 
   const fetchCart = async () => {
     const cartRef = doc(db, `users/${userID}/carts/${restaurantID}`);
@@ -94,8 +102,20 @@ const Restaurant = () => {
     setIsCartOpen(prev => !prev);
   };
 
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      setCartItems([]);
+      setCartItemCount(0);
+      navigate('/login'); // Redirect to login page after logout
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
   return (
     <div className="restaurant-container">
+    <UserStatus />
       <div className="cart-icon-container" onClick={toggleCart}>
         <FontAwesomeIcon icon={faCartShopping} className="cart-icon" />
         {cartItemCount > 0 && <span className="cart-counter">{cartItemCount}</span>}
@@ -113,6 +133,11 @@ const Restaurant = () => {
         </div>
         <button onClick={handleAddToCart} className="add-to-cart-btn">Add to Cart</button>
       </div>
+      {user && (
+          <button onClick={handleLogout} className="logout-btn">
+            Logout
+          </button>
+        )}
     </div>
   );
 };
