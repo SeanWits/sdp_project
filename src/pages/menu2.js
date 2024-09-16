@@ -1,7 +1,7 @@
 import "./menu2.css";
 import restaurantData from "./restaurant.json";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 
 function Menu2() {
   const { restaurantId } = useParams();
@@ -38,7 +38,10 @@ function Menu2() {
 
   return (
     <div className="menu-container">
-      <header className="menuHeader">{restaurant.name}</header>
+      <header className="menuHeader">
+         <Link to="/" className="back-arrow">&#8592;</Link>
+        {restaurant.name}
+      </header>
       <section className="categories-row">
         {restaurant.categories.map((category) => (
           <section
@@ -62,32 +65,29 @@ function Menu2() {
 
       <article className="food-grid">
         {selectedCategory.menu_items.map((item) => (
-          <a href="#"> {/* Make a reference to menu3*/}
-          <section key={item.name} className="food-item">
-            
-            <section className="foodDetails">
-              <h3>{item.name}</h3>
-              <p className="description">{item.description}</p>
-              <p>Price: R{item.price.toFixed(2)}</p>
-              <p>{item.is_available ? "Available" : "Out of stock"}</p>
+          <Link 
+            to={`/menu3/${item.name}`} 
+            state={{ item }} 
+            key={item.name}
+          >
+            <section className="food-item">
+              <section className="foodDetails">
+                <h3>{item.name}</h3>
+                <p className="description">{item.description}</p>
+                <p>Price: R{item.price.toFixed(2)}</p>
+                <p>{item.is_available ? "Available" : "Out of stock"}</p>
+              </section>
+              <section className="foodPics">
+                {item.image_url && (
+                  <img src={item.image_url} alt={item.name} className="food-image" />
+                )}
+              </section>
             </section>
-            
-            
-            <section className="foodPics">
-              {item.image_url && (
-                <img src={item.image_url} alt={item.name} className="food-image" />
-              )}
-            </section>
-          </section>
-          </a>
+          </Link>
         ))}
       </article>
     </div>
   );
 }
 
-
-/*const container = document.getElementById("root");
-const root = ReactDOM.createRoot(container);
-root.render(<Menu2 />);*/
 export default Menu2;

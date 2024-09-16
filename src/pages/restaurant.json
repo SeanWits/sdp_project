@@ -83,42 +83,42 @@
             "description": "lettuce, cucumber, sweet chilli sauce",
             "price": 65.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUG2xUv3otxw9DpNAXfX8yqrHEFXkM6bPXJQ&s"
           },
           {
             "name": "FALAFEL",
             "description": "hummus, gherkin, lettuce, tomato, sweet chilli sauce",
             "price": 65.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRa7RVmQ3YVU686d4u_uDv80fnXTY4uu_vnYA&s"
           },
           {
             "name": "CRUMBED CHICKEN",
             "description": "honey mustard dressing, lettuce",
             "price": 60.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://sailorbailey.com/wp-content/uploads/2023/01/Crispy-Chicken-WrapsKey.jpg"
           },
           {
             "name": "CAJUN CHICKEN",
             "description": "avo, cheddar cheese, honey mustard, lettuce",
             "price": 60.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://sweetpeasandsaffron.com/wp-content/uploads/2019/02/cajun-chicken-wraps-6.jpg"
           },
           {
             "name": "GREEK CHICKEN",
             "description": "oregano chicken, avo, feta, lettuce, honey mustard",
             "price": 60.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvPQHWRt8dcNK5LmkSA_pYPHXNrsazqeHdpQ&s"
           },
           {
             "name": "BBQ STEAK",
             "description": "cheddar cheese, gherkins, lettuce, tomato",
             "price": 70.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEJV_pIjDoI_69jEUJKlHdLVdPXqJfRpNXug&s"
           }
         ]
       },
@@ -130,21 +130,21 @@
             "description": "mixed greens, tomato, cucumber, onion",
             "price": 45.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chopped-green-salad-with-herby-chilli-dressing-429ab82.jpg?quality=90&webp=true&resize=300,272"
           },
           {
             "name": "GREEK SALAD",
             "description": "green salad with feta cheese & olives",
             "price": 70.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://www.thehungrybites.com/wp-content/uploads/2017/07/Authentic-Greek-salad-horiatiki-2.jpg"
           },
           {
             "name": "CHICKEN SALAD",
             "description": "cajun or greek chicken with mixed greens",
             "price": 70.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://hips.hearstapps.com/hmg-prod/images/grilled-chicken-salad-index-6628169554c88.jpg?crop=0.8890484453220048xw:1xh;center,top&resize=1200:*"
           }
         ]
       },
@@ -156,14 +156,14 @@
             "description": "two chicken breasts",
             "price": 70.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://pavaotogo.com/wp-content/uploads/2022/06/J17-Pavao-Grilled-Chicken-Breast.jpg"
           },
           {
             "name": "200G CHICKEN STRIPS & CHIPS",
             "description": "with sweet chilli/honey mustard dressing",
             "price": 85.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://timeoutcafe.co.za/cdn/shop/products/ChickenStrips1_f4d033d5-f163-40ab-876c-43eaa9d388a8.jpg?v=1665391368"
           }
         ]
       },
@@ -171,88 +171,88 @@
         "name": "Pizzas",
         "menu_items": [
           {
-            "name": "FOCACCIA BREAS",
+            "name": "FOCACCIA BREAD",
             "description": "garlic & herbs",
             "price": 35.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://www.themediterraneandish.com/wp-content/uploads/2022/10/focaccia-recipe-11.jpg"
           },
           {
             "name": "CHEESY FOCACCIA",
             "description": "mozzarella cheese, garlic & herbs",
             "price": 55.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://staticcookist.akamaized.net/wp-content/uploads/sites/22/2023/07/cheese-focaccia.jpg"
           },
           {
             "name": "MARGARITA",
             "description": "cheese & tomato",
             "price": 65.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://cdn.loveandlemons.com/wp-content/uploads/2023/07/margherita-pizza.jpg"
           },
           {
             "name": "VEGETARIAN",
             "description": "mushrooms, olives, green peppers",
             "price": 80.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://www.orchidsandsweettea.com/wp-content/uploads/2019/05/Veggie-Pizza-2-of-5-e1691215701129.jpg"
           },
           {
             "name": "REGINA",
             "description": "ham & mushroom",
             "price": 75.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://media-cdn.tripadvisor.com/media/photo-s/11/9a/19/87/regina-pizza.jpg"
           },
           {
             "name": "PEPPERONI",
             "description": "",
             "price": 80.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://www.phantomgourmet.com/wp-content/uploads/2019/07/frame_118191-1778x1000.jpg"
           },
           {
             "name": "CON POLLO",
             "description": "chicken, green peppers, onions & chilli",
             "price": 80.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6Yy0lim6sRQ4nMrYmzMYZCtbN4qUltO4vOQ&s"
           },
           {
             "name": "CHICKEN MAYO",
             "description": "",
             "price": 80.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://cdn.romanspizza.co.za/images/root/v2/pizza/ravenous/pizza-chickmayofeta-pan.png"
           },
           {
             "name": "MEXICAN",
             "description": "mince, green peppers & chilli",
             "price": 90.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://tastesbetterfromscratch.com/wp-content/uploads/2019/07/Mexican-Pizza-Thumbnail-11.jpg"
           },
           {
             "name": "BBQ CHICKEN",
             "description": "chicken, bbq sauce, mushroom, green peppers",
             "price": 90.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://www.tasteandtellblog.com/wp-content/uploads/2021/01/BBQ-Chicken-Pizza-1.jpg"
           },
           {
             "name": "MEATY",
             "description": "pepperoni, bacon, ham",
             "price": 105.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://www.schlotzskys.com/-/media/schlotzskys/menu/pizza/meaty_pizza_1200x800.jpg?v=1&d=20220823T063727Z"
           },
           {
             "name": "ROMA",
             "description": "bacon, avo & feta",
             "price": 115.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTryhx2fbFwe1dz5YMSbmQ2JUqGAHZTD3UKpg&s"
           }
 
         ]
@@ -265,70 +265,70 @@
             "description": "tomato and herb sauce",
             "price": 45.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://norecipes.com/wp-content/uploads/2020/10/spaghetti-napolitan-003-1200x1799.jpg"
           },
           {
             "name": "ARABIATTA",
             "description": "tomato and herb sauce with chilli",
             "price": 50.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjFaJEhRdYX89MuZ23K217Cd3dlx94Wyth2w&s"
           },
           {
             "name": "CREAMY MUSHROOM",
             "description": "",
             "price": 70.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://www.saltandlavender.com/wp-content/uploads/2018/10/creamy-mushroom-pasta-recipe-8.jpg"
           },
           {
             "name": "PESTO PASTA",
             "description": "basil pesto and cherry tomatoes",
             "price": 65.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHrv4vK03K9QsEhezKBkRyxGI4wbpdhw2qRQ&s"
           },
           {
             "name": "ARABIATTA CHICKEN",
             "description": "tomato and herb sauce with chicken and chilli",
             "price": 65.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdtYAtL_YkprSrTW5M7R6DyrmHxOmXdXiTcw&s"
           },
           {
             "name": "CREAMY CHICKEN PESTO",
             "description": "creamy basil pesto and chicken",
             "price": 75.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://www.budgetbytes.com/wp-content/uploads/2019/10/Creamy-Pesto-Chicken-Pasta-close-plate.jpg"
           },
           {
             "name": "CREAMY CHICKEN",
             "description": "and mushrooms in a herb creamy sauce",
             "price": 75.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQA11NRYpEIqH06Mz1CgJVdJo8I2m3P8uQ7gw&s"
           },
           {
             "name": "AMATRICIANNI",
             "description": "tomato, chilli and bacon",
             "price": 65.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRK9-3ib_gqGi5Won0YMp7--FfShM7MIdC-3g&s"
           },
           {
             "name": "ALFREDO",
             "description": "ham and muchroom in a creamy sauce",
             "price": 73.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://www.allrecipes.com/thmb/9aWCdbfttLcsW2dFQWwVQBGJM3E=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/AR-236973-CreamyAlfredoSauce-0238-4x3-1-01e7091f47ae452d991abe32cbed5921.jpg"
           },
           {
             "name": "BOLOGNAISE",
             "description": "tomato sauce with beef mince",
             "price": 80.00,
             "is_available": true,
-            "image_url": "https://www.catschool.co/wp-content/uploads/2023/06/orange-tabby-kitten.png"
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHe0jF12JOMJBRdv93DiE83F59KRjPM6jlHQ&s"
           }
         ]
       }

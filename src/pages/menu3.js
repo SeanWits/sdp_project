@@ -1,65 +1,40 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
 import "./menu3.css";
-import restaurantData from "./restaurant.json"; //Mock API for testing
 
 function Menu3() {
-  const [restaurants, setRestaurants] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const location = useLocation();
+  const { itemName } = useParams();
+  const item = location.state?.item;
 
-  useEffect(() => {
-    const loadRestaurants = () => {
-      try {
-        setRestaurants(restaurantData);
-        setLoading(false);
-      } catch (err) {
-        setError("Failed to load restaurant data");
-        setLoading(false);
-      }
-    };
-
-    loadRestaurants();
-  }, []);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!restaurants.length) return <div>No restaurant data available</div>;
+  if (!item) {
+    return <div>Error: Item not found</div>;
+  }
 
   return (
     <div className="restaurant-list">
-      <header className="menuHeader">Restaurant/Dining Hall Name</header>
-      <h1>Meal Name</h1>
+      <header className="menuHeader">
+        <Link to={-1} className="back-arrow">&#8592;</Link>
+        Restaurant/Dining Hall Name
+      </header>
+      <h1>{item.name}</h1>
       <div className="separator-line"></div>
       <section id="mainThing">
         <article>
           <div className="menu3DivBox" id="longerThings">
-            A description
+            {item.description}
           </div>
         </article>
         <article>
           <div className="menu3DivBox">Customise order</div>
-          Total: <button>Add to cart</button>
+          Total: R{item.price.toFixed(2)} <button className="menuButton">Add to cart</button>
         </article>
       </section>
       <div className="separator-line"></div>
 
-      <section>
-        <section id="reviews">
-          <section id="reviewsReviews">
-            <h2>Reviews</h2>
-          </section>
-
-          <section id="reviewsRating">
-            <article>
-              <h2>Rating</h2>
-            </article>
-            <article>
-              <h2>Date posted: </h2>
-            </article>
-          </section>
-        </section>
-      </section>
+      <button className="menuButton" id="menuInfoButton">
+        Click For Review
+      </button>
     </div>
   );
 }
