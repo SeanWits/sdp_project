@@ -18,7 +18,7 @@ function App() {
             <Router>
                 <Routes>
                     
-                    <Route path="/menu" element={<Menu />} />
+                    <Route path="/" element={<Menu />} />
                     <Route path="/menu3" element={<Menu3 />} />
                     {/*<Route path="/test" element={<Test />} />*/}
                     {/*<Route path="/menuInfo" element={<MenuInfo />} />*/}
