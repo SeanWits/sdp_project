@@ -17,6 +17,11 @@ import Checkout from './pages/Checkout/Checkout';
 import Orders from './pages/Orders/Orders';
 import Register from './pages/Register/Register'
 import Login from './pages/Login/Login';
+import Menu from "./pages/menu";
+import Menu2 from "./pages/menu2";
+import Menu3 from "./pages/menu3";
+import MenuInfo from "./pages/menuInfo";
+
 import { UserProvider } from './utils/userContext';
 
 function App() {
@@ -45,16 +50,18 @@ function App() {
       <Router>
         <div className="App">
           <Routes>
-            <Route path="/" element={<Restaurant />} />
+            <Route path="/" element={<Menu />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/orders" element={<Orders />} />
+            <Route path="/menu/:restaurantId" element={<Menu2 />} />
+            <Route path="/menu/:restaurantId/:itemName" element={<Menu3 />} />
+            <Route path="/restaurant-info/:id" element={<MenuInfo />} />
           </Routes>
         </div>
       </Router>
     </UserProvider>
   );
 }
-
 export default App;
