@@ -5,7 +5,7 @@ import OrderSummaryPage from '../OrderSummaryPage';
 import { getDoc } from '../../../firebase';
 
 // Mock Firebase getDoc
-jest.mock('../../firebase',  () => ({
+jest.mock('../../../__mocks__/firebase',  () => ({
   getDoc: jest.fn(),
 }));
 
@@ -16,6 +16,14 @@ jest.mock('react-router-dom', () => ({
 
 const mockNavigate = jest.fn();
 useNavigate.mockImplementation(() => mockNavigate);
+
+describe('OrderSummaryPage Component', () => {
+    test('renders the Order Summary page', () => {
+      render(<OrderSummaryPage />);
+      const headingElement = screen.getByText(/Order Summary/i);
+      expect(headingElement).toBeInTheDocument();
+    });
+  });
 
 describe('OrderSummaryPage', () => {
   beforeEach(() => {

@@ -40,11 +40,9 @@ const OrderSummaryPage = () => {
   }, [navigate]);
 
   const handleDone = () => {
-    alert('Reservation confirmed!');
-    // Clear the reservation ID from localStorage
+    console.log('handleDone called'); // Add this line
     localStorage.removeItem('reservationId');
-    // Navigate back to the reservation page
-    navigate('/');
+    navigate('/history');
   };
 
   return (

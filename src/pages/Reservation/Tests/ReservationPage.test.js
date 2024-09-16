@@ -5,9 +5,11 @@ import ReservationPage from '../ReservationPage';
 import { setDoc } from '../../../firebase';
 
 // Mock Firebase setDoc and useNavigate
-jest.mock('../../firebase',  () => ({
+jest.mock('../../../__mocks__/firebase',  () => ({
   setDoc: jest.fn(),
 }));
+
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn(),
@@ -15,6 +17,14 @@ jest.mock('react-router-dom', () => ({
 
 const mockNavigate = jest.fn();
 useNavigate.mockImplementation(() => mockNavigate);
+
+describe('ReservationPage Component', () => {
+    test('renders the ReservationPage component', () => {
+      render(<ReservationPage />);
+      const headingElement = screen.getByText(/Make a Reservation/i);
+      expect(headingElement).toBeInTheDocument();
+    });
+  });
 
 describe('ReservationPage', () => {
   it('renders reservation form correctly', () => {
