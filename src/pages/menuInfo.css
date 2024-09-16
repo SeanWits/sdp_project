@@ -10,3 +10,21 @@
     margin-top: 20px;
     margin-bottom: 20px;
 }
+
+#menuInfoButton{
+    margin-left: 45%;
+}
+
+.back-arrow {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    text-decoration: none;
+    font-size: 24px;
+  }
+
+  .menuHeader {
+    position: relative;
+  }

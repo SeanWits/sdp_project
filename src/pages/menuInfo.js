@@ -28,9 +28,9 @@ function MenuInfo() {
 
   return (
     <div className="restaurant-info">
-      <header className="menuHeader">Restaurant/Dining Hall Name</header>
-      
-      
+      <header className="menuHeader">
+      <Link to="/" className="back-arrow">&#8592;</Link>
+        Restaurant/Dining Hall Name</header>
 
       <section className="resDeets">
         <section id="reviews">
@@ -39,7 +39,7 @@ function MenuInfo() {
           </section>
 
           <section id="reviewsRating">
-            <article id = "nameRes">
+            <article id="nameRes">
               <ul>
                 <li>Name: </li>
                 <li>Location: </li>
@@ -50,30 +50,15 @@ function MenuInfo() {
                 <li>rating: </li>
               </ul>
             </article>
-            <article>
-              {/*Picture here */}
-            </article>
+            <article>{/*Picture here */}</article>
           </section>
         </section>
       </section>
 
-      <section id="reviews">
-          <section id="reviewsReviews">
-            <h2>Reviews</h2>
-          </section>
-
-          <section id="reviewsRating">
-            <article>
-              <h2>Rating</h2>
-            </article>
-            <article>
-              <h2>Date posted: </h2>
-            </article>
-          </section>
-        </section>
-    
+      <button className="menuButton" id="menuInfoButton">
+        Click For Review
+      </button>
     </div>
-    
   );
 }
 
