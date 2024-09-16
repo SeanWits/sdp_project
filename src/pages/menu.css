@@ -68,3 +68,10 @@ a {
     text-decoration: none;
     color: inherit;
 }
+
+.restaurant-image img {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  object-fit: cover;
+}

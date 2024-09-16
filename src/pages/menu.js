@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./menu.css";
-import restaurantData from "./restaurant.json"; //Mock API for testing
+import { db } from '../firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 function Menu() {
   const [restaurants, setRestaurants] = useState([]);
@@ -9,17 +10,24 @@ function Menu() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const loadRestaurants = () => {
+    const fetchRestaurants = async () => {
       try {
-        setRestaurants(restaurantData);
+        const restaurantsCollection = collection(db, 'restaurants');
+        const restaurantsSnapshot = await getDocs(restaurantsCollection);
+        const restaurantsList = restaurantsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setRestaurants(restaurantsList);
         setLoading(false);
       } catch (err) {
+        console.error("Error fetching restaurants:", err);
         setError("Failed to load restaurant data");
         setLoading(false);
       }
     };
 
-    loadRestaurants();
+    fetchRestaurants();
   }, []);
 
   if (loading) return <div>Loading...</div>;
@@ -38,22 +46,27 @@ function Menu() {
               <p>
                 Hours: {restaurant.opening_time} - {restaurant.closing_time}
               </p>
-              <p>Rating:</p>
+              <p>Rating: {restaurant.rating || 'N/A'}</p>
             </div>
             <div>
               <ul>
                 <li>
-                  <Link to={`/menu/${restaurant.id}`}>
+                  <Link to={`/menu/${restaurant.id}`} state={{ restaurant }}>
                     <button className="menuButton">Menu</button>
                   </Link>
                 </li>
                 <li>
-                  <Link to={`/restaurant-info/${restaurant.id}`}>
-                <button className="menuButton">More Info</button>
-              </Link>
-              </li>
+                  <Link to={`/restaurant-info/${restaurant.id}`} state={{ restaurant }}>
+                    <button className="menuButton">More Info</button>
+                  </Link>
+                </li>
               </ul>
             </div>
+          </section>
+          <section className="restaurant-image">
+            {restaurant.restImg && (
+              <img src={restaurant.restImg} alt={restaurant.name} />
+            )}
           </section>
         </article>
       ))}

@@ -8,6 +8,7 @@ import UserStatus from '../../utils/userStatus';
 import { logoutUser } from '../../utils/authFunctions';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../utils/userContext';
+import UpdateProductIDs from '../../UpdateProductIDs';
 
 const Restaurant = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -138,6 +139,7 @@ const Restaurant = () => {
             Logout
           </button>
         )}
+        <UpdateProductIDs />
     </div>
   );
 };
