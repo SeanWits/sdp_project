@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
 import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import Header from "../components/Header/Header";
+import Footer from "../components/Footer/Footer";
 
 function Menu2() {
   const { restaurantId } = useParams();
@@ -46,6 +48,8 @@ function Menu2() {
   if (!restaurant.categories || restaurant.categories.length === 0) return <div>No menu categories available</div>;
 
   return (
+    <>
+    <Header/>
     <div className="menu-container">
       <header className="menuHeader">
         <Link to="/" className="back-arrow">&#8592;</Link>
@@ -99,6 +103,8 @@ function Menu2() {
         </>
       )}
     </div>
+    <Footer/>
+    </>
   );
 }
 

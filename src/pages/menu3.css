@@ -41,3 +41,10 @@
     height: 50px;
     color: white; /* Assuming you want white text on the dark background */
 }
+
+.item-image {
+    width: 30%; /* Adjust as needed */
+    max-height: 250px; /* Adjust as needed */
+    object-fit: cover;
+    border-radius: 8px;
+  }
