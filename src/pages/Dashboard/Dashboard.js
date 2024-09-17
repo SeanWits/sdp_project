@@ -20,8 +20,11 @@ const Dashboard = () => {
   useEffect(() => {
     if (user?.uid) {
       fetchUserData();
+    } else {
+      // If there's no user, redirect to login
+      navigate('/login');
     }
-  }, [user]);
+  }, [user, navigate]);
 
   const fetchUserData = async () => {
     try {
@@ -100,7 +103,9 @@ const Dashboard = () => {
   const handleLogout = async () => {
     try {
       await logoutUser();
-      setUser(null); // Clear the user context
+      if (typeof setUser === 'function') {
+        setUser(null); // Clear the user context if setUser is available
+      }
       navigate('/login'); // Redirect to login page
     } catch (error) {
       console.error("Error logging out:", error);
@@ -114,12 +119,12 @@ const Dashboard = () => {
 
   return (
     <>
-    <Header/>
-    <header className="orderHeader">
+      <Header/>
+      <header className="orderHeader">
         <Link to="/" className="back-arrow-dash">&#8592;</Link>
         <h1 className="dashHeading">Meal Credit Dashboard</h1>
       </header>
-    <div className="dashboard">
+      <div className="dashboard">
       <p className="user-greeting">Welcome, {userData?.name || 'User'}</p>
       
       <div className="balance">
