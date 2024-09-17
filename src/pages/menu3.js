@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import "./menu3.css";
 import { db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { UserContext } from '../utils/userContext';
+import Header from '../components/Header/Header';
+import Footer from '../components/Footer/Footer';
 
 function Menu3() {
   const location = useLocation();
@@ -11,6 +14,7 @@ function Menu3() {
   const [restaurantName, setRestaurantName] = useState(location.state?.restaurantName || "Restaurant/Dining Hall");
   const [loading, setLoading] = useState(!item);
   const [error, setError] = useState(null);
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -43,11 +47,60 @@ function Menu3() {
     fetchItem();
   }, [restaurantId, itemName, item]);
 
+  const handleAddToCart = async () => {
+    if (!user) {
+      console.log("User not logged in");
+      // Implement user feedback or redirect to login
+      return;
+    }
+
+    const userID = user.uid;
+    const cartRef = doc(db, `users/${userID}/carts/${restaurantId}`);
+    const cartSnap = await getDoc(cartRef);
+
+    const newItem = {
+      productId: item.productID, // Use the correct productID from the item
+      quantity: 1,
+      priceAtPurchase: item.price,
+      imageSrc: item.image_url || "", // Use the correct image_url from the item
+      name: item.name,
+      prepTime: item.prepTime || 10 // You might want to add this field to your item data if it's needed
+    };
+
+    try {
+      if (!cartSnap.exists()) {
+        await setDoc(cartRef, {
+          restaurantID: restaurantId,
+          items: [newItem]
+        });
+      } else {
+        const existingItems = cartSnap.data().items || [];
+        const existingItemIndex = existingItems.findIndex(i => i.productId === newItem.productId);
+
+        if (existingItemIndex > -1) {
+          existingItems[existingItemIndex].quantity += 1;
+          await updateDoc(cartRef, { items: existingItems });
+        } else {
+          await updateDoc(cartRef, {
+            items: arrayUnion(newItem)
+          });
+        }
+      }
+      console.log("Item added to cart");
+      // Implement user feedback for successful add to cart
+    } catch (error) {
+      console.error("Error adding item to cart:", error);
+      // Implement user feedback for error
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!item) return <div>No item data available</div>;
 
   return (
+    <>
+    <Header/>
     <div className="restaurant-list">
       <header className="menuHeader">
         <Link to={`/menu/${restaurantId}`} className="back-arrow">&#8592;</Link>
@@ -63,8 +116,9 @@ function Menu3() {
         </article>
         <article>
           <div className="menu3DivBox">Customise order</div>
-          Total: R{item.price.toFixed(2)} <button className="menuButton">Add to cart</button>
+          Total: R{item.price.toFixed(2)} <button className="menuButton" onClick={handleAddToCart}>Add to cart</button>
         </article>
+        <img src={item.image_url} alt={item.name} className="item-image" />
       </section>
       <div className="separator-line"></div>
 
@@ -72,6 +126,8 @@ function Menu3() {
         Click For Review
       </button>
     </div>
+    <Footer/>
+    </>
   );
 }
 
