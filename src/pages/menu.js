@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import "./menu.css";
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
+import Header from "../components/Header/Header";
+import Footer from "../components/Footer/Footer";
 
 function Menu() {
     const [restaurants, setRestaurants] = useState([]);
@@ -73,6 +75,7 @@ function Menu() {
         </article>
       ))}
     </div>
+    <Footer/>
     </>
   );
 }
