@@ -1,0 +1,99 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #003b5c;
+  min-height: 10vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.navbar {
+  background-color: #fcb040;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  min-height: 10vh;
+}
+
+.bottomBar {
+  background-color: #fcb040;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 10vh;
+  position: fixed;
+  bottom: 0;
+  min-width: 100%;
+}
+
+.textbox {
+  background-color: rgb(219, 219, 219);
+  display: flex;
+  min-height: 7vh;
+  min-width: 100vh;
+  outline: auto;
+}
+
+.input-form {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  min-height: 7vh;
+}
+
+.button-add {
+  display: flex;
+  min-height: 7vh;
+  min-width: 20vh;
+}
+
+.checkBox {
+  display: flex;
+  flex-direction: row;
+  background-color: #003b5c;
+  color: white;
+  font-family: 'Courier New', Courier, monospace;
+  border-radius: 10px;
+  width: 25%;
+  padding: 1%;
+  margin-bottom: 1%;
+}
+
+.list-checkBox {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  font-size: x-large;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
