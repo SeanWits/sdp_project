@@ -2,6 +2,7 @@
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
+  margin-bottom: 100;
   font-family: Arial, sans-serif;
 }
 
@@ -179,11 +180,11 @@
 }
 
 .back-arrow-checkout {
-  position: relative;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: white;
-  text-decoration: none;
-  font-size: 24px;
+  margin-right: 45%;
+  margin-left: 2.5%;
+  margin-top: 1.0%;
+}
+
+.checkoutHeading{
+  text-align: center;
 }
