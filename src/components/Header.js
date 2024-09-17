@@ -21,6 +21,12 @@ function Header() {
                 </section>
                 <section id="icons_on_header">
                     <span
+                        class="material-symbols-outlined icon"
+                        onClick={() => navigate("/login")}
+                    >
+                        person
+                    </span>
+                    <span
                         className="material-symbols-outlined icon"
                         onClick={() => navigate("/Orders")}
                     >
