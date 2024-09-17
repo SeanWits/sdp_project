@@ -57,7 +57,7 @@ function Header({ disableCart = false, disableOrders = false }) {
 
     const handleOrdersClick = () => {
         if (!disableOrders) {
-            navigate("/dashboard");
+            navigate("/orders");
         }
     };
 
