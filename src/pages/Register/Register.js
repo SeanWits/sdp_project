@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { registerUser } from "../../utils/authFunctions";
-import { useNavigate } from "react-router-dom";
-import UserStatus from "../../utils/userStatus";
+import { useNavigate, Link } from "react-router-dom";
 import "./Register.css"
 
 const Register = () => {
@@ -39,18 +38,11 @@ const Register = () => {
         } catch (error) {
             console.error("Registration error:", error);
             if (error.code === "auth/invalid-email") {
-                setError(
-                    "The email address is badly formatted. Please enter a valid email."
-                );
+                setError("The email address is badly formatted. Please enter a valid email.");
             } else if (error.code === "auth/email-already-in-use") {
-                setError(
-                    "This email is already registered. Please use a different email or try logging in."
-                );
+                setError("This email is already registered. Please use a different email or try logging in.");
             } else {
-                setError(
-                    error.message ||
-                        "An error occurred during registration. Please try again."
-                );
+                setError(error.message || "An error occurred during registration. Please try again.");
             }
         }
     };
@@ -61,6 +53,7 @@ const Register = () => {
                 <img
                     id="logo_login_img"
                     src={require("../../assets/logo outline transparent.png")}
+                    alt="Logo"
                 />
             </section>
             <section id="signup_article_section">
@@ -115,10 +108,10 @@ const Register = () => {
                         <button className="button" type="submit">
                             Register
                         </button>
-                        <a id="account_anchor" onClick={navigate("/login")}>
-                            Have an account? Login
-                        </a>
                     </form>
+                    <Link to="/login" id="account_anchor">
+                        Have an account? Login
+                    </Link>
                 </article>
             </section>
         </div>
