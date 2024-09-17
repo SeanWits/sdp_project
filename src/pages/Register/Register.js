@@ -115,6 +115,9 @@ const Register = () => {
                         <button className="button" type="submit">
                             Register
                         </button>
+                        <a id="account_anchor" onClick={navigate("/login")}>
+                            Have an account? Login
+                        </a>
                     </form>
                 </article>
             </section>
