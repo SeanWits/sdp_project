@@ -79,13 +79,19 @@ function Header({ disableCart = false, disableOrders = false }) {
                 </section>
                 <section id="icons_on_header">
                     <span
+                        className="material-symbols-outlined icon"
+                        onClick={() => navigate("/dashboard")}
+                    >
+                        person
+                    </span>
+                    <span
                         className={`material-symbols-outlined icon ${disableOrders ? 'disabled' : ''}`}
                         onClick={handleOrdersClick}
                     >
                         receipt
                     </span>
-                    <div 
-                        className={`cart-icon-container-header ${disableCart ? 'disabled' : ''}`} 
+                    <div
+                        className={`cart-icon-container-header ${disableCart ? 'disabled' : ''}`}
                         onClick={toggleCart}
                     >
                         <span className="material-symbols-outlined icon">
@@ -96,9 +102,9 @@ function Header({ disableCart = false, disableOrders = false }) {
                 </section>
             </header>
             {!disableCart && (
-                <Cart 
-                    isOpen={isCartOpen} 
-                    onClose={toggleCart} 
+                <Cart
+                    isOpen={isCartOpen}
+                    onClose={toggleCart}
                     items={cartItems}
                     restaurantID={restaurantID}
                     userID={user ? user.uid : null}
