@@ -11,15 +11,43 @@ body {
     background-color: rgba(252, 176, 64, 1);
 }
 
-#logo_login {
-    width: 80%;
+#logo_login_img {
+    width: 100%;
+    padding: 50px;
 }
 
 #login_article {
     background-color: white;
-    height: 500px;
     border-radius: 15px;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
+    width: 300px;
+}
+
+#form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: space-between;
+    padding-block: 20px;
+}
+
+#login_heading_section {
+    background-color: #003b5c;
+    color: white;
+    border-radius: 15px 15px 0px 0px;
+}
+
+.centre_no_margin {
+    margin: 0;
+    align-self: center;
+    padding: 10px;
+}
+
+#login_article_section {
+    width: 100%;
+    display: flex;
     justify-content: center;
 }
