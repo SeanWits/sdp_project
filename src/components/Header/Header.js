@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./Header.css";
 import { UserContext } from '../../utils/userContext';
 import { db, doc, getDoc } from '../../firebase';
 import Cart from '../Cart/Cart';
 
-function Header() {
+function Header({ disableCart = false, disableOrders = false }) {
     const navigate = useNavigate();
+    const location = useLocation();
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [cartItems, setCartItems] = useState([]);
     const [cartItemCount, setCartItemCount] = useState(0);
@@ -14,10 +15,10 @@ function Header() {
     const restaurantID = "rest001";
 
     useEffect(() => {
-        if (user) {
+        if (user && !disableCart) {
             fetchCart();
         }
-    }, [user]);
+    }, [user, disableCart]);
 
     const fetchCart = async () => {
         if (!user) return;
@@ -37,7 +38,15 @@ function Header() {
     };
 
     const toggleCart = () => {
-        setIsCartOpen(prev => !prev);
+        if (!disableCart) {
+            setIsCartOpen(prev => !prev);
+        }
+    };
+
+    const handleOrdersClick = () => {
+        if (!disableOrders) {
+            navigate("/Orders");
+        }
     };
 
     return (
@@ -58,12 +67,15 @@ function Header() {
                 </section>
                 <section id="icons_on_header">
                     <span
-                        className="material-symbols-outlined icon"
-                        onClick={() => navigate("/Orders")}
+                        className={`material-symbols-outlined icon ${disableOrders ? 'disabled' : ''}`}
+                        onClick={handleOrdersClick}
                     >
                         receipt
                     </span>
-                    <div className="cart-icon-container-header" onClick={toggleCart}>
+                    <div 
+                        className={`cart-icon-container-header ${disableCart ? 'disabled' : ''}`} 
+                        onClick={toggleCart}
+                    >
                         <span className="material-symbols-outlined icon">
                             shopping_basket
                         </span>
@@ -71,13 +83,15 @@ function Header() {
                     </div>
                 </section>
             </header>
-            <Cart 
-                isOpen={isCartOpen} 
-                onClose={toggleCart} 
-                items={cartItems}
-                restaurantID={restaurantID}
-                userID={user ? user.uid : null}
-            />
+            {!disableCart && (
+                <Cart 
+                    isOpen={isCartOpen} 
+                    onClose={toggleCart} 
+                    items={cartItems}
+                    restaurantID={restaurantID}
+                    userID={user ? user.uid : null}
+                />
+            )}
         </>
     );
 }
