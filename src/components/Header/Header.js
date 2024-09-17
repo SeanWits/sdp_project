@@ -19,10 +19,8 @@ function Header({ disableCart = false, disableOrders = false }) {
             fetchCart();
         }
 
-        // Add event listener for cart updates
         window.addEventListener('cartUpdated', fetchCart);
 
-        // Cleanup function to remove event listener
         return () => {
             window.removeEventListener('cartUpdated', fetchCart);
         };
@@ -49,15 +47,27 @@ function Header({ disableCart = false, disableOrders = false }) {
         setCartItemCount(count);
     };
 
+    const handleNavigation = (path) => {
+        if (user) {
+            navigate(path);
+        } else {
+            navigate("/login");
+        }
+    };
+
     const toggleCart = () => {
         if (!disableCart) {
-            setIsCartOpen(prev => !prev);
+            if (user) {
+                setIsCartOpen(prev => !prev);
+            } else {
+                navigate("/login");
+            }
         }
     };
 
     const handleOrdersClick = () => {
         if (!disableOrders) {
-            navigate("/orders");
+            handleNavigation("/orders");
         }
     };
 
@@ -80,7 +90,7 @@ function Header({ disableCart = false, disableOrders = false }) {
                 <section id="icons_on_header">
                     <span
                         className="material-symbols-outlined icon"
-                        onClick={() => navigate("/dashboard")}
+                        onClick={() => handleNavigation("/dashboard")}
                     >
                         person
                     </span>
@@ -101,13 +111,13 @@ function Header({ disableCart = false, disableOrders = false }) {
                     </div>
                 </section>
             </header>
-            {!disableCart && (
+            {!disableCart && user && (
                 <Cart
                     isOpen={isCartOpen}
                     onClose={toggleCart}
                     items={cartItems}
                     restaurantID={restaurantID}
-                    userID={user ? user.uid : null}
+                    userID={user.uid}
                 />
             )}
         </>
