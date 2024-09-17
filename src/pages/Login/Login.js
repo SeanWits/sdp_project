@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { loginUser } from "../../utils/authFunctions";
 import { useNavigate } from "react-router-dom";
-import "./Login.css"
+import "./Login.css";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -20,36 +20,44 @@ const Login = () => {
     };
 
     return (
-      <div id="login">
-        <section id="loging_logo">
-          <img id="logo_login" src={require("../../assets/logo outline transparent.png")}/>
-        </section>
-        <article id="login_article">
-            <section id="login_heading_section">
-                <h2>Login</h2>
+        <div id="login">
+            <section id="login_logo">
+                <img
+                    id="logo_login_img"
+                    src={require("../../assets/logo outline transparent.png")}
+                />
             </section>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <form id="form" onSubmit={handleSubmit}>
-                <input
-                    className="form_input"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email"
-                    required
-                    />
-                <input
-                    className="form_input"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                    required
-                    />
-                <button className="button" type="submit">Login</button>
-            </form>
-        </article>
-      </div>
+            <section id="login_article_section">
+                <article id="login_article">
+                    <section id="login_heading_section">
+                        <h2 className="centre_no_margin">Login</h2>
+                    </section>
+                    {error && <p style={{ color: "red" }}>{error}</p>}
+                    <form id="form" onSubmit={handleSubmit}>
+                        <input
+                            className="form_input"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Email"
+                            required
+                        />
+                        <input
+                            className="form_input"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Password"
+                            required
+                        />
+                        <button className="button" type="submit">
+                            Login
+                        </button>
+                    </form>
+                </article>
+            </section>
+            "
+        </div>
     );
 };
 
