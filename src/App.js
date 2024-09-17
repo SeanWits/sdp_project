@@ -21,6 +21,7 @@ import Menu from "./pages/menu";
 import Menu2 from "./pages/menu2";
 import Menu3 from "./pages/menu3";
 import MenuInfo from "./pages/menuInfo";
+import Dashboard from './pages/Dashboard/Dashboard';
 
 import { UserProvider } from './utils/userContext';
 
@@ -55,6 +56,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/orders" element={<Orders />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/menu/:restaurantId" element={<Menu2 />} />
             <Route path="/menu/:restaurantId/:itemName" element={<Menu3 />} />
             <Route path="/restaurant-info/:id" element={<MenuInfo />} />
