@@ -82,3 +82,14 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+.material-symbols-outlined.icon.disabled,
+.cart-icon-container-header.disabled .icon {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #888; /* Grey color for disabled state */
+}
+
+.cart-icon-container-header.disabled {
+  cursor: not-allowed;
+}
