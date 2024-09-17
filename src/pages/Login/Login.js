@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { loginUser } from "../../utils/authFunctions";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./Login.css";
 
 const Login = () => {
@@ -25,6 +25,7 @@ const Login = () => {
                 <img
                     id="logo_login_img"
                     src={require("../../assets/logo outline transparent.png")}
+                    alt="Logo"
                 />
             </section>
             <section id="login_article_section">
@@ -53,9 +54,9 @@ const Login = () => {
                         <button className="button" type="submit">
                             Login
                         </button>
-                        <a id="account_anchor" onClick={navigate("/register")}>
+                        <Link to="/register" id="account_anchor">
                             Don't have an account? Register
-                        </a>
+                        </Link>
                     </form>
                 </article>
             </section>
