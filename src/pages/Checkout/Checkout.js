@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './Checkout.css';
 import { db, doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from '../../firebase';
+import { UserContext } from '../../utils/userContext';
+import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
 
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -9,16 +12,18 @@ const Checkout = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const [voucherCode, setVoucherCode] = useState('');
 
+  const { user } = useContext(UserContext);
   const restaurantID = "rest001";
-  const userID = "GUuNErry035Y9L5q5fqa";
 
   useEffect(() => {
-    fetchCart();
-    fetchWalletBalance();
-  }, []);
+    if (user) {
+      fetchCart();
+      fetchWalletBalance();
+    }
+  }, [user]);
 
   const fetchCart = async () => {
-    const cartRef = doc(db, `users/${userID}/carts/${restaurantID}`);
+    const cartRef = doc(db, `users/${user.uid}/carts/${restaurantID}`);
     const cartSnap = await getDoc(cartRef);
     if (cartSnap.exists()) {
       const cartData = cartSnap.data();
@@ -28,13 +33,14 @@ const Checkout = () => {
   };
 
   const fetchWalletBalance = async () => {
-    const userRef = doc(db, 'users', userID);
+    const userRef = doc(db, 'users', user.uid);
     const userSnap = await getDoc(userRef);
     if (userSnap.exists()) {
       const userData = userSnap.data();
       setWalletBalance(userData.wallet || 0);
     }
   };
+
 
   const calculateTotal = (items) => {
     const newTotal = items.reduce((sum, item) => sum + item.priceAtPurchase * item.quantity, 0);
@@ -56,7 +62,7 @@ const Checkout = () => {
   };
 
   const deleteItem = async (productId) => {
-    const cartRef = doc(db, `users/${userID}/carts/${restaurantID}`);
+    const cartRef = doc(db, `users/${user.uid}/carts/${restaurantID}`);
     const cartSnap = await getDoc(cartRef);
     if (cartSnap.exists()) {
       const cartData = cartSnap.data();
@@ -77,9 +83,9 @@ const Checkout = () => {
     try {
       // Create new order document
       const orderRef = await addDoc(collection(db, "orders"), {
-        userId: userID,
+        userId: user.uid,
         restaurantId: restaurantID,
-        status: "preparing",
+        status: "ongoing",
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         completedAt: null,
@@ -101,7 +107,7 @@ const Checkout = () => {
 
       // Update user's wallet balance if paid from wallet
       if (selectedPayment === 'wallet') {
-        const userRef = doc(db, 'users', userID);
+        const userRef = doc(db, 'users', user.uid);
         await updateDoc(userRef, {
           wallet: walletBalance - total
         });
@@ -109,7 +115,7 @@ const Checkout = () => {
       }
 
       // Clear the cart
-      const cartRef = doc(db, `users/${userID}/carts/${restaurantID}`);
+      const cartRef = doc(db, `users/${user.uid}/carts/${restaurantID}`);
       await updateDoc(cartRef, { items: [] });
       setCartItems([]);
       setTotal(0);
@@ -123,6 +129,8 @@ const Checkout = () => {
   };
 
   return (
+    <>
+    <Header disableCart={true} disableOrders={false}/>
     <main className="checkout-container">
       <h1>Checkout</h1>
       
@@ -131,6 +139,7 @@ const Checkout = () => {
         {cartItems.map((item, index) => (
           <React.Fragment key={item.productId}>
             <article className="meal-item">
+              <img src={item.imageSrc} alt={item.name} className="meal-image" />
               <div className="meal-info">
                 <span className="meal-name">{item.name} (x{item.quantity})</span>
                 <span className="meal-price">R{(item.priceAtPurchase * item.quantity).toFixed(2)}</span>
@@ -195,6 +204,8 @@ const Checkout = () => {
 
       <button className="confirm-purchase" onClick={confirmPurchase}>Confirm Purchase</button>
     </main>
+    <Footer/>
+    </>
   );
 };
 

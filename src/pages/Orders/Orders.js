@@ -1,84 +1,100 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { collection, query, where, getDocs, orderBy, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
+import { UserContext } from '../../utils/userContext';
 import OrderCard from '../../components/OrderCard/OrderCard';
+import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
 import './Orders.css';
 
-const ordersData = [
-  {
-    id: 1,
-    restaurantName: "Jimmy's",
-    itemCount: 4,
-    orderDate: "August 17, 2024 @ 15:27",
-    items: [
-      { id: 1, name: "item 1", quantity: 3 },
-      { id: 2, name: "item 2", quantity: 1 },
-    //   { id: 3, name: "item 3", quantity: 1 },
-    //   { id: 4, name: "item 4", quantity: 1 },
-    //   { id: 5, name: "item 5", quantity: 1 },
-    //   { id: 6, name: "item 6", quantity: 1 }
-    ],
-    totalPrice: 12.99,
-    status: "Preparing"
-  },
-  {
-    id: 2,
-    restaurantName: "Zesty Lemons",
-    itemCount: 2,
-    orderDate: "August 17, 2024 @ 15:27",
-    items: [
-      { id: 1, name: "item 1", quantity: 1 },
-      { id: 2, name: "item 2", quantity: 1 }
-    ],
-    totalPrice: 89.99,
-    status: "Collected"
-  },
-  {
-    id: 3,
-    restaurantName: "Chinese Lantern",
-    itemCount: 4,
-    orderDate: "August 17, 2024 @ 15:27",
-    items: [
-      { id: 1, name: "item 1", quantity: 2 },
-      { id: 2, name: "item 2", quantity: 2 }
-    ],
-    totalPrice: 72.99,
-    status: "Collected"
-  },
-  {
-    id: 4,
-    restaurantName: "Jimmy's",
-    itemCount: 4,
-    orderDate: "August 17, 2024 @ 15:27",
-    items: [
-      { id: 1, name: "item 1", quantity: 3 },
-      { id: 2, name: "item 2", quantity: 1 }
-    ],
-    totalPrice: 18.99,
-    status: "Collected"
-  },
-  {
-    id: 5,
-    restaurantName: "Jimmy's",
-    itemCount: 4,
-    orderDate: "August 17, 2024 @ 15:27",
-    items: [
-      { id: 1, name: "item 1", quantity: 3 },
-      { id: 2, name: "item 2", quantity: 1 }
-    ],
-    totalPrice: 48.99,
-    status: "Cancelled"
-  }
-];
-
 const Orders = () => {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { user } = useContext(UserContext);
+
+  useEffect(() => {
+    fetchOrdersAndRestaurants();
+  }, [user]);
+
+  const fetchOrdersAndRestaurants = async () => {
+    if (!user) return;
+
+    try {
+      const ordersRef = collection(db, 'orders');
+      const q = query(
+        ordersRef,
+        where('userId', '==', user.uid),
+        orderBy('createdAt', 'desc')
+      );
+      const querySnapshot = await getDocs(q);
+      
+      const ordersData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt.toDate(),
+        updatedAt: doc.data().updatedAt.toDate()
+      }));
+
+      // Fetch restaurant details for each unique restaurantId
+      const uniqueRestaurantIds = [...new Set(ordersData.map(order => order.restaurantId))];
+      const restaurantDetails = {};
+
+      for (const restaurantId of uniqueRestaurantIds) {
+        const restaurantDoc = await getDoc(doc(db, 'restaurants', restaurantId));
+        if (restaurantDoc.exists()) {
+          restaurantDetails[restaurantId] = restaurantDoc.data();
+        }
+      }
+
+      // Combine order data with restaurant details
+      const ordersWithRestaurantDetails = ordersData.map(order => ({
+        ...order,
+        restaurantDetails: restaurantDetails[order.restaurantId] || {}
+      }));
+
+      setOrders(ordersWithRestaurantDetails);
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+      setError("Failed to load orders. Please try again.");
+      setLoading(false);
+    }
+  };
+
+  const handleStatusUpdate = async (orderId, newStatus) => {
+    try {
+      const orderRef = doc(db, 'orders', orderId);
+      await updateDoc(orderRef, { status: newStatus });
+
+      // Update the local state
+      setOrders(prevOrders =>
+        prevOrders.map(order =>
+          order.id === orderId ? { ...order, status: newStatus } : order
+        )
+      );
+    } catch (err) {
+      console.error("Error updating order status:", err);
+      setError("Failed to update order status. Please try again.");
+    }
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
   return (
-    <div className="orders-container">
-      <h1 className="orders-title">Orders</h1>
-      <div className="order-list">
-        {ordersData.map(order => (
-          <OrderCard key={order.id} order={order} />
-        ))}
+    <>
+      <Header disableCart={true} disableOrders={true}/>
+      <div className="orders-container">
+        <h1 className="orders-title">Orders</h1>
+        <div className="order-list">
+          {orders.map(order => (
+            <OrderCard key={order.id} order={order} onStatusUpdate={handleStatusUpdate} />
+          ))}
+        </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 

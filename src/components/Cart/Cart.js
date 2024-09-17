@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import './Cart.css';
+import { useNavigate } from 'react-router-dom';
 import { db, doc, getDoc, updateDoc } from '../../firebase';
 
 const Cart = ({ isOpen, onClose, restaurantID, userID }) => {
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isOpen) {
@@ -34,7 +36,7 @@ const Cart = ({ isOpen, onClose, restaurantID, userID }) => {
     console.log("read"); // Log read operation
     if (cartSnap.exists()) {
       const cartData = cartSnap.data();
-      const updatedItems = cartData.items.map(item => 
+      const updatedItems = cartData.items.map(item =>
         item.productId === productId ? { ...item, quantity: newQuantity } : item
       ).filter(item => item.quantity > 0);
 
@@ -60,6 +62,11 @@ const Cart = ({ isOpen, onClose, restaurantID, userID }) => {
     }
   };
 
+  const handleCheckout = () => {
+    onClose(); // Close the cart modal
+    navigate('/checkout'); // Navigate to the checkout page
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -82,9 +89,9 @@ const Cart = ({ isOpen, onClose, restaurantID, userID }) => {
                   <span>{item.quantity}</span>
                   <button onClick={() => updateItemQuantity(item.productId, item.quantity + 1)} aria-label={`Increase quantity of ${item.name}`}>+</button>
                 </div>
-                <button 
-                  className="delete-btn" 
-                  onClick={() => deleteItem(item.productId)} 
+                <button
+                  className="delete-btn"
+                  onClick={() => deleteItem(item.productId)}
                   aria-label={`Remove ${item.name} from cart`}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="trash-icon">
@@ -99,8 +106,7 @@ const Cart = ({ isOpen, onClose, restaurantID, userID }) => {
           </ul>
         </div>
         <footer>
-          <p className="cart-total">Total: R{total.toFixed(2)}</p>
-          <button className="checkout-btn">Checkout</button>
+          <button className="checkout-btn" onClick={handleCheckout}>Checkout</button>
           <button className="close-btn" onClick={onClose}>Close</button>
         </footer>
       </section>
