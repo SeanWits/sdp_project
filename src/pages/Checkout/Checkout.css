@@ -166,3 +166,24 @@
 .confirm-purchase:hover {
   background-color: #0056b3;
 }
+
+.checkoutHeader {
+  height: 60px;
+  background-color: #003B5C;
+  color: white;
+  text-align: center;
+  align-content: center;
+  font-size: 30px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.back-arrow-checkout {
+  position: relative;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  text-decoration: none;
+  font-size: 24px;
+}
