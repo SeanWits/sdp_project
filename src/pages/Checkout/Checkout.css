@@ -5,9 +5,6 @@
   font-family: Arial, sans-serif;
 }
 
-h1, h2 {
-  color: #333;
-}
 
 .order-summary {
   background-color: #f9f9f9;
@@ -26,19 +23,30 @@ h1, h2 {
   font-size: 16px;
 }
 
+.meal-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
 .meal-info {
   display: flex;
   justify-content: space-between;
-  width: 100%;
+  align-items: center;
+  flex-grow: 1;
   margin-right: 10px;
 }
 
 .meal-name {
   flex-grow: 1;
+  margin-right: 10px;
 }
 
 .meal-price {
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .delete-btn {
