@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { collection, query, where, getDocs, orderBy, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
+import {Link} from "react-router-dom";
 import { UserContext } from '../../utils/userContext';
 import OrderCard from '../../components/OrderCard/OrderCard';
 import Header from '../../components/Header/Header';
@@ -85,8 +86,11 @@ const Orders = () => {
   return (
     <>
       <Header disableCart={true} disableOrders={true}/>
+      <header className="orderHeader">
+        <Link to="/" className="back-arrow-orders">&#8592;</Link>
+        Orders
+      </header>
       <div className="orders-container">
-        <h1 className="orders-title">Orders</h1>
         <div className="order-list">
           {orders.map(order => (
             <OrderCard key={order.id} order={order} onStatusUpdate={handleStatusUpdate} />
