@@ -131,10 +131,10 @@ const Checkout = () => {
 
   return (
     <>
-    <Header disableCart={true} disableOrders={false}/>\
+    <Header disableCart={true} disableOrders={false}/>
     <header className="checkoutHeader">
         <Link to="/" className="back-arrow-checkout">&#8592;</Link>
-        Orders
+        <h1 className="checkoutHeading">Checkout</h1>
       </header>
     <main className="checkout-container">
       

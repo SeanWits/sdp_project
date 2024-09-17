@@ -5,6 +5,7 @@ import { UserContext } from '../../utils/userContext';
 import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../../utils/authFunctions';
 import './Dashboard.css';
+import {Link} from "react-router-dom";
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 
@@ -114,8 +115,11 @@ const Dashboard = () => {
   return (
     <>
     <Header/>
+    <header className="orderHeader">
+        <Link to="/" className="back-arrow-dash">&#8592;</Link>
+        <h1 className="dashHeading">Meal Credit Dashboard</h1>
+      </header>
     <div className="dashboard">
-      <h1>Meal Credit Dashboard</h1>
       <p className="user-greeting">Welcome, {userData?.name || 'User'}</p>
       
       <div className="balance">

@@ -88,7 +88,7 @@ const Orders = () => {
       <Header disableCart={true} disableOrders={true}/>
       <header className="orderHeader">
         <Link to="/" className="back-arrow-orders">&#8592;</Link>
-        Orders
+        <h1 className="orderHeading">Orders</h1>
       </header>
       <div className="orders-container">
         <div className="order-list">
