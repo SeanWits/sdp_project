@@ -3,18 +3,18 @@
     margin-top: 1.5%;
     padding-left: 1.5%;
     padding-right: 1.5%;
-    
+    display: flex;
 }
 
 .menuHeader {
     height: 60px;
-    background-color: #003B5C;
+    background-color: #003b5c;
     color: white;
     text-align: center;
     align-content: center;
-  }
+}
 
-.restaurant-details h2{
+.restaurant-details h2 {
     padding-top: 10px;
 }
 
@@ -24,10 +24,10 @@ article {
     margin-left: 3%;
     margin-right: 3%;
     border-radius: 20px;
-  }
+}
 
 #main-section {
-    background-color: #FCB040;
+    background-color: #fcb040;
     border-radius: 20px;
     height: 170px;
     padding-left: 2%;
@@ -46,12 +46,11 @@ ul {
 
 li {
     margin-bottom: 20px;
-    
 }
 .menuButton {
     width: 200px;
     height: 47px;
-    background-color: #003B5C;
+    background-color: #003b5c;
     color: white;
     cursor: pointer;
     border-radius: 15px;
@@ -60,18 +59,22 @@ li {
 }
 
 .menuButton:hover {
-  background-color: #0056b3;
+    background-color: #0056b3;
 }
-
 
 a {
     text-decoration: none;
     color: inherit;
 }
 
+.restaurant-image {
+    display: flex;
+    justify-content: center;
+}
+
 .restaurant-image img {
-  width: 100%;
-  max-width: 200px;
-  height: auto;
-  object-fit: cover;
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    object-fit: cover;
 }
