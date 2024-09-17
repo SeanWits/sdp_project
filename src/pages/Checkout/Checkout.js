@@ -4,6 +4,7 @@ import { db, doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from 
 import { UserContext } from '../../utils/userContext';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+import {Link} from "react-router-dom";
 
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -130,9 +131,12 @@ const Checkout = () => {
 
   return (
     <>
-    <Header disableCart={true} disableOrders={false}/>
+    <Header disableCart={true} disableOrders={false}/>\
+    <header className="checkoutHeader">
+        <Link to="/" className="back-arrow-checkout">&#8592;</Link>
+        Orders
+      </header>
     <main className="checkout-container">
-      <h1>Checkout</h1>
       
       <section className="order-summary">
         <h2>Order Summary</h2>
