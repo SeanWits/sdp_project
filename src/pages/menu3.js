@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import "./menu3.css";
 import { db } from '../firebase';
 import { doc, getDoc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
@@ -9,6 +9,7 @@ import Footer from '../components/Footer/Footer';
 
 function Menu3() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { restaurantId, itemName } = useParams();
   const [item, setItem] = useState(location.state?.item || null);
   const [restaurantName, setRestaurantName] = useState(location.state?.restaurantName || "Restaurant/Dining Hall");
@@ -50,7 +51,7 @@ function Menu3() {
   const handleAddToCart = async () => {
     if (!user) {
       console.log("User not logged in");
-      // Implement user feedback or redirect to login
+      navigate('/login', { state: { from: location } });
       return;
     }
 
@@ -59,12 +60,12 @@ function Menu3() {
     const cartSnap = await getDoc(cartRef);
 
     const newItem = {
-      productId: item.productID, // Use the correct productID from the item
+      productId: item.productID,
       quantity: 1,
       priceAtPurchase: item.price,
-      imageSrc: item.image_url || "", // Use the correct image_url from the item
+      imageSrc: item.image_url || "",
       name: item.name,
-      prepTime: item.prepTime || 10 // You might want to add this field to your item data if it's needed
+      prepTime: item.prepTime || 10
     };
 
     try {
@@ -87,6 +88,10 @@ function Menu3() {
         }
       }
       console.log("Item added to cart");
+      
+      // Dispatch custom event to notify of cart update
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
+      
       // Implement user feedback for successful add to cart
     } catch (error) {
       console.error("Error adding item to cart:", error);

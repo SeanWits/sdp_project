@@ -18,6 +18,15 @@ function Header({ disableCart = false, disableOrders = false }) {
         if (user && !disableCart) {
             fetchCart();
         }
+
+        // Add event listener for cart updates
+        window.addEventListener('cartUpdated', fetchCart);
+
+        // Cleanup function to remove event listener
+        return () => {
+            window.removeEventListener('cartUpdated', fetchCart);
+        };
+
     }, [user, disableCart]);
 
     const fetchCart = async () => {
@@ -29,6 +38,9 @@ function Header({ disableCart = false, disableOrders = false }) {
             const items = cartSnap.data().items || [];
             setCartItems(items);
             updateCartItemCount(items);
+        } else {
+            setCartItems([]);
+            updateCartItemCount([]);
         }
     };
 
@@ -45,7 +57,7 @@ function Header({ disableCart = false, disableOrders = false }) {
 
     const handleOrdersClick = () => {
         if (!disableOrders) {
-            navigate("/Orders");
+            navigate("/dashboard");
         }
     };
 
