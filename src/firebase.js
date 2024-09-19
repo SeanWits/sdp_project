@@ -2,25 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, 
-  doc, 
-  getDoc, 
-  setDoc, 
-  updateDoc, 
-  arrayUnion, 
-  collection, 
-  addDoc, 
-  query,
-  where,
-  getDocs,
-  deleteDoc, serverTimestamp } from "firebase/firestore";
-
-
-
-
-
-// console.log('REACT_APP_FIREBASE_API_KEY:', process.env.REACT_APP_FIREBASE_API_KEY);
-// console.log('REACT_APP_FIREBASE_AUTH_DOMAIN:', process.env.REACT_APP_FIREBASE_AUTH_DOMAIN);
+import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -33,26 +15,22 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASURE_ID
 };
 
-// console.log("Firebase Config:", firebaseConfig);
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
-setPersistence(auth, browserLocalPersistence)
-  .catch((error) => {
-    console.error("Error setting persistence:", error);
-  });
 
-// console.log("Firebase app initialized:", app);
+// Wrap setPersistence in a try-catch block
+try {
+  setPersistence(auth, browserLocalPersistence)
+    .catch((error) => {
+      console.error("Error setting persistence:", error);
+    });
+} catch (error) {
+  console.error("Error setting persistence:", error);
+}
+
 const db = getFirestore(app);
 const imgDB = getStorage(app);
 
-export { auth, db, doc, getDoc, setDoc, updateDoc, arrayUnion, imgDB, collection, addDoc, serverTimestamp , query , where , getDocs , deleteDoc };
-//export { auth, db, doc, getDoc, setDoc, updateDoc, arrayUnion, collection, addDoc, Timestamp };
-
- 
-
-
-
-
+export { auth, db, doc, getDoc, setDoc, updateDoc, arrayUnion, imgDB, collection, addDoc, serverTimestamp };
