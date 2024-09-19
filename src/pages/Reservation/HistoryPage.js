@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import { db, collection, query, where, getDocs, deleteDoc,doc, getDoc } from '../../firebase'; // Import necessary Firebase functions
-import { styles } from './styles';
+import { db, collection, query, where, getDocs, deleteDoc, doc } from '../../firebase'; // Firebase imports
+import { styles } from './styles'; // Importing updated styles
 
 const HistoryPage = () => {
   const [reservations, setReservations] = useState([]);
@@ -16,12 +15,12 @@ const HistoryPage = () => {
   const fetchReservations = async () => {
     setLoading(true);
     try {
-      const userId = "vutshila"; // Replace with actual user ID when authentication is implemented
+      const userId = "vutshila"; // Replace with actual user ID
       const q = query(collection(db, "Reservation"), where("userId", "==", userId));
       const querySnapshot = await getDocs(q);
-      const reservationsData = querySnapshot.docs.map(doc => ({
+      const reservationsData = querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
       setReservations(reservationsData);
     } catch (error) {
