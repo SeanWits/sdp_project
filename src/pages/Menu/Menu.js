@@ -1,12 +1,12 @@
-import "./menu2.css";
+import "./Menu.css";
 import { useState, useEffect } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
-import { db } from '../firebase';
+import { db } from '../../firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import Header from "../components/Header/Header";
-import Footer from "../components/Footer/Footer";
+import Header from "../../components/Header/Header";
+import Footer from "../../components/Footer/Footer";
 
-function Menu2() {
+function Menu() {
   const { restaurantId } = useParams();
   const location = useLocation();
   const [restaurant, setRestaurant] = useState(location.state?.restaurant || null);
@@ -108,4 +108,4 @@ function Menu2() {
   );
 }
 
-export default Menu2;
+export default Menu;

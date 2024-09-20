@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
-import Menu3 from './menu3';
+import Meal from './Meal';
 
 // Mock the restaurantData import
 jest.mock('./restaurant.json', () => [

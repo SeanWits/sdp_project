@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import Menu from './Menu';
+import Restaurant from './Restaurant';
 
 // Mock the restaurantData import
 jest.mock('./restaurant.json', () => [
@@ -15,13 +15,13 @@ jest.mock('./restaurant.json', () => [
 ]);
 
 // Mock the css import
-jest.mock('./menu.css', () => ({}));
+jest.mock('./Restaurant.css', () => ({}));
 
-describe('Menu Component', () => {
+describe('Restaurant Component', () => {
   test('renders without crashing', () => {
     render(
       <Router>
-        <Menu />
+        <Restaurant />
       </Router>
     );
 
@@ -34,7 +34,7 @@ describe('Menu Component', () => {
     expect(screen.getByText('Hours: 9:00 AM - 10:00 PM')).toBeInTheDocument();
 
     // Check if the buttons are rendered
-    expect(screen.getByText('Menu')).toBeInTheDocument();
+    expect(screen.getByText('Restaurant')).toBeInTheDocument();
     expect(screen.getByText('More Info')).toBeInTheDocument();
   });
 });

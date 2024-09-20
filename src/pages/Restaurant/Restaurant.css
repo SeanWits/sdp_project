@@ -1,108 +1,80 @@
-.restaurant-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: center;
+.restaurant-details {
+    border: 1px solid;
+    margin-top: 1.5%;
+    padding-left: 1.5%;
+    padding-right: 1.5%;
+    display: flex;
 }
 
-.product-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  margin-top: 20px;
-  background-color: #f9f9f9;
+.menuHeader {
+    height: 60px;
+    background-color: #003b5c;
+    color: white;
+    text-align: center;
+    align-content: center;
 }
 
-.product-image {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
+.restaurant-details h2 {
+    padding-top: 10px;
 }
 
-.product-name {
-  font-size: 24px;
-  margin: 10px 0;
+article {
+    background-color: white;
+    height: 200px;
+    margin-left: 3%;
+    margin-right: 3%;
+    border-radius: 20px;
 }
 
-.product-price {
-  font-size: 18px;
-  color: #007bff;
-  margin-bottom: 15px;
+#main-section {
+    background-color: #fcb040;
+    border-radius: 20px;
+    height: 170px;
+    padding-left: 2%;
+    margin-top: 15px;
+    width: 75%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.quantity-control {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 15px;
+ul {
+    list-style-type: none; /* Removes bullet points */
+    margin-right: 20px;
 }
 
-.quantity-btn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  width: 30px;
-  height: 30px;
-  font-size: 18px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: background-color 0.3s;
+li {
+    margin-bottom: 20px;
+}
+.menuButton {
+    width: 200px;
+    height: 47px;
+    background-color: #003b5c;
+    color: white;
+    cursor: pointer;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
 }
 
-.quantity-btn:hover {
-  background-color: #0056b3;
+.menuButton:hover {
+    background-color: #0056b3;
 }
 
-.quantity {
-  font-size: 18px;
-  margin: 0 15px;
+a {
+    text-decoration: none;
+    color: inherit;
 }
 
-.add-to-cart-btn {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+.restaurant-image {
+    display: flex;
+    justify-content: center;
 }
 
-.add-to-cart-btn:hover {
-  background-color: #218838;
-}
-
-.cart-info {
-  margin-top: 20px;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.cart-icon-container {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  font-size: 24px;
-  cursor: pointer;
-  z-index: 1001;
-}
-
-.cart-icon {
-  color: #007bff;
-}
-
-.cart-counter {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  background-color: #dc3545;
-  color: white;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 12px;
-  font-weight: bold;
+.restaurant-image img {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    object-fit: cover;
 }

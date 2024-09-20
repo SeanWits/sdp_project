@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
-import "./menu3.css";
-import { db } from '../firebase';
+import "./Meal.css";
+import { db } from '../../firebase';
 import { doc, getDoc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { UserContext } from '../utils/userContext';
-import Header from '../components/Header/Header';
-import Footer from '../components/Footer/Footer';
+import { UserContext } from '../../utils/userContext';
+import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
 
-function Menu3() {
+function Meal() {
   const location = useLocation();
   const navigate = useNavigate();
   const { restaurantId, itemName } = useParams();
@@ -115,12 +115,12 @@ function Menu3() {
       <div className="separator-line"></div>
       <section id="mainThing">
         <article>
-          <div className="menu3DivBox" id="longerThings">
+          <div className="MealDivBox" id="longerThings">
             {item.description}
           </div>
         </article>
         <article>
-          <div className="menu3DivBox">Customise order</div>
+          <div className="MealDivBox">Customise order</div>
           Total: R{item.price.toFixed(2)} <button className="menuButton" onClick={handleAddToCart}>Add to cart</button>
         </article>
         <img src={item.image_url} alt={item.name} className="item-image" />
@@ -136,4 +136,4 @@ function Menu3() {
   );
 }
 
-export default Menu3;
+export default Meal;

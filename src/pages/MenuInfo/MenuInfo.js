@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
-import "./menuInfo.css";
-import { db } from '../firebase';
+import "./MenuInfo.css";
+import { db } from '../../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
 function MenuInfo() {
