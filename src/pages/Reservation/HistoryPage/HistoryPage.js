@@ -77,7 +77,6 @@ const HistoryPage = () => {
                 <p><strong>Restaurant:</strong> {reservation.restaurantName}</p>
                 <p><strong>Date:</strong> {reservation.date.toDate().toLocaleString()}</p>
                 <p><strong>Number of People:</strong> {reservation.numberOfPeople}</p>
-                <p><strong>Reservation ID:</strong> {reservation.restaurantId}</p>
                 <p><strong>Status:</strong> {getReservationStatus(reservation.date)}</p>
                 {getReservationStatus(reservation.date) === "Upcoming" && (
                   <button 

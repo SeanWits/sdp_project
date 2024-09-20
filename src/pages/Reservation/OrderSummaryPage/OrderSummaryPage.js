@@ -60,7 +60,6 @@ const OrderSummaryPage = () => {
         <p><strong>Restaurant:</strong> {data.restaurantName || 'Not specified'}</p>
         <p><strong>Date:</strong> {formatDate(data.date)}</p>
         <p><strong>Number of People:</strong> {data.numberOfPeople || 'Not specified'}</p>
-        <p><strong>Reservation ID:</strong> {data.restaurantId || 'Not specified'}</p>
 
         <button onClick={handleDone} style={styles.button}>Done</button>
       </div>
