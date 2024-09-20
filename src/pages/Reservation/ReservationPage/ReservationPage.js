@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, collection, addDoc, serverTimestamp } from '../../../firebase'; // Import necessary Firebase functions
-import { styles } from '../styles
-0';
+import { styles } from '../styles';
 
 const ReservationPage = () => {
   const [date, setDate] = useState('');
