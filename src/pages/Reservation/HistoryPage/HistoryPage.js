@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db, collection, query, where, getDocs, deleteDoc, doc } from '../../firebase'; // Firebase imports
-import { styles } from './styles'; // Importing updated styles
+import { db, collection, query, where, getDocs, deleteDoc, doc } from '../../../firebase'; // Firebase imports
+import { styles } from '../styles'; // Importing updated styles
 
 const HistoryPage = () => {
   const [reservations, setReservations] = useState([]);

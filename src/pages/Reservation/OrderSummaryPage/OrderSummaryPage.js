@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db, doc, getDoc } from '../../firebase'; // Import necessary Firebase functions
-import { styles } from './styles';
+import { db, doc, getDoc } from '../../../firebase'; // Import necessary Firebase functions
+import { styles } from '../styles';
 
 const OrderSummaryPage = () => {
   const [data, setData] = useState({});

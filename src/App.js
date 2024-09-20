@@ -1,13 +1,6 @@
-import React from 'react';
+/*import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import Menu from "./pages/menu";
-import Menu2 from "./pages/menu2";
-import Menu3 from "./pages/menu3";
-import MenuInfo from "./pages/menuInfo";
-import Test from "./pages/test";
-
-export const UserContext = createContext(null);
 import firebase from "firebase/compat/app";
 // Required for side-effects
 import "firebase/firestore";
@@ -26,26 +19,6 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import { UserProvider } from './utils/userContext';
 
 function App() {
-  const [user, setUser] = useState(null);
-
-    return (
-        <UserContext.Provider value={user}>
-            <Router>
-                <Routes>
-                    
-                    <Route path="/" element={<Menu />} />
-                    {/*<Route path="/menu3" element={<Menu3 />} />*/}
-                    <Route path="/menu3/:itemName" element={<Menu3 />} />
-                    {/*<Route path="/test" element={<Test />} />*/}
-                    {/*<Route path="/menuInfo" element={<MenuInfo />} />*/}
-                    <Route path="/restaurant-info/:id" element={<MenuInfo />} />
-                    {/*<Route path="/menu2" element={<Menu2 />} />  Remove this */}
-                    <Route path="/menu/:restaurantId" element={<Menu2 />} />
-                </Routes>
-            </Router>
-        </UserContext.Provider>
-    );
-
   return (
     <UserProvider>
       <Router>
@@ -66,4 +39,33 @@ function App() {
     </UserProvider>
   );
 }
+export default App;*/
+
+
+
+
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
+import ReservationPage from './pages/Reservation/ReservationPage/ReservationPage';
+import OrderSummaryPage from './pages/Reservation/OrderSummaryPage/OrderSummaryPage';
+import HistoryPage from './pages/Reservation/HistoryPage/HistoryPage';
+import { auth } from './firebase';
+
+function App() {
+  return (
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<ReservationPage />} />
+          <Route path="/order-summary" element={<OrderSummaryPage />} />
+          <Route path="/history" element={<HistoryPage />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+
 export default App;
+
