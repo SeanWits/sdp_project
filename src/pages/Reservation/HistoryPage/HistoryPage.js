@@ -90,7 +90,7 @@ const HistoryPage = () => {
             ))}
           </div>
         )}
-        <button onClick={() => navigate('/')} style={styles.button}>Make New Reservation</button>
+        <button onClick={() => navigate('/')} style={styles.button}>Back to Menu</button>
       </div>
     </div>
   );

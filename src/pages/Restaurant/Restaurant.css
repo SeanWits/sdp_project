@@ -1,9 +1,16 @@
+.restaurant-list {
+    background-color: #f0f0f0;
+    padding-bottom: 20px;
+}
+
 .restaurant-details {
-    border: 1px solid;
+    border: 1px solid #ddd;
     margin-top: 1.5%;
-    padding-left: 1.5%;
-    padding-right: 1.5%;
+    padding: 15px;
     display: flex;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .menuHeader {
@@ -11,27 +18,20 @@
     background-color: #003b5c;
     color: white;
     text-align: center;
-    align-content: center;
+    line-height: 60px;
+    font-size: 24px;
+    font-weight: bold;
 }
 
 .restaurant-details h2 {
-    padding-top: 10px;
-}
-
-article {
-    background-color: white;
-    height: 200px;
-    margin-left: 3%;
-    margin-right: 3%;
-    border-radius: 20px;
+    margin-top: 0;
+    color: #003b5c;
 }
 
 #main-section {
     background-color: #fcb040;
     border-radius: 20px;
-    height: 170px;
-    padding-left: 2%;
-    margin-top: 15px;
+    padding: 20px;
     width: 75%;
     flex-shrink: 0;
     display: flex;
@@ -40,13 +40,15 @@ article {
 }
 
 ul {
-    list-style-type: none; /* Removes bullet points */
-    margin-right: 20px;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
 }
 
 li {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
+
 .menuButton {
     width: 200px;
     height: 47px;
@@ -55,7 +57,8 @@ li {
     cursor: pointer;
     border-radius: 15px;
     border: none;
-    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
 .menuButton:hover {
@@ -70,6 +73,9 @@ a {
 .restaurant-image {
     display: flex;
     justify-content: center;
+    align-items: center;
+    width: 25%;
+    padding-left: 20px;
 }
 
 .restaurant-image img {
@@ -77,4 +83,5 @@ a {
     max-width: 200px;
     height: auto;
     object-fit: cover;
+    border-radius: 10px;
 }

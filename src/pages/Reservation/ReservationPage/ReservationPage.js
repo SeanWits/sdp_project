@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { db, collection, addDoc, serverTimestamp } from '../../../firebase'; // Import necessary Firebase functions
 import { styles } from '../styles';
 
 const ReservationPage = () => {
+  const { id } = useParams();
+  const location = useLocation();
+  const restaurant = location.state?.restaurant;
   const [date, setDate] = useState('');
   const [timeSlot, setTimeSlot] = useState('');
   const [people, setPeople] = useState(1);
