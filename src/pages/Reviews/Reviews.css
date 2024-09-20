@@ -1,0 +1,71 @@
+body {
+    margin: 0;
+}
+
+.material-symbols-outlined.icon.filled {
+    font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
+    font-size: 30px;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.centre_no_margin {
+    margin: 0;
+    align-self: center;
+}
+#h2_reviews {
+    color: white;
+}
+
+.header2 {
+    background-color: #003b5c;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-inline: 20px;
+    font-size: 20px;
+    height: 60px;
+    color: white;
+}
+
+#reviews_icons {
+    display: flex;
+    justify-content: space-between;
+    width: 110px;
+}
+
+#rating_section {
+    display: flex;
+    justify-content: space-between;
+    padding-inline: 30px;
+    font-size: 20px;
+    padding-block: 10px;
+}
+
+.flex-direction-row {
+    display: flex;
+    flex-direction: row;
+}
+
+#review_text_section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#review_text_heading_section {
+    background-color: #ffd197;
+    width: 100%;
+    color: black;
+    display: flex;
+    justify-content: center;
+    padding-block: 5px;
+}
+
+#review_section {
+    margin: 20px;
+    outline: solid;
+    outline-color: #003b5c;
+    outline-width: 1px;
+    border-radius: 15px;
+}
