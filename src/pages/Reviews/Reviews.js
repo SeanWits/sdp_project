@@ -1,5 +1,7 @@
 import "./Reviews.css";
 import Popup from "../../components/Popup/Popup";
+import React, { useState } from "react";
+import { AddReview } from "./AddReview";
 
 export function Reviews() {
     //pop up
@@ -64,7 +66,7 @@ export function Reviews() {
                 </section>
             </section>
             <Popup isOpen={isPopupOpen} onClose={togglePopup}>
-                <AddReview restaurantID={restaurantID} mealID={mealID} />
+                <AddReview />
             </Popup>
         </>
     );
