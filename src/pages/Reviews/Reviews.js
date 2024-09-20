@@ -1,3 +1,5 @@
+import "./Reviews.css"
+
 export function Feedback() {
     return (
         <>
