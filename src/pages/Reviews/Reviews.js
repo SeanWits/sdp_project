@@ -1,6 +1,14 @@
-import "./Reviews.css"
+import "./Reviews.css";
+import Popup from "../../components/Popup/Popup";
 
 export function Feedback() {
+    //pop up
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+    const togglePopup = () => {
+        setIsPopupOpen((prev) => !prev);
+    };
+
     return (
         <>
             <link
@@ -12,7 +20,10 @@ export function Feedback() {
                     Reviews
                 </h2>
                 <section id="reviews_icons">
-                    <span className="material-symbols-outlined icon filled">
+                    <span
+                        className="material-symbols-outlined icon filled"
+                        onClick={togglePopup}
+                    >
                         add_box
                     </span>
                     <span className="material-symbols-outlined icon filled">
@@ -52,6 +63,9 @@ export function Feedback() {
                     <p id="review_paragraph">A review</p>
                 </section>
             </section>
+            <Popup isOpen={isPopupOpen} onClose={togglePopup}>
+                <AddReview restaurantID={restaurantID} mealID={mealID} />
+            </Popup>
         </>
     );
 }
