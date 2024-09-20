@@ -11,7 +11,7 @@ const OrderSummaryPage = () => {
     const fetchReservation = async () => {
       const reservationId = localStorage.getItem('reservationId');
       if (!reservationId) {
-        // If no reservationId, redirect to the reservation page
+        // If no reservationId, redirect to the home page
         navigate('/');
         return;
       }
@@ -20,12 +20,8 @@ const OrderSummaryPage = () => {
         // Fetch the reservation document from Firestore using the reservationId
         const reservationDoc = await getDoc(doc(db, 'Reservation', reservationId));
         if (reservationDoc.exists()) {
-          // Set the data to state, and ensure "selectedFood" defaults to "None" if not provided
-          const reservationData = reservationDoc.data();
-          setData({
-            ...reservationData,
-            selectedFood: reservationData.selectedFood || 'None' // Default to 'None' if not provided
-          });
+          // Set the data to state
+          setData(reservationDoc.data());
         } else {
           console.error('No such document!');
           navigate('/');
@@ -40,22 +36,31 @@ const OrderSummaryPage = () => {
   }, [navigate]);
 
   const handleDone = () => {
-    console.log('handleDone called'); // Add this line
+    console.log('handleDone called');
     localStorage.removeItem('reservationId');
     navigate('/history');
+  };
+
+  const formatDate = (date) => {
+    if (date && date instanceof Date) {
+      return date.toLocaleString();
+    } else if (date && date.toDate instanceof Function) {
+      return date.toDate().toLocaleString();
+    }
+    return 'Date not available';
   };
 
   return (
     <div style={styles.pageWrapper}>
       <div style={styles.container}>
         <div style={styles.yellowBox}>
-          <h1>Order Summary</h1>
+          <h1>Reservation Summary</h1>
         </div>
 
-        <p><strong>Restaurant:</strong> {data.restaurant}</p>
-        <p><strong>Date:</strong> {data.date?.toDate().toLocaleString()}</p>
-        <p><strong>Number of People:</strong> {data.numberOfPeople}</p>
-        <p><strong>Food Selected:</strong> {data.selectedFood}</p>
+        <p><strong>Restaurant:</strong> {data.restaurantName || 'Not specified'}</p>
+        <p><strong>Date:</strong> {formatDate(data.date)}</p>
+        <p><strong>Number of People:</strong> {data.numberOfPeople || 'Not specified'}</p>
+        <p><strong>Reservation ID:</strong> {data.restaurantId || 'Not specified'}</p>
 
         <button onClick={handleDone} style={styles.button}>Done</button>
       </div>

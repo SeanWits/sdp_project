@@ -60,9 +60,9 @@ function Restaurant() {
                   </Link>
                 </li>
                 <li>
-                  <Link to={`/reservation/${restaurant.id}`} state={{ restaurant }}>
-                    <button className="menuButton">Reservation</button>
-                  </Link>
+                <Link to={`/reservation/${restaurant.id}`} state={{ restaurant }}>
+                  <button className="menuButton">Reservation</button>
+                </Link>
                 </li>
                 <li>
                   <Link to={`/restaurant-info/${restaurant.id}`} state={{ restaurant }}>

@@ -32,7 +32,7 @@ const HistoryPage = () => {
 
   const handleCancel = async (reservationId, reservationDate) => {
     const now = new Date();
-    const reservationTime = new Date(reservationDate);
+    const reservationTime = reservationDate.toDate();
     const timeDifference = reservationTime.getTime() - now.getTime();
     const hoursDifference = timeDifference / (1000 * 3600);
 
@@ -52,7 +52,7 @@ const HistoryPage = () => {
 
   const getReservationStatus = (reservationDate) => {
     const now = new Date();
-    const reservationTime = new Date(reservationDate);
+    const reservationTime = reservationDate.toDate();
     if (now > reservationTime) {
       return "Attended";
     } else {
@@ -74,13 +74,14 @@ const HistoryPage = () => {
           <div>
             {reservations.map((reservation) => (
               <div key={reservation.id} style={styles.reservationItem}>
-                <p><strong>Restaurant:</strong> {reservation.restaurant}</p>
+                <p><strong>Restaurant:</strong> {reservation.restaurantName}</p>
                 <p><strong>Date:</strong> {reservation.date.toDate().toLocaleString()}</p>
                 <p><strong>Number of People:</strong> {reservation.numberOfPeople}</p>
-                <p><strong>Status:</strong> {getReservationStatus(reservation.date.toDate())}</p>
-                {getReservationStatus(reservation.date.toDate()) === "Upcoming" && (
+                <p><strong>Reservation ID:</strong> {reservation.restaurantId}</p>
+                <p><strong>Status:</strong> {getReservationStatus(reservation.date)}</p>
+                {getReservationStatus(reservation.date) === "Upcoming" && (
                   <button 
-                    onClick={() => handleCancel(reservation.id, reservation.date.toDate())}
+                    onClick={() => handleCancel(reservation.id, reservation.date)}
                     style={styles.cancelButton}
                   >
                     Cancel Reservation

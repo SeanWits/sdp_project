@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useParams, useLocation } from 'react-router-dom';
-import { db, collection, addDoc, serverTimestamp } from '../../../firebase'; // Import necessary Firebase functions
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { db, collection, addDoc, serverTimestamp } from '../../../firebase';
 import { styles } from '../styles';
 
 const ReservationPage = () => {
-  const { id } = useParams();
-  const location = useLocation();
-  const restaurant = location.state?.restaurant;
   const [date, setDate] = useState('');
   const [timeSlot, setTimeSlot] = useState('');
   const [people, setPeople] = useState(1);
   const navigate = useNavigate();
+  const { id } = useParams();
+  const location = useLocation();
+  const restaurant = location.state?.restaurant;
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -40,7 +39,7 @@ const ReservationPage = () => {
     return timeSlots;
   };
 
-  const timeSlots = generateTimeSlots('09:00', '17:00');
+  const timeSlots = restaurant ? generateTimeSlots(restaurant.opening_time, restaurant.closing_time) : [];
 
   const handleConfirm = async () => {
     if (!date) {
@@ -48,23 +47,23 @@ const ReservationPage = () => {
       return;
     }
 
-    const selectedRestaurant = "Restaurant XYZ";
+    if (!restaurant) {
+      alert('Restaurant information is missing.');
+      return;
+    }
+
     const reservationData = {
-      restaurant: selectedRestaurant,
-      date: new Date(`${date}T${timeSlot}`), // Create a Date object from date and time
+      restaurantId: id,
+      restaurantName: restaurant.name,
+      date: new Date(`${date}T${timeSlot}`),
       userId: "vutshila", // Hardcoded User ID, replace with dynamic value if available
       numberOfPeople: people,
       createdAt: serverTimestamp(),
     };
 
     try {
-      // Store the reservation data in Firestore
       const reservationRef = await addDoc(collection(db, "Reservation"), reservationData);
-
-      // Store the Firestore document ID in localStorage to retrieve it in the next page
       localStorage.setItem('reservationId', reservationRef.id);
-
-      // Navigate to the order summary page
       navigate('/order-summary');
     } catch (error) {
       console.error("Error adding reservation: ", error);
@@ -72,11 +71,15 @@ const ReservationPage = () => {
     }
   };
 
+  if (!restaurant) {
+    return <div style={styles.pageWrapper}>Loading restaurant information...</div>;
+  }
+
   return (
     <div style={styles.pageWrapper}>
       <div style={styles.container}>
         <div style={styles.yellowBox}>
-          <h1>Select Date, Time Slot & Number of People</h1>
+          <h1>Reservation for {restaurant.name}</h1>
         </div>
 
         <label htmlFor="date" style={styles.label}>Select Date:</label>
@@ -112,7 +115,7 @@ const ReservationPage = () => {
           max="10"
           style={styles.input}
           value={people}
-          onChange={(e) => setPeople(e.target.value)}
+          onChange={(e) => setPeople(Number(e.target.value))}
         />
 
         <button onClick={handleConfirm} style={styles.button}>Confirm Reservation</button>

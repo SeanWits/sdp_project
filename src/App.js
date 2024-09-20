@@ -37,9 +37,10 @@ function App() {
             <Route path="/menu/:restaurantId" element={<Menu />} />
             <Route path="/menu/:restaurantId/:itemName" element={<Meal />} />
             <Route path="/restaurant-info/:id" element={<MenuInfo />} />
+            
             <Route path="/reservation/:id" element={<ReservationPage />} />
             <Route path="/order-summary" element={<OrderSummaryPage />} />
-          <Route path="/history" element={<HistoryPage />} />
+            <Route path="/history" element={<HistoryPage />} />
           </Routes>
         </div>
       </Router>
