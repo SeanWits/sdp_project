@@ -1,7 +1,7 @@
 import "./Reviews.css";
 import Popup from "../../components/Popup/Popup";
 
-export function Feedback() {
+export function Reviews() {
     //pop up
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
