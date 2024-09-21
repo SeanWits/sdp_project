@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Menu2 from './menu2.js';
-import restaurantData from "./restaurant.json"; //Mock API for testing
+import Menu from './Menu.js';
+import restaurantData from "../restaurant.json"; //Mock API for testing
 import { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 
