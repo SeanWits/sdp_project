@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
-import "./MenuInfo.css";
+import "./RestaurantInfo.css";
 import { db } from '../../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
-function MenuInfo() {
+function RestaurantInfo() {
   const { id } = useParams();
   const location = useLocation();
   const [restaurant, setRestaurant] = useState(location.state?.restaurant || null);
@@ -70,11 +70,11 @@ function MenuInfo() {
         </section>
       </section>
 
-      <button className="menuButton" id="menuInfoButton">
+      <button className="menuButton" id="RestaurantInfoButton">
         Click For Review
       </button>
     </div>
   );
 }
 
-export default MenuInfo;
+export default RestaurantInfo;
