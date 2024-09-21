@@ -1,0 +1,9 @@
+#Footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(252, 176, 64, 1);
+    bottom: 0;
+    position: fixed;
+    width: -webkit-fill-available;
+}

@@ -1,0 +1,30 @@
+#nameRes{
+    background-color: #FCB040;
+    height: 290px;
+    width: 760px;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.resDeets{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#menuInfoButton{
+    margin-left: 45%;
+}
+
+.back-arrow {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    text-decoration: none;
+    font-size: 24px;
+  }
+
+  .menuHeader {
+    position: relative;
+  }
