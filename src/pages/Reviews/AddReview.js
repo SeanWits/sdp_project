@@ -3,7 +3,7 @@ import {db, doc, setDoc, serverTimestamp} from "../../firebase";
 import {UserContext} from "../../utils/userContext";
 import "./Reviews.css"
 
-export function AddReview(restaurantID, mealID = null) {
+export function AddReview(restaurantID, mealID) {
     const [restaurantRating, setRestaurantRating] = useState(0);
     const [restaurantReview, setRestaurantReview] = useState("");
 
