@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
 import "./MenuInfo.css";
-import { db } from '../../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import {db} from '../../firebase';
+import {doc, getDoc} from 'firebase/firestore';
 import Popup from "../../components/Popup/Popup";
 import {AddReview} from "../Reviews/AddReview";
 import {Reviews} from "../Reviews/Reviews";
@@ -36,6 +36,24 @@ function MenuInfo() {
     const togglePopup = () => {
         setIsPopupOpen((prev) => !prev);
     };
+
+    useEffect(() => {
+        const fetchRestaurant = async () => {
+            if (!restaurant) {
+                try {
+                    const restaurantDoc = await getDoc(doc(db, 'restaurants', id));
+                    if (restaurantDoc.exists()) {
+                        setRestaurant({id: restaurantDoc.id, ...restaurantDoc.data()});
+                    } else {
+                        setError("Restaurant not found");
+                    }
+                } catch (err) {
+                    console.error("Error fetching restaurant:", err);
+                    setError("Failed to load restaurant data");
+                }
+                setLoading(false);
+            }
+        };
 
     fetchRestaurant();
   }, [id, restaurant]);
@@ -78,15 +96,14 @@ function MenuInfo() {
         </section>
       </section>
 
-      <button className="menuButton" id="menuInfoButton">
-        Click For Review
-      </button>
-    </div>
-  );
             <button onClick={togglePopup} className="menuButton" id="menuInfoButton">
+                Click For Review
+            </button>
             <Popup isOpen={isPopupOpen} onClose={togglePopup}>
                 <Reviews restaurantID={restaurant.id}/>
             </Popup>
+        </div>
+    );
 }
 
 export default MenuInfo;
