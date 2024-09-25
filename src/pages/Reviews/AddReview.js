@@ -81,7 +81,11 @@ export function AddReview(restaurantID, mealID) {
                         placeholder="Enter a review"
                     />
                 </section>
-                <button type="button" id="confirm_button">
+                <button
+                    type="button"
+                    onClick={addRestaurantReview}
+                    id="confirm_button"
+                >
                     Confirm
                 </button>
             </section>
