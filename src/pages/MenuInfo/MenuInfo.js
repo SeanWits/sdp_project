@@ -14,23 +14,6 @@ function MenuInfo() {
   const [loading, setLoading] = useState(!restaurant);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchRestaurant = async () => {
-      if (!restaurant) {
-        try {
-          const restaurantDoc = await getDoc(doc(db, 'restaurants', id));
-          if (restaurantDoc.exists()) {
-            setRestaurant({ id: restaurantDoc.id, ...restaurantDoc.data() });
-          } else {
-            setError("Restaurant not found");
-          }
-        } catch (err) {
-          console.error("Error fetching restaurant:", err);
-          setError("Failed to load restaurant data");
-        }
-        setLoading(false);
-      }
-    };
     //pop up
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const togglePopup = () => {
