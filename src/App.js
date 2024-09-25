@@ -4,10 +4,10 @@ import "./App.css";
 import firebase from "firebase/compat/app";
 // Required for side-effects
 import "firebase/firestore";
-import Checkout from './pages/Checkout/Checkout';
-import Orders from './pages/Orders/Orders';
-import Register from './pages/Register/Register'
-import Login from './pages/Login/Login';
+import Checkout from "./pages/Checkout/Checkout";
+import Orders from "./pages/Orders/Orders";
+import Register from "./pages/Register/Register";
+import Login from "./pages/Login/Login";
 import Restaurant from "./pages/Restaurant/Restaurant";
 import Menu from "./pages/Menu/Menu";
 import Meal from "./pages/Meal/Meal";
