@@ -1,9 +1,9 @@
-import {useContext, useEffect, useState} from "react";
+import {useContext, useState} from "react";
 import {db, doc, setDoc, serverTimestamp} from "../../firebase";
 import {UserContext} from "../../utils/userContext";
 import "./Reviews.css"
 
-export function AddReview(restaurantID, mealID) {
+export function AddReview(restaurantID, mealID = null) {
     const [restaurantRating, setRestaurantRating] = useState(0);
     const [restaurantReview, setRestaurantReview] = useState("");
 
@@ -44,9 +44,9 @@ export function AddReview(restaurantID, mealID) {
                 href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
             />
             <header id="reviews_header">
-                <span class="material-symbols-outlined">arrow_back</span>
+                <span className="material-symbols-outlined">arrow_back</span>
                 <h2>Review Restaurant/Dining Hall</h2>
-                <img src=""/>
+                <img src="" alt={"Restaurant logo."}/>
             </header>
             <section id="add_review_section">
                 <section id="add_rating_section">
