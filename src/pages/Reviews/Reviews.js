@@ -78,7 +78,7 @@ export function Reviews(restaurantID, mealID) {
                 </section>
             </section>
             <Popup isOpen={isPopupOpen} onClose={togglePopup}>
-                <AddReview />
+                <AddReview restaurantID={restaurantID.restaurantID}/>
             </Popup>
         </>
     );
