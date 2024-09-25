@@ -1,64 +1,149 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Meal from './Meal';
+import { UserContext } from '../../utils/userContext';
+import * as firestore from 'firebase/firestore';
 
-// Mock the restaurantData import
-jest.mock('./restaurant.json', () => [
-  {
-    id: 'test1',
-    name: 'Test Restaurant',
-    location: 'Test Location',
-    opening_time: '09:00',
-    closing_time: '22:00',
-  },
-]);
+// Mock the firebase module
+jest.mock('../../firebase', () => ({
+  db: {},
+}));
 
-describe('Menu3 Component', () => {
+// Mock the firestore module
+jest.mock('firebase/firestore', () => ({
+  doc: jest.fn(),
+  getDoc: jest.fn(),
+  setDoc: jest.fn(),
+  updateDoc: jest.fn(),
+  arrayUnion: jest.fn(x => x),
+}));
+
+// Mock react-router-dom
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: jest.fn(),
+  useLocation: jest.fn(),
+  useNavigate: jest.fn(),
+  Link: ({ children, to }) => <a href={to}>{children}</a>,
+}));
+
+// Mock Header and Footer components
+jest.mock('../../components/Header/Header', () => () => <div data-testid="mock-header">Header</div>);
+jest.mock('../../components/Footer/Footer', () => () => <div data-testid="mock-footer">Footer</div>);
+
+const mockItem = {
+  name: 'Test Item',
+  description: 'Test description',
+  price: 10.99,
+  image_url: 'http://example.com/test.jpg',
+  productID: 'testProduct'
+};
+
+const mockRestaurantData = {
+  name: 'Test Restaurant',
+  categories: [
+    {
+      menu_items: [mockItem]
+    }
+  ]
+};
+
+describe('Meal Component', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    require('react-router-dom').useParams.mockReturnValue({ restaurantId: 'testRestaurant', itemName: 'Test%20Item' });
+    require('react-router-dom').useLocation.mockReturnValue({ state: null });
+    require('react-router-dom').useNavigate.mockReturnValue(jest.fn());
+  });
+
   test('renders loading state initially', () => {
-    render(<Router><Menu3 /></Router>);
+    firestore.getDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => mockRestaurantData,
+    });
+
+    render(
+      <Router>
+        <UserContext.Provider value={{ user: null }}>
+          <Meal />
+        </UserContext.Provider>
+      </Router>
+    );
+
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
-  test('renders restaurant data after loading', async () => {
-    render(<Router><Menu3 /></Router>);
-    
-    await waitFor(() => {
-      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+  test('renders meal information after loading', async () => {
+    firestore.getDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => mockRestaurantData,
     });
 
-    expect(screen.getByText('Restaurant/Dining Hall Name')).toBeInTheDocument();
-    expect(screen.getByText('Meal Name')).toBeInTheDocument();
-    expect(screen.getByText('A description')).toBeInTheDocument();
-    expect(screen.getByText('Customise order')).toBeInTheDocument();
-    expect(screen.getByText('Add to cart')).toBeInTheDocument();
-    expect(screen.getByText('Reviews')).toBeInTheDocument();
-    expect(screen.getByText('Rating')).toBeInTheDocument();
-    expect(screen.getByText('Date posted:')).toBeInTheDocument();
-  });
+    render(
+      <Router>
+        <UserContext.Provider value={{ user: null }}>
+          <Meal />
+        </UserContext.Provider>
+      </Router>
+    );
 
-  test('renders error message when data loading fails', async () => {
-    // Mock the restaurantData to throw an error
-    jest.mock('./restaurant.json', () => {
-      throw new Error('Failed to load data');
-    });
-
-    render(<Router><Menu3 /></Router>);
-    
     await waitFor(() => {
-      expect(screen.getByText('Error: Failed to load restaurant data')).toBeInTheDocument();
+      expect(screen.getByText('Test Item')).toBeInTheDocument();
+      expect(screen.getByText('Test description')).toBeInTheDocument();
+      expect(screen.getByText('Total: R10.99')).toBeInTheDocument();
+      expect(screen.getByAltText('Test Item')).toHaveAttribute('src', 'http://example.com/test.jpg');
     });
   });
 
-  test('renders no data message when restaurant list is empty', async () => {
-    // Mock the restaurantData to return an empty array
-    jest.mock('./restaurant.json', () => []);
-
-    render(<Router><Menu3 /></Router>);
-    
-    await waitFor(() => {
-      expect(screen.getByText('No restaurant data available')).toBeInTheDocument();
+  test('handles add to cart for logged in user', async () => {
+    firestore.getDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => mockRestaurantData,
     });
+
+    render(
+      <Router>
+        <UserContext.Provider value={{ user: { uid: 'testUser' } }}>
+          <Meal />
+        </UserContext.Provider>
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Add to cart')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Add to cart'));
+
+    await waitFor(() => {
+      expect(firestore.setDoc).toHaveBeenCalled();
+    });
+  });
+
+  test('navigates to login when adding to cart without being logged in', async () => {
+    firestore.getDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => mockRestaurantData,
+    });
+
+    const mockNavigate = jest.fn();
+    require('react-router-dom').useNavigate.mockReturnValue(mockNavigate);
+
+    render(
+      <Router>
+        <UserContext.Provider value={{ user: null }}>
+          <Meal />
+        </UserContext.Provider>
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Add to cart')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Add to cart'));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/login', expect.anything());
   });
 });
