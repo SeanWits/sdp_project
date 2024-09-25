@@ -3,6 +3,9 @@ import { Link, useParams, useLocation } from "react-router-dom";
 import "./MenuInfo.css";
 import { db } from '../../firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import Popup from "../../components/Popup/Popup";
+import {AddReview} from "../Reviews/AddReview";
+import {Reviews} from "../Reviews/Reviews";
 
 function MenuInfo() {
   const { id } = useParams();
@@ -27,6 +30,11 @@ function MenuInfo() {
         }
         setLoading(false);
       }
+    };
+    //pop up
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const togglePopup = () => {
+        setIsPopupOpen((prev) => !prev);
     };
 
     fetchRestaurant();
@@ -75,6 +83,10 @@ function MenuInfo() {
       </button>
     </div>
   );
+            <button onClick={togglePopup} className="menuButton" id="menuInfoButton">
+            <Popup isOpen={isPopupOpen} onClose={togglePopup}>
+                <Reviews restaurantID={restaurant.id}/>
+            </Popup>
 }
 
 export default MenuInfo;
