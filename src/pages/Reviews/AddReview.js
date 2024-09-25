@@ -1,7 +1,7 @@
-export function AddReview() {
 import {useContext, useEffect, useState} from "react";
 import {db, doc, setDoc, serverTimestamp} from "../../firebase";
 import {UserContext} from "../../utils/userContext";
+import "./Reviews.css"
     return (
         <>
         <link
