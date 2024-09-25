@@ -17,24 +17,30 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import {UserProvider} from "./utils/userContext";
 
 function App() {
-  return (
-    <UserProvider>
-      <Router>
-        <div className="App">
-          <Routes>
-            <Route path="/" element={<Restaurant />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/menu/:restaurantId" element={<Menu />} />
-            <Route path="/menu/:restaurantId/:itemName" element={<Meal />} />
-            <Route path="/restaurant-info/:id" element={<MenuInfo />} />
-          </Routes>
-        </div>
-      </Router>
-    </UserProvider>
-  );
+    return (
+        <UserProvider>
+            <Router>
+                <div className="App">
+                    <Routes>
+                        <Route path="/" element={<Restaurant/>}/>
+                        <Route path="/login" element={<Login/>}/>
+                        <Route path="/register" element={<Register/>}/>
+                        <Route path="/checkout" element={<Checkout/>}/>
+                        <Route path="/orders" element={<Orders/>}/>
+                        <Route path="/dashboard" element={<Dashboard/>}/>
+                        <Route path="/menu/:restaurantId" element={<Menu/>}/>
+                        <Route
+                            path="/menu/:restaurantId/:itemName"
+                            element={<Meal/>}
+                        />
+                        <Route
+                            path="/restaurant-info/:id"
+                            element={<MenuInfo/>}
+                        />
+                    </Routes>
+                </div>
+            </Router>
+        </UserProvider>
+    );
 }
 export default App;
