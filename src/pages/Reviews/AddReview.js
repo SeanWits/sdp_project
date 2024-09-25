@@ -46,7 +46,7 @@ export function AddReview(restaurantID, mealID) {
             <header id="reviews_header">
                 <span class="material-symbols-outlined">arrow_back</span>
                 <h2>Review Restaurant/Dining Hall</h2>
-                <img src="" />
+                <img src=""/>
             </header>
             <section id="add_review_section">
                 <section id="add_rating_section">
