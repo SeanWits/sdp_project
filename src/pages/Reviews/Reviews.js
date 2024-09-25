@@ -4,7 +4,7 @@ import React, {useState, useContext} from "react";
 import {UserContext} from "../../utils/userContext";
 import {AddReview} from "./AddReview";
 
-export function Reviews() {
+export function Reviews(restaurantID, mealID) {
     //pop up
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
