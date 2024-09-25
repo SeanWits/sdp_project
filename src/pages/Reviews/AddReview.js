@@ -52,24 +52,24 @@ export function AddReview(restaurantID, mealID) {
                 <section id="add_rating_section">
                     <section id="rating_and_date_section">
                         <h3>Rating:</h3>
-                        <span id="one_star" class="material-symbols-outlined">
-                            star
-                        </span>
-                        <span id="two_stars" class="material-symbols-outlined">
-                            star
-                        </span>
-                        <span
-                            id="three_stars"
-                            class="material-symbols-outlined"
-                        >
-                            star
-                        </span>
-                        <span id="four_stars" class="material-symbols-outlined">
-                            star
-                        </span>
-                        <span id="five_stars" class="material-symbols-outlined">
-                            star
-                        </span>
+                        <div className="flex">
+                            {[1, 2, 3, 4, 5].map((starValue) => (
+                                <span
+                                    key={starValue}
+                                    className={`material-symbols-outlined text-3xl cursor-pointer transition-all duration-150 ${
+                                        starValue <= restaurantRating ? 'star-filled' : 'star-outlined'
+                                    }`}
+                                    onClick={() => handleStarClick(starValue)}
+                                    style={{
+                                        fontVariationSettings: starValue <= restaurantRating
+                                            ? "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48"
+                                            : "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48"
+                                    }}
+                                >
+                                    star
+                                </span>
+                            ))}
+                        </div>
                     </section>
                 </section>
                 <section id="add_review_text_section">
