@@ -1,18 +1,28 @@
 import "./Reviews.css";
 import Popup from "../../components/Popup/Popup";
-import React, { useState } from "react";
-import { AddReview } from "./AddReview";
 import React, {useState, useContext} from "react";
+import {UserContext} from "../../utils/userContext";
 import {AddReview} from "./AddReview";
 
 export function Reviews() {
     //pop up
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
+    //get user id
+    const {user} = useContext(UserContext);
+
     const togglePopup = () => {
         setIsPopupOpen((prev) => !prev);
     };
 
+    //if user not logged in
+    const handleAddReview = () => {
+        if (!user) {
+            alert("Please log in to leave a review");
+        } else {
+            togglePopup();
+        }
+    };
     return (
         <>
             <link
