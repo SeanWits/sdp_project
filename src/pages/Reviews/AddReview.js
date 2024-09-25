@@ -2,6 +2,41 @@ import {useContext, useEffect, useState} from "react";
 import {db, doc, setDoc, serverTimestamp} from "../../firebase";
 import {UserContext} from "../../utils/userContext";
 import "./Reviews.css"
+
+export function AddReview(restaurantID, mealID) {
+    const [restaurantRating, setRestaurantRating] = useState(0);
+    const [restaurantReview, setRestaurantReview] = useState("");
+
+    const {user} = useContext(UserContext);
+
+    const addRestaurantReview = async () => {
+        if (!user) {
+            console.error("User not signed in");
+            return;
+        }
+        try {
+            const reviewRef = doc(
+                db,
+                `restaurants/${restaurantID.restaurantID}/restaurantReviews/${user.uid}`
+            );
+            await setDoc(reviewRef, {
+                rating: restaurantRating,
+                review: restaurantReview,
+                dateCreated: serverTimestamp(),
+            });
+            console.log("Restaurant review added successfully");
+            // Reset form fields
+            setRestaurantRating(0);
+            setRestaurantReview("");
+        } catch (error) {
+            console.error("Error adding restaurant review: ", error);
+        }
+    };
+
+    const handleStarClick = (starRating) => {
+        setRestaurantRating(starRating);
+    };
+
     return (
         <>
         <link
