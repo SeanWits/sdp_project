@@ -36,7 +36,7 @@ export function Reviews(restaurantID, mealID) {
                 <section id="reviews_icons">
                     <span
                         className="material-symbols-outlined icon filled"
-                        onClick={togglePopup}
+                        onClick={handleAddReview}
                     >
                         add_box
                     </span>
