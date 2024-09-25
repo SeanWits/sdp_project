@@ -9,6 +9,11 @@ export function AddReview(restaurantID, mealID = null) {
 
     const {user} = useContext(UserContext);
 
+    const [mode, setMode] = useState("restaurant");
+    if (mealID) {
+        setMode("meal");
+    }
+
     const addRestaurantReview = async () => {
         if (!user) {
             console.error("User not signed in");
