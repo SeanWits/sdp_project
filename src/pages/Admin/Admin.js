@@ -23,7 +23,7 @@ const Admin = () => {
     const idToken = await user.getIdToken();
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/admin/create-api-key`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/create-api-key`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${idToken}`,
