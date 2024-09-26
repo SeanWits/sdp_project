@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import "./Meal.css";
-import { db } from '../../firebase';
-import { doc, getDoc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { UserContext } from '../../utils/userContext';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
@@ -21,22 +19,13 @@ function Meal() {
     const fetchItem = async () => {
       if (!item) {
         try {
-          const restaurantDoc = await getDoc(doc(db, 'restaurants', restaurantId));
-          if (restaurantDoc.exists()) {
-            const restaurantData = restaurantDoc.data();
-            setRestaurantName(restaurantData.name);
-            const foundItem = restaurantData.categories
-              .flatMap(category => category.menu_items)
-              .find(menuItem => menuItem.name === decodeURIComponent(itemName));
-            
-            if (foundItem) {
-              setItem(foundItem);
-            } else {
-              setError("Item not found");
-            }
-          } else {
-            setError("Restaurant not found");
+          const response = await fetch(`https://your-firebase-function-url.com/restaurant/${restaurantId}/menu-item/${encodeURIComponent(itemName)}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch menu item');
           }
+          const data = await response.json();
+          setItem(data.item);
+          setRestaurantName(data.restaurantName);
         } catch (err) {
           console.error("Error fetching item:", err);
           setError("Failed to load item data");
@@ -55,38 +44,24 @@ function Meal() {
       return;
     }
 
-    const userID = user.uid;
-    const cartRef = doc(db, `users/${userID}/carts/${restaurantId}`);
-    const cartSnap = await getDoc(cartRef);
-
-    const newItem = {
-      productId: item.productID,
-      quantity: 1,
-      priceAtPurchase: item.price,
-      imageSrc: item.image_url || "",
-      name: item.name,
-      prepTime: item.prepTime || 10
-    };
-
     try {
-      if (!cartSnap.exists()) {
-        await setDoc(cartRef, {
-          restaurantID: restaurantId,
-          items: [newItem]
-        });
-      } else {
-        const existingItems = cartSnap.data().items || [];
-        const existingItemIndex = existingItems.findIndex(i => i.productId === newItem.productId);
+      const idToken = await user.getIdToken();
+      const response = await fetch('${process.env.REACT_APP_API_URL}/cart/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({
+          restaurantId,
+          item
+        })
+      });
 
-        if (existingItemIndex > -1) {
-          existingItems[existingItemIndex].quantity += 1;
-          await updateDoc(cartRef, { items: existingItems });
-        } else {
-          await updateDoc(cartRef, {
-            items: arrayUnion(newItem)
-          });
-        }
+      if (!response.ok) {
+        throw new Error('Failed to add item to cart');
       }
+
       console.log("Item added to cart");
       
       // Dispatch custom event to notify of cart update

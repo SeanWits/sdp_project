@@ -1,27 +1,41 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import './Cart.css';
 import { useNavigate } from 'react-router-dom';
-import { db, doc, getDoc, updateDoc } from '../../firebase';
+import { UserContext } from '../../utils/userContext';
 
-const Cart = ({ isOpen, onClose, restaurantID, userID }) => {
+const Cart = ({ isOpen, onClose, restaurantID }) => {
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && user) {
       fetchCart();
     }
-  }, [isOpen]);
+  }, [isOpen, user]);
+
+  useEffect(() => {
+    calculateTotal(items);
+  }, [items]);
 
   const fetchCart = async () => {
-    const cartRef = doc(db, `users/${userID}/carts/${restaurantID}`);
-    const cartSnap = await getDoc(cartRef);
-    console.log("read"); // Log read operation
-    if (cartSnap.exists()) {
-      const cartData = cartSnap.data();
+    if (!user) return;
+
+    try {
+      const idToken = await user.getIdToken();
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/${restaurantID}`, {
+        headers: {
+          'Authorization': `Bearer ${idToken}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch cart');
+      }
+      const cartData = await response.json();
       setItems(cartData.items || []);
-      calculateTotal(cartData.items || []);
+    } catch (error) {
+      console.error("Error fetching cart:", error);
     }
   };
 
@@ -31,34 +45,40 @@ const Cart = ({ isOpen, onClose, restaurantID, userID }) => {
   };
 
   const updateItemQuantity = async (productId, newQuantity) => {
-    const cartRef = doc(db, `users/${userID}/carts/${restaurantID}`);
-    const cartSnap = await getDoc(cartRef);
-    console.log("read"); // Log read operation
-    if (cartSnap.exists()) {
-      const cartData = cartSnap.data();
-      const updatedItems = cartData.items.map(item =>
-        item.productId === productId ? { ...item, quantity: newQuantity } : item
-      ).filter(item => item.quantity > 0);
-
-      await updateDoc(cartRef, { items: updatedItems });
-      console.log("write"); // Log write operation
-      setItems(updatedItems);
-      calculateTotal(updatedItems);
+    try {
+      const idToken = await user.getIdToken();
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/${restaurantID}/update`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ productId, quantity: newQuantity })
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update cart');
+      }
+      await fetchCart();  // Fetch the updated cart
+    } catch (error) {
+      console.error("Error updating cart:", error);
     }
   };
 
   const deleteItem = async (productId) => {
-    const cartRef = doc(db, `users/${userID}/carts/${restaurantID}`);
-    const cartSnap = await getDoc(cartRef);
-    console.log("read"); // Log read operation
-    if (cartSnap.exists()) {
-      const cartData = cartSnap.data();
-      const updatedItems = cartData.items.filter(item => item.productId !== productId);
-
-      await updateDoc(cartRef, { items: updatedItems });
-      console.log("write"); // Log write operation
-      setItems(updatedItems);
-      calculateTotal(updatedItems);
+    try {
+      const idToken = await user.getIdToken();
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/${restaurantID}/${productId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${idToken}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete item from cart');
+      }
+      await fetchCart();  // Fetch the updated cart
+    } catch (error) {
+      console.error("Error deleting item from cart:", error);
     }
   };
 
@@ -106,6 +126,7 @@ const Cart = ({ isOpen, onClose, restaurantID, userID }) => {
           </ul>
         </div>
         <footer>
+          <p>Total: R{total.toFixed(2)}</p>
           <button className="checkout-btn" onClick={handleCheckout}>Checkout</button>
           <button className="close-btn" onClick={onClose}>Close</button>
         </footer>

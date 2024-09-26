@@ -12,7 +12,7 @@ import Restaurant from "./pages/Restaurant/Restaurant";
 import Menu from "./pages/Menu/Menu";
 import Meal from "./pages/Meal/Meal";
 import Admin from './pages/Admin/Admin';
-import RestaurantInfo from "./pages/RestaurantInfo/RestaurantInfo";
+
 import Dashboard from './pages/Dashboard/Dashboard';
 import { UserProvider } from './utils/userContext';
 import RestaurantInfo from './pages/RestaurantInfo/RestaurantInfo';
