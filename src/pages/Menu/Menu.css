@@ -9,6 +9,11 @@
 #menuFoodBanner {
   background-color: #003B5C;
   margin-left: 4%;
+  margin-right: 4%;
+  margin-bottom: 1%;
+  border-radius: 20px;
+  padding-top: 0.0157px;
+  padding-bottom: 0.0157px;
   color: white;
 }
 
