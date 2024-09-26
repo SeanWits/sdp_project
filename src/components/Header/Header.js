@@ -72,7 +72,7 @@ function Header({ disableCart = false, disableOrders = false }) {
 
     const handleOrdersClick = () => {
         if (!disableOrders) {
-            handleNavigation("/admin");
+            handleNavigation("/orders");
         }
     };
 
