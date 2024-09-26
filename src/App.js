@@ -11,6 +11,7 @@ import Login from './pages/Login/Login';
 import Restaurant from "./pages/Restaurant/Restaurant";
 import Menu from "./pages/Menu/Menu";
 import Meal from "./pages/Meal/Meal";
+import Admin from './pages/Admin/Admin';
 import RestaurantInfo from "./pages/RestaurantInfo/RestaurantInfo";
 import Dashboard from './pages/Dashboard/Dashboard';
 import { UserProvider } from './utils/userContext';
@@ -27,6 +28,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/orders" element={<Orders />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/menu/:restaurantId" element={<Menu />} />
             <Route path="/menu/:restaurantId/:itemName" element={<Meal />} />
