@@ -3,8 +3,7 @@ import {Link, useParams, useLocation} from "react-router-dom";
 import "./MenuInfo.css";
 import {db} from '../../firebase';
 import {doc, getDoc} from 'firebase/firestore';
-import Popup from "../../components/Popup/Popup";
-import {AddReview} from "../Reviews/AddReview";
+import Popup from "../Reviews/Popup/Popup";
 import {Reviews} from "../Reviews/Reviews";
 
 function MenuInfo() {
