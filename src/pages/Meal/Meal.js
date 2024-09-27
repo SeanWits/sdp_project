@@ -75,8 +75,8 @@ function Meal() {
 
         };
 
-    fetchItem();
-  }, [restaurantId, itemName, item]);
+        fetchItem();
+    }, [restaurantId, itemName, item]);
 
   const handleAddToCart = async () => {
     if (!user) {
