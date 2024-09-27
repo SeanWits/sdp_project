@@ -46,7 +46,7 @@ const Checkout = () => {
   const fetchWalletBalance = async () => {
     try {
       const idToken = await user.getIdToken();
-      const response = await fetch('${process.env.REACT_APP_API_URL}/user', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/user`, {
         headers: {
           'Authorization': `Bearer ${idToken}`
         }
@@ -135,7 +135,7 @@ const Checkout = () => {
         setWalletBalance(prevBalance => prevBalance - total);
       }
       // Redirect to a confirmation page or back to the menu
-      navigate('/');
+      navigate('/orders');
     } catch (error) {
       console.error("Error during checkout:", error);
       alert('An error occurred while processing your order: ' + error.message);

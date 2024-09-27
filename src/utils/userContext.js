@@ -9,17 +9,24 @@ export const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
       setLoading(false);
+      console.log("Auth state changed:", currentUser ? currentUser.uid : "No user");
     });
 
     return () => unsubscribe();
   }, []);
 
+  const value = {
+    user,
+    setUser,
+    loading
+  };
+
   return (
-    <UserContext.Provider value={{ user, loading }}>
-      {children}
+    <UserContext.Provider value={value}>
+      {!loading && children}
     </UserContext.Provider>
   );
 };
