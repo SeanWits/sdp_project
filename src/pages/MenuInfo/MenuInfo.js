@@ -67,7 +67,7 @@ function MenuInfo() {
                                 <li>Contact details: {restaurant.contact_details || 'N/A'}</li>
                                 <li>Telephone: {restaurant.telephone || 'N/A'}</li>
                                 <li>Email: {restaurant.email || 'N/A'}</li>
-                                <li>Rating: {restaurant.rating || 'N/A'}</li>
+                                <li>Rating: {restaurant.averageRating || 'N/A'}</li>
                             </ul>
                         </article>
                         <article>
