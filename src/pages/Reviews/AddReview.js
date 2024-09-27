@@ -105,6 +105,27 @@ export function AddReview(restaurantID, mealID) {
                     Confirm
                 </button>
             </section>
+                                ))}
+                            </div>
+                        </section>
+                    </section>
+                    <section id="add_review_text_section">
+                        <h3 id="review_text_heading">Review</h3>
+                        <textarea
+                            id={"review_text_input"}
+                            value={restaurantReview}
+                            onChange={(e) => setRestaurantReview(e.target.value)}
+                            placeholder="Enter a review"
+                        />
+                    </section>
+                    <button className={"menuButton"}
+                            type="button"
+                            onClick={addRestaurantReview}
+                            id="confirm_button"
+                    >
+                        Confirm
+                    </button>
+                </section>
         </>
     );
 }
