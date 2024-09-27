@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
+import React, {useState, useEffect, useContext} from "react";
+import {Link, useLocation, useParams, useNavigate} from "react-router-dom";
 import "./Meal.css";
-import { db } from '../../firebase';
-import { doc, getDoc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { UserContext } from '../../utils/userContext';
+import {collection, db} from '../../firebase';
+import {doc, getDoc, setDoc, updateDoc, arrayUnion, getDocs, query, where} from 'firebase/firestore';
+import {UserContext} from '../../utils/userContext';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+import Popup from "../Reviews/Popup/Popup";
+import {Reviews} from "../Reviews/Reviews";
+import {calculateAverageRating} from "../../utils/averageRating";
 
 function Meal() {
   const location = useLocation();
