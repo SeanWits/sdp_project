@@ -18,7 +18,7 @@
     padding-top: 10px;
 }
 
-article {
+.restaurant-article {
     background-color: white;
     height: 200px;
     margin-left: 3%;
@@ -47,6 +47,7 @@ ul {
 li {
     margin-bottom: 20px;
 }
+
 .menuButton {
     width: 200px;
     height: 47px;
