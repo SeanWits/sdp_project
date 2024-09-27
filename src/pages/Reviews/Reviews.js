@@ -1,10 +1,53 @@
 import "./Reviews.css";
-import Popup from "../../components/Popup/Popup";
-import React, {useState, useContext} from "react";
+import Popup from "./Popup/Popup";
+import React, {useState, useContext, useEffect} from "react";
 import {UserContext} from "../../utils/userContext";
 import {AddReview} from "./AddReview";
+import {collection, db} from "../../firebase";
+import {getDocs, where, query} from "firebase/firestore";
 
 export function Reviews(restaurantID, mealID) {
+
+    //get reviews from database
+    const [reviews, setReviews] = useState([]);
+
+    mealID = restaurantID.mealID;
+    restaurantID = restaurantID.restaurantID;
+
+    useEffect(() => {
+        const fetchReviews = async () => {
+            if (!user) {
+                console.error("User not signed in");
+                return;
+            }
+            try {
+                let reviewsRef;
+                if (mealID) {
+                    // If mealID is present, filter by productID
+                    reviewsRef = query(
+                        collection(db, `restaurants/${restaurantID}/mealReviews`),
+                        where("productID", "==", mealID)
+                    );
+                } else {
+                    reviewsRef = collection(
+                        db,
+                        `restaurants/${restaurantID}/restaurantReviews`
+                    );
+                }
+                const querySnapshot = await getDocs(reviewsRef);
+                const fetchedReviews = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()  //spread data in array
+                }));
+                setReviews(fetchedReviews);
+            } catch (error) {
+                console.error("Error fetching reviews:", error);
+            }
+        };
+        fetchReviews();
+    }, [restaurantID, mealID]);
+
+
     //pop up
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
