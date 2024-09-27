@@ -73,11 +73,12 @@ export function Reviews(restaurantID, mealID) {
                 rel="stylesheet"
                 href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
             />
-            <header className="header2" id="reviews_header">
-                <h2 id="h2_reviews" className="centre_no_margin">
-                    Reviews
-                </h2>
-                <section id="reviews_icons">
+            <article id={"reviews_page"}>
+                <header className="header2" id="reviews_header">
+                    <h2 id="h2_reviews" className="centre_no_margin">
+                        Reviews
+                    </h2>
+                    <section id="reviews_icons">
                     <span
                         className="material-symbols-outlined icon filled"
                         onClick={handleAddReview}
