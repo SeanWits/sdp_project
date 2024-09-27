@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { registerUser } from "../../utils/authFunctions";
-import { useNavigate } from "react-router-dom";
+import React, {useState} from "react";
+import {registerUser} from "../../utils/authFunctions";
+import {Link, useNavigate} from "react-router-dom";
 import UserStatus from "../../utils/userStatus";
 import "./Register.css"
 
@@ -49,7 +49,7 @@ const Register = () => {
             } else {
                 setError(
                     error.message ||
-                        "An error occurred during registration. Please try again."
+                    "An error occurred during registration. Please try again."
                 );
             }
         }
@@ -68,7 +68,7 @@ const Register = () => {
                     <section id="signup_heading_section">
                         <h2>Register</h2>
                     </section>
-                    {error && <p style={{ color: "red" }}>{error}</p>}
+                    {error && <p style={{color: "red"}}>{error}</p>}
                     <form id="form" onSubmit={handleSubmit}>
                         <input
                             type="text"
@@ -115,9 +115,9 @@ const Register = () => {
                         <button className="button" type="submit">
                             Register
                         </button>
-                        <a id="account_anchor" onClick={navigate("/login")}>
+                        <Link to={"/login"} id="account_anchor">
                             Have an account? Login
-                        </a>
+                        </Link>
                     </form>
                 </article>
             </section>
