@@ -59,7 +59,7 @@ function MenuInfo() {
                     </section>
 
                     <section id="reviewsRating">
-                        <article id="nameRes">
+                        <article id="nameRes" className={"restaurant-article"}>
                             <ul>
                                 <li>Name: {restaurant.name}</li>
                                 <li>Location: {restaurant.location}</li>
