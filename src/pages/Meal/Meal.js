@@ -21,38 +21,59 @@ function Meal() {
     const {user} = useContext(UserContext);
     const [rating, setRating] = useState(0);
 
-  useEffect(() => {
-    const fetchItem = async () => {
-      if (!item) {
-        try {
-          const restaurantDoc = await getDoc(doc(db, 'restaurants', restaurantId));
-          if (restaurantDoc.exists()) {
-            const restaurantData = restaurantDoc.data();
-            setRestaurantName(restaurantData.name);
-            const foundItem = restaurantData.categories
-              .flatMap(category => category.menu_items)
-              .find(menuItem => menuItem.name === decodeURIComponent(itemName));
-            
-            if (foundItem) {
-              setItem(foundItem);
-            } else {
-              setError("Item not found");
-            }
-          } else {
-            setError("Restaurant not found");
-          }
-        } catch (err) {
-          console.error("Error fetching item:", err);
-          setError("Failed to load item data");
-        }
-        setLoading(false);
-      }
-    };
     //pop up
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const togglePopup = () => {
         setIsPopupOpen((prev) => !prev);
     };
+    useEffect(() => {
+        const fetchItem = async () => {
+            if (!item) {
+                try {
+                    const restaurantDoc = await getDoc(doc(db, 'restaurants', restaurantId));
+                    if (restaurantDoc.exists()) {
+                        const restaurantData = restaurantDoc.data();
+                        setRestaurantName(restaurantData.name);
+                        const foundItem = restaurantData.categories
+                            .flatMap(category => category.menu_items)
+                            .find(menuItem => menuItem.name === decodeURIComponent(itemName));
+
+                        if (foundItem) {
+                            setItem(foundItem);
+                        } else {
+                            setError("Item not found");
+                        }
+                    } else {
+                        setError("Restaurant not found");
+                    }
+                } catch (err) {
+                    console.error("Error fetching item:", err);
+                    setError("Failed to load item data");
+                }
+                setLoading(false);
+            }
+
+            // Fetch average rating for the meal
+            try {
+                const mealReviewCollection = query(
+                    collection(db, `restaurants/${restaurantId}/mealReviews`),
+                    where("productID", "==", item.productID)
+                );
+                const mealReviewSnapshots = await getDocs(mealReviewCollection);
+
+                // Get the ratings for each review and calculate the average
+                const ratings = mealReviewSnapshots.docs.map(doc => doc.data().rating);
+                const averageRating = ratings.length > 0
+                    ? ratings.reduce((total, rating) => total + rating, 0) / ratings.length
+                    : 0;
+
+                setRating(averageRating);  // Set the calculated average rating
+            } catch (error) {
+                console.error("Error fetching reviews:", error);
+                setRating(0);  // Set default rating if there was an error
+            }
+
+        };
 
     fetchItem();
   }, [restaurantId, itemName, item]);
@@ -136,16 +157,17 @@ function Meal() {
       </section>
       <div className="separator-line"></div>
 
-      <button className="menuButton" id="menuInfoButton">
-        Click For Review
-      </button>
-    </div>
-    <Footer/>
-    </>
-  );
+                <button className="menuButton" id="menuInfoButton" onClick={togglePopup}>
+                    Click For Review
+                </button>
+
                 <Popup isOpen={isPopupOpen} onClose={togglePopup}>
                     <Reviews restaurantID={restaurantId} mealID={item.productID}/>
                 </Popup>
+            </div>
+            <Footer/>
+        </>
+    );
 }
 
 export default Meal;
