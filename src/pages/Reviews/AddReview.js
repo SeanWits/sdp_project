@@ -84,27 +84,6 @@ export function AddReview(restaurantID, mealID) {
                                     >
                                     star
                                 </span>
-                            ))}
-                        </div>
-                    </section>
-                </section>
-                <section id="add_review_text_section">
-                    <h3 id="review_text_heading">Review</h3>
-                    <input
-                        type="text"
-                        value={restaurantReview}
-                        onChange={(e) => setRestaurantReview(e.target.value)}
-                        placeholder="Enter a review"
-                    />
-                </section>
-                <button
-                    type="button"
-                    onClick={addRestaurantReview}
-                    id="confirm_button"
-                >
-                    Confirm
-                </button>
-            </section>
                                 ))}
                             </div>
                         </section>
@@ -126,6 +105,7 @@ export function AddReview(restaurantID, mealID) {
                         Confirm
                     </button>
                 </section>
+            </article>
         </>
     );
 }
