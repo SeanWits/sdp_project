@@ -51,40 +51,47 @@ export function Reviews(restaurantID, mealID) {
                     <span className="material-symbols-outlined icon filled">
                         swap_vertical_circle
                     </span>
-                </section>
-            </header>
-            <section id="review_section">
-                <section id="rating_section">
-                    <section
-                        className="flex-direction-row"
-                        id="rating_and_date_section"
-                    >
-                        <h3 className="centre_no_margin">Rating:</h3>
-                        <p id="rating_paragraph"></p>
                     </section>
-                    <section
-                        className="flex-direction-row"
-                        id="date_posted_section"
-                    >
-                        <h3 className="centre_no_margin">Date Posted:</h3>
-                        <p id="date_posted_paragraph"></p>
-                    </section>
+                </header>
+                <section id="review_section">
+                    {reviews.map((review) => (
+                        <div key={review.id} className="review-item">
+                            <section id="rating_section">
+                                <section
+                                    className="flex-direction-row"
+                                    id="rating_and_date_section"
+                                >
+                                    <h3 className="centre_no_margin">Rating:</h3>
+                                    <p id="rating_paragraph">{review.rating}</p>
+                                </section>
+                                <section
+                                    className="flex-direction-row"
+                                    id="date_posted_section"
+                                >
+                                    <h3 className="centre_no_margin">Date Posted:</h3>
+                                    <p id="date_posted_paragraph">
+                                        {review.dateCreated ? new Date(review.dateCreated.seconds * 1000).toLocaleDateString() : 'N/A'}
+                                    </p>
+                                </section>
+                            </section>
+                            <section id="review_text_section">
+                                <section id="review_text_heading_section">
+                                    <h3
+                                        className="centre_no_margin"
+                                        id="review_text_heading"
+                                    >
+                                        Review
+                                    </h3>
+                                </section>
+                                <p id="review_paragraph">{review.review}</p>
+                            </section>
+                        </div>
+                    ))}
                 </section>
-                <section id="review_text_section">
-                    <section id="review_text_heading_section">
-                        <h3
-                            className="centre_no_margin"
-                            id="review_text_heading"
-                        >
-                            Review
-                        </h3>
-                    </section>
-                    <p id="review_paragraph">A review</p>
-                </section>
-            </section>
-            <Popup isOpen={isPopupOpen} onClose={togglePopup}>
-                <AddReview restaurantID={restaurantID.restaurantID}/>
-            </Popup>
+                <Popup isOpen={isPopupOpen} onClose={togglePopup}>
+                    <AddReview restaurantID={restaurantID} mealID={mealID}/>
+                </Popup>
+            </article>
         </>
     );
 }
