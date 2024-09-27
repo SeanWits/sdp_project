@@ -20,15 +20,14 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
 
-// Wrap setPersistence in a try-catch block
-try {
-  setPersistence(auth, browserLocalPersistence)
-    .catch((error) => {
-      console.error("Error setting persistence:", error);
-    });
-} catch (error) {
-  console.error("Error setting persistence:", error);
-}
+// Set persistence
+setPersistence(auth, browserLocalPersistence)
+  .then(() => {
+    console.log("Persistence set successfully");
+  })
+  .catch((error) => {
+    console.error("Error setting persistence:", error);
+  });
 
 const db = getFirestore(app);
 const imgDB = getStorage(app);
