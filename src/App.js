@@ -12,7 +12,9 @@ import Restaurant from "./pages/Restaurant/Restaurant";
 import Menu from "./pages/Menu/Menu";
 import Meal from "./pages/Meal/Meal";
 import Admin from './pages/Admin/Admin';
-
+import ReservationPage from './pages/Reservation/ReservationPage/ReservationPage';
+import OrderSummaryPage from './pages/Reservation/OrderSummaryPage/OrderSummaryPage';
+import HistoryPage from './pages/Reservation/HistoryPage/HistoryPage';
 import Dashboard from './pages/Dashboard/Dashboard';
 import { UserProvider } from './utils/userContext';
 import RestaurantInfo from './pages/RestaurantInfo/RestaurantInfo';
@@ -33,6 +35,9 @@ function App() {
             <Route path="/menu/:restaurantId" element={<Menu />} />
             <Route path="/menu/:restaurantId/:itemName" element={<Meal />} />
             <Route path="/restaurant-info/:id" element={<RestaurantInfo />} />
+            <Route path="/reservation/:id" element={<ReservationPage />} />
+            <Route path="/order-summary" element={<OrderSummaryPage />} />
+            <Route path="/history" element={<HistoryPage />} />
           </Routes>
         </div>
       </Router>

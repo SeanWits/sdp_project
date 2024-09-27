@@ -12,7 +12,7 @@ function Restaurant() {
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
-        const response = await fetch('${process.env.REACT_APP_API_URL}/restaurants');
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/restaurants`);
         if (!response.ok) {
           throw new Error('Failed to fetch restaurants');
         }
@@ -55,6 +55,11 @@ function Restaurant() {
                   <Link to={`/menu/${restaurant.id}`} state={{ restaurant }}>
                     <button className="menuButton">Menu</button>
                   </Link>
+                </li>
+                <li>
+                <Link to={`/reservation/${restaurant.id}`} state={{ restaurant }}>
+                  <button className="menuButton">Reservation</button>
+                </Link>
                 </li>
                 <li>
                   <Link to={`/restaurant-info/${restaurant.id}`} state={{ restaurant }}>
