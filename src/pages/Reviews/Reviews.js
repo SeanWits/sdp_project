@@ -59,7 +59,7 @@ export function Reviews(restaurantID, mealID) {
     };
 
     //if user not logged in
-    const handleAddReview = () => {
+    const handleReview = () => {
         if (!user) {
             alert("Please log in to leave a review");
         } else {
