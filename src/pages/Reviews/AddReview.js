@@ -9,10 +9,8 @@ export function AddReview(restaurantID, mealID) {
 
     const {user} = useContext(UserContext);
 
-    const [mode, setMode] = useState("restaurant");
-    if (mealID) {
-        setMode("meal");
-    }
+    mealID = restaurantID.mealID;
+    restaurantID = restaurantID.restaurantID;
 
     const addRestaurantReview = async () => {
         if (!user) {
