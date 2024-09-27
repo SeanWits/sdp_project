@@ -31,8 +31,16 @@ export function AddReview(restaurantID, mealID) {
                 rating: restaurantRating,
                 review: restaurantReview,
                 dateCreated: serverTimestamp(),
-            });
-            console.log("Restaurant review added successfully");
+            };
+
+            // Add user_Id and productID only if mealID is not null
+            if (mealID) {
+                reviewData.user_Id = user.uid;
+                reviewData.productID = mealID;
+            }
+
+            await setDoc(reviewRef, reviewData);
+            alert(`${mealID ? "Meal" : "Restaurant"} review added successfully`);
             // Reset form fields
             setRestaurantRating(0);
             setRestaurantReview("");
