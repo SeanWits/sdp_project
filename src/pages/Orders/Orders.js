@@ -24,7 +24,7 @@ const Orders = () => {
   const fetchOrders = async () => {
     try {
       const idToken = await user.getIdToken();
-      const response = await fetch('${process.env.REACT_APP_API_URL}/orders', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/orders`, {
         headers: {
           'Authorization': `Bearer ${idToken}`
         }

@@ -1,27 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db, collection, query, where, getDocs, deleteDoc, doc } from '../../../firebase'; // Firebase imports
-import { styles } from '../styles'; // Importing updated styles
+import { UserContext } from '../../../utils/userContext';
+import { styles } from '../styles';
 
 const HistoryPage = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
     fetchReservations();
-  }, []);
+  }, [user, navigate]);
 
   const fetchReservations = async () => {
     setLoading(true);
     try {
-      const userId = "vutshila"; // Replace with actual user ID
-      const q = query(collection(db, "Reservation"), where("userId", "==", userId));
-      const querySnapshot = await getDocs(q);
-      const reservationsData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const idToken = await user.getIdToken();
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/reservations`, {
+        headers: {
+          'Authorization': `Bearer ${idToken}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch reservations');
+      }
+
+      const reservationsData = await response.json();
       setReservations(reservationsData);
     } catch (error) {
       console.error("Error fetching reservations: ", error);
@@ -32,13 +42,24 @@ const HistoryPage = () => {
 
   const handleCancel = async (reservationId, reservationDate) => {
     const now = new Date();
-    const reservationTime = reservationDate.toDate();
+    const reservationTime = new Date(reservationDate);
     const timeDifference = reservationTime.getTime() - now.getTime();
     const hoursDifference = timeDifference / (1000 * 3600);
 
     if (hoursDifference > 1) {
       try {
-        await deleteDoc(doc(db, "Reservation", reservationId));
+        const idToken = await user.getIdToken();
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/reservations/${reservationId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${idToken}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to cancel reservation');
+        }
+
         alert("Reservation cancelled successfully.");
         fetchReservations(); // Refresh the list
       } catch (error) {
@@ -52,7 +73,7 @@ const HistoryPage = () => {
 
   const getReservationStatus = (reservationDate) => {
     const now = new Date();
-    const reservationTime = reservationDate.toDate();
+    const reservationTime = new Date(reservationDate);
     if (now > reservationTime) {
       return "Attended";
     } else {
@@ -60,6 +81,19 @@ const HistoryPage = () => {
       const hoursDifference = timeDifference / (1000 * 3600);
       return hoursDifference > 1 ? "Upcoming" : "Imminent";
     }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Not specified';
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
   };
 
   return (
@@ -75,7 +109,7 @@ const HistoryPage = () => {
             {reservations.map((reservation) => (
               <div key={reservation.id} style={styles.reservationItem}>
                 <p><strong>Restaurant:</strong> {reservation.restaurantName}</p>
-                <p><strong>Date:</strong> {reservation.date.toDate().toLocaleString()}</p>
+                <p><strong>Date:</strong> {formatDate(reservation.date)}</p>
                 <p><strong>Number of People:</strong> {reservation.numberOfPeople}</p>
                 <p><strong>Status:</strong> {getReservationStatus(reservation.date)}</p>
                 {getReservationStatus(reservation.date) === "Upcoming" && (
