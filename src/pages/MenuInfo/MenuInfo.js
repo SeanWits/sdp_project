@@ -83,7 +83,7 @@ function MenuInfo() {
                 Click For Review
             </button>
             <Popup isOpen={isPopupOpen} onClose={togglePopup}>
-                <Reviews restaurantID={restaurant.id}/>
+                <Reviews restaurantID={restaurant.id} mealID={null}/>
             </Popup>
         </div>
     );
