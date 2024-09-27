@@ -19,7 +19,7 @@ function Meal() {
     const fetchItem = async () => {
       if (!item) {
         try {
-          const response = await fetch(`https://your-firebase-function-url.com/restaurant/${restaurantId}/menu-item/${encodeURIComponent(itemName)}`);
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/${restaurantId}/menu-item/${encodeURIComponent(itemName)}`);
           if (!response.ok) {
             throw new Error('Failed to fetch menu item');
           }
@@ -46,7 +46,7 @@ function Meal() {
 
     try {
       const idToken = await user.getIdToken();
-      const response = await fetch('${process.env.REACT_APP_API_URL}/cart/add', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

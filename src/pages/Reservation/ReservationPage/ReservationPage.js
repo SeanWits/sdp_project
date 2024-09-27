@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { db, collection, addDoc, serverTimestamp } from '../../../firebase';
+import { UserContext } from '../../../utils/userContext';
 import { styles } from '../styles';
 
 const ReservationPage = () => {
@@ -11,11 +11,46 @@ const ReservationPage = () => {
   const { id } = useParams();
   const location = useLocation();
   const restaurant = location.state?.restaurant;
+  const { user } = useContext(UserContext);
+  const checkPerformed = useRef(false);
 
   useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('date').setAttribute('min', today);
-  }, []);
+    
+    if (!checkPerformed.current) {
+      checkActiveReservation();
+      checkPerformed.current = true;
+    }
+  }, []); // Empty dependency array
+
+  const checkActiveReservation = async () => {
+    try {
+      const idToken = await user.getIdToken();
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/reservations/active`, {
+        headers: {
+          'Authorization': `Bearer ${idToken}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to check active reservations');
+      }
+
+      const { hasActiveReservation } = await response.json();
+      if (hasActiveReservation) {
+        alert("You have an active reservation");
+        navigate('/history');
+      }
+    } catch (error) {
+      console.error("Error checking active reservations: ", error);
+      alert("Failed to check active reservations. Please try again.");
+    }
+  };
 
   const generateTimeSlots = (open, close) => {
     const timeSlots = [];
@@ -42,8 +77,8 @@ const ReservationPage = () => {
   const timeSlots = restaurant ? generateTimeSlots(restaurant.opening_time, restaurant.closing_time) : [];
 
   const handleConfirm = async () => {
-    if (!date) {
-      alert('Please select a date.');
+    if (!date || !timeSlot) {
+      alert('Please select a date and time slot.');
       return;
     }
 
@@ -55,15 +90,27 @@ const ReservationPage = () => {
     const reservationData = {
       restaurantId: id,
       restaurantName: restaurant.name,
-      date: new Date(`${date}T${timeSlot}`),
-      userId: "vutshila", // Hardcoded User ID, replace with dynamic value if available
+      date: `${date}T${timeSlot}`,
       numberOfPeople: people,
-      createdAt: serverTimestamp(),
     };
 
     try {
-      const reservationRef = await addDoc(collection(db, "Reservation"), reservationData);
-      localStorage.setItem('reservationId', reservationRef.id);
+      const idToken = await user.getIdToken();
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/reservations`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(reservationData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create reservation');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('reservationId', data.reservationId);
       navigate('/order-summary');
     } catch (error) {
       console.error("Error adding reservation: ", error);

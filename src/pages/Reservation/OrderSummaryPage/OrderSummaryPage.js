@@ -1,31 +1,40 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db, doc, getDoc } from '../../../firebase'; // Import necessary Firebase functions
+import { UserContext } from '../../../utils/userContext';
 import { styles } from '../styles';
 
 const OrderSummaryPage = () => {
   const [data, setData] = useState({});
   const navigate = useNavigate();
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
     const fetchReservation = async () => {
       const reservationId = localStorage.getItem('reservationId');
       if (!reservationId) {
-        // If no reservationId, redirect to the home page
         navigate('/');
         return;
       }
 
       try {
-        // Fetch the reservation document from Firestore using the reservationId
-        const reservationDoc = await getDoc(doc(db, 'Reservation', reservationId));
-        if (reservationDoc.exists()) {
-          // Set the data to state
-          setData(reservationDoc.data());
-        } else {
-          console.error('No such document!');
-          navigate('/');
+        const idToken = await user.getIdToken();
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/reservations/${reservationId}`, {
+          headers: {
+            'Authorization': `Bearer ${idToken}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch reservation');
         }
+
+        const reservationData = await response.json();
+        setData(reservationData);
       } catch (error) {
         console.error('Error fetching reservation: ', error);
         navigate('/');
@@ -33,21 +42,24 @@ const OrderSummaryPage = () => {
     };
 
     fetchReservation();
-  }, [navigate]);
+  }, [user, navigate]);
 
   const handleDone = () => {
-    console.log('handleDone called');
     localStorage.removeItem('reservationId');
     navigate('/history');
   };
 
-  const formatDate = (date) => {
-    if (date && date instanceof Date) {
-      return date.toLocaleString();
-    } else if (date && date.toDate instanceof Function) {
-      return date.toDate().toLocaleString();
-    }
-    return 'Date not available';
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Not specified';
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
   };
 
   return (

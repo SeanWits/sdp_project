@@ -25,7 +25,7 @@ const Dashboard = () => {
   const fetchUserData = async () => {
     try {
       const idToken = await user.getIdToken();
-      const response = await fetch('${process.env.REACT_APP_API_URL}/user', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/user`, {
         headers: {
           'Authorization': `Bearer ${idToken}`
         }
@@ -45,7 +45,7 @@ const Dashboard = () => {
 
   const fetchRecentTransactions = async (idToken) => {
     try {
-      const response = await fetch('${process.env.REACT_APP_API_URL}/orders?limit=3', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/orders?limit=3`, {
         headers: {
           'Authorization': `Bearer ${idToken}`
         }
@@ -69,7 +69,7 @@ const Dashboard = () => {
 
     try {
       const idToken = await user.getIdToken();
-      const response = await fetch('${process.env.REACT_APP_API_URL}/user/update-wallet', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/user/update-wallet`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${idToken}`,
