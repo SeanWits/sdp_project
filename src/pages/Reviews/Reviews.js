@@ -57,11 +57,6 @@ export function Reviews(restaurantID, mealID) {
     const togglePopup = () => {
         setIsPopupOpen((prev) => !prev);
     };
-    
-    const [mode, setMode] = useState("restaurant");
-    if (mealID) {
-        setMode("meal");
-    }
 
     //if user not logged in
     const handleAddReview = () => {
