@@ -85,10 +85,10 @@ export function Reviews(restaurantID, mealID) {
                     >
                         add_box
                     </span>
-                    <span className="material-symbols-outlined icon filled">
+                        <span className="material-symbols-outlined icon filled">
                         filter_alt
                     </span>
-                    <span className="material-symbols-outlined icon filled">
+                        <span className="material-symbols-outlined icon filled">
                         swap_vertical_circle
                     </span>
                     </section>
