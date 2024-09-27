@@ -66,6 +66,7 @@ export function Reviews(restaurantID, mealID) {
             togglePopup();
         }
     };
+
     return (
         <>
             <link
