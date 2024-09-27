@@ -18,11 +18,16 @@ export function AddReview(restaurantID, mealID) {
             return;
         }
         try {
-            const reviewRef = doc(
-                db,
-                `restaurants/${restaurantID.restaurantID}/restaurantReviews/${user.uid}`
-            );
-            await setDoc(reviewRef, {
+            let reviewRef;
+            if (mealID) {
+                // For meal reviews, create a new document with a unique ID
+                let autoID = doc(collection(db, `restaurants/${restaurantID}/mealReviews`)).id;
+                reviewRef = doc(db, `restaurants/${restaurantID}/mealReviews/${autoID}`);
+            } else {
+                // For restaurant reviews, use the user's ID
+                reviewRef = doc(db, `restaurants/${restaurantID}/restaurantReviews/${user.uid}`);
+            }
+            const reviewData = {
                 rating: restaurantRating,
                 review: restaurantReview,
                 dateCreated: serverTimestamp(),
