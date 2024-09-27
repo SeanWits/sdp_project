@@ -11,14 +11,15 @@ import {Reviews} from "../Reviews/Reviews";
 import {calculateAverageRating} from "../../utils/averageRating";
 
 function Meal() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { restaurantId, itemName } = useParams();
-  const [item, setItem] = useState(location.state?.item || null);
-  const [restaurantName, setRestaurantName] = useState(location.state?.restaurantName || "Restaurant/Dining Hall");
-  const [loading, setLoading] = useState(!item);
-  const [error, setError] = useState(null);
-  const { user } = useContext(UserContext);
+    const location = useLocation();
+    const navigate = useNavigate();
+    const {restaurantId, itemName} = useParams();
+    const [item, setItem] = useState(location.state?.item || null);
+    const [restaurantName, setRestaurantName] = useState(location.state?.restaurantName || "Restaurant/Dining Hall");
+    const [loading, setLoading] = useState(!item);
+    const [error, setError] = useState(null);
+    const {user} = useContext(UserContext);
+    const [rating, setRating] = useState(0);
 
   useEffect(() => {
     const fetchItem = async () => {
