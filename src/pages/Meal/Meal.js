@@ -48,6 +48,11 @@ function Meal() {
         setLoading(false);
       }
     };
+    //pop up
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const togglePopup = () => {
+        setIsPopupOpen((prev) => !prev);
+    };
 
     fetchItem();
   }, [restaurantId, itemName, item]);
@@ -138,6 +143,9 @@ function Meal() {
     <Footer/>
     </>
   );
+                <Popup isOpen={isPopupOpen} onClose={togglePopup}>
+                    <Reviews restaurantID={restaurantId} mealID={item.productID}/>
+                </Popup>
 }
 
 export default Meal;
