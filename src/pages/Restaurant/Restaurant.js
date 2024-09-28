@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./Restaurant.css";
-import { db } from '../../firebase';
-import { collection, getDocs } from 'firebase/firestore';
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 
@@ -14,12 +12,11 @@ function Restaurant() {
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
-        const restaurantsCollection = collection(db, 'restaurants');
-        const restaurantsSnapshot = await getDocs(restaurantsCollection);
-        const restaurantsList = restaurantsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/restaurants`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch restaurants');
+        }
+        const restaurantsList = await response.json();
         setRestaurants(restaurantsList);
         setLoading(false);
       } catch (err) {
@@ -58,6 +55,11 @@ function Restaurant() {
                   <Link to={`/menu/${restaurant.id}`} state={{ restaurant }}>
                     <button className="menuButton">Menu</button>
                   </Link>
+                </li>
+                <li>
+                <Link to={`/reservation/${restaurant.id}`} state={{ restaurant }}>
+                  <button className="menuButton">Reservation</button>
+                </Link>
                 </li>
                 <li>
                   <Link to={`/restaurant-info/${restaurant.id}`} state={{ restaurant }}>

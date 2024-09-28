@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
-import "./MenuInfo.css";
-import { db } from '../../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import "./RestaurantInfo.css";
 
-function MenuInfo() {
+function RestaurantInfo() {
   const { id } = useParams();
   const location = useLocation();
   const [restaurant, setRestaurant] = useState(location.state?.restaurant || null);
@@ -15,12 +13,12 @@ function MenuInfo() {
     const fetchRestaurant = async () => {
       if (!restaurant) {
         try {
-          const restaurantDoc = await getDoc(doc(db, 'restaurants', id));
-          if (restaurantDoc.exists()) {
-            setRestaurant({ id: restaurantDoc.id, ...restaurantDoc.data() });
-          } else {
-            setError("Restaurant not found");
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/restaurant/${id}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch restaurant data');
           }
+          const restaurantData = await response.json();
+          setRestaurant(restaurantData);
         } catch (err) {
           console.error("Error fetching restaurant:", err);
           setError("Failed to load restaurant data");
@@ -70,11 +68,11 @@ function MenuInfo() {
         </section>
       </section>
 
-      <button className="menuButton" id="menuInfoButton">
+      <button className="menuButton" id="RestaurantInfoButton">
         Click For Review
       </button>
     </div>
   );
 }
 
-export default MenuInfo;
+export default RestaurantInfo;

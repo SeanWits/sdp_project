@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import './Checkout.css';
-import { db, doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from '../../firebase';
 import { UserContext } from '../../utils/userContext';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
-import {Link} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -12,36 +11,55 @@ const Checkout = () => {
   const [selectedPayment, setSelectedPayment] = useState('wallet');
   const [walletBalance, setWalletBalance] = useState(0);
   const [voucherCode, setVoucherCode] = useState('');
-
   const { user } = useContext(UserContext);
+  const navigate = useNavigate();
   const restaurantID = "rest001";
 
   useEffect(() => {
-    if (user) {
-      fetchCart();
-      fetchWalletBalance();
+    if (!user) {
+      navigate('/login');
+      return;
     }
-  }, [user]);
+    fetchCart();
+    fetchWalletBalance();
+  }, [user, navigate]);
 
   const fetchCart = async () => {
-    const cartRef = doc(db, `users/${user.uid}/carts/${restaurantID}`);
-    const cartSnap = await getDoc(cartRef);
-    if (cartSnap.exists()) {
-      const cartData = cartSnap.data();
+    try {
+      const idToken = await user.getIdToken();
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/${restaurantID}`, {
+        headers: {
+          'Authorization': `Bearer ${idToken}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch cart');
+      }
+      const cartData = await response.json();
       setCartItems(cartData.items || []);
       calculateTotal(cartData.items || []);
+    } catch (error) {
+      console.error("Error fetching cart:", error);
     }
   };
 
   const fetchWalletBalance = async () => {
-    const userRef = doc(db, 'users', user.uid);
-    const userSnap = await getDoc(userRef);
-    if (userSnap.exists()) {
-      const userData = userSnap.data();
+    try {
+      const idToken = await user.getIdToken();
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/user`, {
+        headers: {
+          'Authorization': `Bearer ${idToken}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+      const userData = await response.json();
       setWalletBalance(userData.wallet || 0);
+    } catch (error) {
+      console.error("Error fetching wallet balance:", error);
     }
   };
-
 
   const calculateTotal = (items) => {
     const newTotal = items.reduce((sum, item) => sum + item.priceAtPurchase * item.quantity, 0);
@@ -57,21 +75,27 @@ const Checkout = () => {
   };
 
   const applyVoucher = () => {
-    // implement the logic for apply the voucher
+    // Implement voucher logic here
     console.log('Applying voucher:', voucherCode);
-    // For now, log the voucher code
   };
 
   const deleteItem = async (productId) => {
-    const cartRef = doc(db, `users/${user.uid}/carts/${restaurantID}`);
-    const cartSnap = await getDoc(cartRef);
-    if (cartSnap.exists()) {
-      const cartData = cartSnap.data();
-      const updatedItems = cartData.items.filter(item => item.productId !== productId);
-
-      await updateDoc(cartRef, { items: updatedItems });
-      setCartItems(updatedItems);
-      calculateTotal(updatedItems);
+    try {
+      const idToken = await user.getIdToken();
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/${restaurantID}/${productId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${idToken}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to remove item from cart');
+      }
+      const updatedCart = await response.json();
+      setCartItems(updatedCart.items || []);
+      calculateTotal(updatedCart.items || []);
+    } catch (error) {
+      console.error("Error removing item from cart:", error);
     }
   };
 
@@ -82,61 +106,51 @@ const Checkout = () => {
     }
 
     try {
-      // Create new order document
-      const orderRef = await addDoc(collection(db, "orders"), {
-        userId: user.uid,
-        restaurantId: restaurantID,
-        status: "ongoing",
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-        completedAt: null,
-        items: cartItems.map(item => ({
-          productId: item.productId,
-          name: item.name,
-          quantity: item.quantity,
-          priceAtPurchase: item.priceAtPurchase,
-          imageSrc: item.imageSrc,
-          prepTime: item.prepTime
-        })),
-        totalAmount: total,
-        paymentMethod: selectedPayment,
-        voucherCode: selectedPayment === 'voucher' ? voucherCode : null,
-        notes: "" // You could add a notes field in your UI if needed
+      const idToken = await user.getIdToken();
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/checkout`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          restaurantId: restaurantID,
+          items: cartItems,
+          totalAmount: total,
+          paymentMethod: selectedPayment,
+          voucherCode: selectedPayment === 'voucher' ? voucherCode : null
+        })
       });
-
-      console.log("Order created with ID: ", orderRef.id);
-
-      // Update user's wallet balance if paid from wallet
-      if (selectedPayment === 'wallet') {
-        const userRef = doc(db, 'users', user.uid);
-        await updateDoc(userRef, {
-          wallet: walletBalance - total
-        });
-        setWalletBalance(walletBalance - total);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Checkout failed');
       }
-
-      // Clear the cart
-      const cartRef = doc(db, `users/${user.uid}/carts/${restaurantID}`);
-      await updateDoc(cartRef, { items: [] });
+      const result = await response.json();
+      alert('Purchase confirmed! Order ID: ' + result.orderId);
+      // Clear local cart state
       setCartItems([]);
       setTotal(0);
-
-      alert('Purchase confirmed! Order ID: ' + orderRef.id);
-      // redirect to the next page here
+      // Update wallet balance if paid from wallet
+      if (selectedPayment === 'wallet') {
+        setWalletBalance(prevBalance => prevBalance - total);
+      }
+      // Redirect to a confirmation page or back to the menu
+      navigate('/orders');
     } catch (error) {
-      console.error("Error creating order: ", error);
-      alert('An error occurred while processing your order. Please try again.');
+      console.error("Error during checkout:", error);
+      alert('An error occurred while processing your order: ' + error.message);
     }
   };
 
+  
   return (
     <>
-    <Header disableCart={true} disableOrders={false}/>
-    <header className="checkoutHeader">
+      <Header disableCart={true} disableOrders={false}/>
+      <header className="checkoutHeader">
         <Link to="/" className="back-arrow-checkout">&#8592;</Link>
         <h1 className="checkoutHeading">Checkout</h1>
       </header>
-    <main className="checkout-container">
+      <main className="checkout-container">
       
       <section className="order-summary">
         <h2>Order Summary</h2>
