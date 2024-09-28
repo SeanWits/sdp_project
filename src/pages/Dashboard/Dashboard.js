@@ -5,6 +5,7 @@ import { logoutUser } from '../../utils/authFunctions';
 import './Dashboard.css';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+import LoadModal from '../../components/LoadModal/LoadModal'; // Add this import
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
@@ -24,6 +25,7 @@ const Dashboard = () => {
 
   const fetchUserData = async () => {
     try {
+      setLoading(true);
       const idToken = await user.getIdToken();
       const response = await fetch(`${process.env.REACT_APP_API_URL}/user`, {
         headers: {
@@ -36,10 +38,10 @@ const Dashboard = () => {
       const userData = await response.json();
       setUserData(userData);
       await fetchRecentTransactions(idToken);
-      setLoading(false);
+      setTimeout(() => setLoading(false), 200);
     } catch (err) {
       console.error("Error fetching user data:", err);
-      setLoading(false);
+      setTimeout(() => setLoading(false), 200);
     }
   };
 
@@ -105,14 +107,11 @@ const Dashboard = () => {
       alert('Failed to log out. Please try again.');
     }
   };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
+  
   return (
     <>
       <Header/>
+      <LoadModal loading={loading} />
       <header className="orderHeader">
         <Link to="/" className="back-arrow-dash">&#8592;</Link>
         <h1 className="dashHeading">Meal Credit Dashboard</h1>

@@ -4,6 +4,7 @@ import { UserContext } from '../../utils/userContext';
 import OrderCard from '../../components/OrderCard/OrderCard';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+import LoadModal from '../../components/LoadModal/LoadModal'; // Add this import
 import './Orders.css';
 
 const Orders = () => {
@@ -23,6 +24,7 @@ const Orders = () => {
 
   const fetchOrders = async () => {
     try {
+      setLoading(true);
       const idToken = await user.getIdToken();
       const response = await fetch(`${process.env.REACT_APP_API_URL}/orders`, {
         headers: {
@@ -34,11 +36,11 @@ const Orders = () => {
       }
       const ordersData = await response.json();
       setOrders(ordersData);
-      setLoading(false);
+      setTimeout(() => setLoading(false), 200); // 2-second delay before hiding the loader
     } catch (err) {
       console.error("Error fetching orders:", err);
       setError("Failed to load orders. Please try again.");
-      setLoading(false);
+      setTimeout(() => setLoading(false), 200); // 2-second delay even on error
     }
   };
 
@@ -67,12 +69,12 @@ const Orders = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
     <>
       <Header disableCart={true} disableOrders={true}/>
+      <LoadModal loading={loading} />
       <header className="orderHeader">
         <Link to="/" className="back-arrow-orders">&#8592;</Link>
         <h1 className="orderHeading">Orders</h1>

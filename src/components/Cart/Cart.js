@@ -2,10 +2,12 @@ import React, { useEffect, useState, useContext } from 'react';
 import './Cart.css';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../utils/userContext';
+import LoadModal from '../../components/LoadModal/LoadModal'; // Add this import
 
 const Cart = ({ isOpen, onClose, restaurantID }) => {
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { user } = useContext(UserContext);
 
@@ -23,6 +25,7 @@ const Cart = ({ isOpen, onClose, restaurantID }) => {
     if (!user) return;
 
     try {
+      setLoading(true);
       const idToken = await user.getIdToken();
       const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/${restaurantID}`, {
         headers: {
@@ -34,8 +37,10 @@ const Cart = ({ isOpen, onClose, restaurantID }) => {
       }
       const cartData = await response.json();
       setItems(cartData.items || []);
+      setTimeout(() => setLoading(false), 100);
     } catch (error) {
       console.error("Error fetching cart:", error);
+      setTimeout(() => setLoading(false), 100);
     }
   };
 
@@ -91,6 +96,7 @@ const Cart = ({ isOpen, onClose, restaurantID }) => {
 
   return (
     <aside className="cart-modal-overlay" aria-label="Shopping Cart">
+      <LoadModal loading={loading} />
       <section className="cart-modal">
         <header>
           <h2>Cart</h2>
