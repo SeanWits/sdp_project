@@ -8,12 +8,6 @@ jest.mock('../../firebase', () => ({
   db: {},
 }));
 
-const mockGetDoc = jest.fn();
-jest.mock('firebase/firestore', () => ({
-  doc: jest.fn(),
-  getDoc: () => mockGetDoc(),
-}));
-
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -24,6 +18,9 @@ jest.mock('react-router-dom', () => ({
 jest.mock('../Cart/Cart', () => ({ isOpen, onClose }) => 
   isOpen ? <div data-testid="mock-cart" onClick={onClose}>Mock Cart</div> : null
 );
+
+// Mock fetch globally
+global.fetch = jest.fn();
 
 const renderHeader = (user = null, props = {}) => {
   return render(
@@ -38,9 +35,10 @@ const renderHeader = (user = null, props = {}) => {
 describe('Header Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockGetDoc.mockResolvedValue({
-      exists: () => true,
-      data: () => ({ items: [{ quantity: 2 }, { quantity: 3 }] }),
+    // Mock successful fetch response
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ items: [{ quantity: 2 }, { quantity: 3 }] }),
     });
   });
 
@@ -50,18 +48,35 @@ describe('Header Component', () => {
   });
 
   test('fetches cart items when user is logged in', async () => {
+    const mockUser = { 
+      uid: 'testUser',
+      getIdToken: jest.fn().mockResolvedValue('mock-token')
+    };
+
     await act(async () => {
-      renderHeader({ uid: 'testUser' });
+      renderHeader(mockUser);
     });
 
     await waitFor(() => {
-      expect(mockGetDoc).toHaveBeenCalled();
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/cart/rest001'),
+        expect.objectContaining({
+          headers: {
+            'Authorization': 'Bearer mock-token'
+          }
+        })
+      );
     });
   });
 
   test('updates cart item count', async () => {
+    const mockUser = { 
+      uid: 'testUser',
+      getIdToken: jest.fn().mockResolvedValue('mock-token')
+    };
+
     await act(async () => {
-      renderHeader({ uid: 'testUser' });
+      renderHeader(mockUser);
     });
 
     await waitFor(() => {
@@ -70,8 +85,9 @@ describe('Header Component', () => {
   });
 
   test('handles navigation for logged in user', async () => {
+    const mockUser = { uid: 'testUser', getIdToken: jest.fn().mockResolvedValue('mock-token') };
     await act(async () => {
-      renderHeader({ uid: 'testUser' });
+      renderHeader(mockUser);
     });
 
     fireEvent.click(screen.getByText('person'));
@@ -92,8 +108,9 @@ describe('Header Component', () => {
   });
 
   test('toggles cart for logged in user', async () => {
+    const mockUser = { uid: 'testUser', getIdToken: jest.fn().mockResolvedValue('mock-token') };
     await act(async () => {
-      renderHeader({ uid: 'testUser' });
+      renderHeader(mockUser);
     });
 
     fireEvent.click(screen.getByText('shopping_basket'));
@@ -111,8 +128,9 @@ describe('Header Component', () => {
   });
 
   test('disables cart when disableCart prop is true', async () => {
+    const mockUser = { uid: 'testUser', getIdToken: jest.fn().mockResolvedValue('mock-token') };
     await act(async () => {
-      renderHeader({ uid: 'testUser' }, { disableCart: true });
+      renderHeader(mockUser, { disableCart: true });
     });
 
     expect(screen.getByText('shopping_basket').closest('div')).toHaveClass('disabled');
@@ -121,7 +139,8 @@ describe('Header Component', () => {
   });
 
   test('disables orders when disableOrders prop is true', () => {
-    renderHeader({ uid: 'testUser' }, { disableOrders: true });
+    const mockUser = { uid: 'testUser', getIdToken: jest.fn().mockResolvedValue('mock-token') };
+    renderHeader(mockUser, { disableOrders: true });
 
     expect(screen.getByText('receipt')).toHaveClass('disabled');
     fireEvent.click(screen.getByText('receipt'));
@@ -129,20 +148,22 @@ describe('Header Component', () => {
   });
 
   test('handles cart update event', async () => {
+    const mockUser = { uid: 'testUser', getIdToken: jest.fn().mockResolvedValue('mock-token') };
     await act(async () => {
-      renderHeader({ uid: 'testUser' });
+      renderHeader(mockUser);
     });
 
     await waitFor(() => {
       expect(screen.getByText('5')).toBeInTheDocument();
     });
 
-    mockGetDoc.mockResolvedValueOnce({
-      exists: () => true,
-      data: () => ({ items: [{ quantity: 1 }] }),
+    // Mock a new cart state
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ items: [{ quantity: 1 }] }),
     });
 
-    act(() => {
+    await act(async () => {
       window.dispatchEvent(new Event('cartUpdated'));
     });
 
