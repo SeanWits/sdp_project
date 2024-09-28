@@ -1,134 +1,168 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Restaurant from './Restaurant';
-import { collection, getDocs } from 'firebase/firestore';
 
-jest.mock('../../firebase', () => ({
-  db: {},
-}));
-
-jest.mock('firebase/firestore', () => ({
-  collection: jest.fn(),
-  getDocs: jest.fn(),
-}));
-
+// Mock the components
 jest.mock('../../components/Header/Header', () => () => <div data-testid="mock-header">Header</div>);
 jest.mock('../../components/Footer/Footer', () => () => <div data-testid="mock-footer">Footer</div>);
+jest.mock('../../components/LoadModal/LoadModal', () => ({ loading }) => 
+  loading ? <div data-testid="mock-load-modal">Loading...</div> : null
+);
+
+// Mock fetch
+global.fetch = jest.fn();
 
 const mockRestaurants = [
   {
-    id: 'rest1',
-    name: 'Restaurant 1',
-    location: 'Location 1',
+    id: '1',
+    name: 'Test Restaurant 1',
+    location: 'Test Location 1',
     opening_time: '9:00 AM',
     closing_time: '10:00 PM',
-    rating: '4.5',
-    restImg: 'http://example.com/rest1.jpg'
+    rating: 4.5,
+    restImg: 'test-image-1.jpg'
   },
   {
-    id: 'rest2',
-    name: 'Restaurant 2',
-    location: 'Location 2',
+    id: '2',
+    name: 'Test Restaurant 2',
+    location: 'Test Location 2',
     opening_time: '8:00 AM',
     closing_time: '11:00 PM',
-    rating: '4.0',
-    restImg: 'http://example.com/rest2.jpg'
+    rating: null,
+    restImg: null
   }
 ];
-
-const renderWithRouter = (ui, { route = '/' } = {}) => {
-  window.history.pushState({}, 'Test page', route);
-  return render(ui, { wrapper: Router });
-};
 
 describe('Restaurant Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    getDocs.mockResolvedValue({
-      docs: mockRestaurants.map(rest => ({
-        id: rest.id,
-        data: () => rest
-      }))
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockRestaurants),
     });
   });
 
-  test('renders loading state initially', () => {
-    renderWithRouter(<Restaurant />);
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
-  });
+  test('renders Restaurant component and fetches data', async () => {
+    await act(async () => {
+      render(
+        <Router>
+          <Restaurant />
+        </Router>
+      );
+    });
 
-  test('renders restaurant list after loading', async () => {
-    renderWithRouter(<Restaurant />);
+    expect(screen.getByTestId('mock-header')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
+    expect(screen.getByText('Restaurant/Dining Hall Name')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByText('Restaurant 1')).toBeInTheDocument();
-      expect(screen.getByText('Restaurant 2')).toBeInTheDocument();
-      expect(screen.getByText('Location: Location 1')).toBeInTheDocument();
-      expect(screen.getByText('Hours: 9:00 AM - 10:00 PM')).toBeInTheDocument();
-      expect(screen.getByText('Rating: 4.5')).toBeInTheDocument();
-      expect(screen.getAllByText('Menu')[0]).toBeInTheDocument();
-      expect(screen.getAllByText('More Info')[0]).toBeInTheDocument();
+      expect(screen.getByText('Test Restaurant 1')).toBeInTheDocument();
+      expect(screen.getByText('Test Restaurant 2')).toBeInTheDocument();
     });
   });
 
-  test('renders error message when there is a problem fetching data', async () => {
-    getDocs.mockRejectedValue(new Error('Fetch error'));
+  test('displays restaurant details correctly', async () => {
+    await act(async () => {
+      render(
+        <Router>
+          <Restaurant />
+        </Router>
+      );
+    });
 
-    renderWithRouter(<Restaurant />);
+    await waitFor(() => {
+      expect(screen.getByText('Location: Test Location 1')).toBeInTheDocument();
+      expect(screen.getByText('Hours: 9:00 AM - 10:00 PM')).toBeInTheDocument();
+      expect(screen.getByText('Rating: 4.5')).toBeInTheDocument();
+    });
+  });
+
+  test('handles missing rating and image', async () => {
+    await act(async () => {
+      render(
+        <Router>
+          <Restaurant />
+        </Router>
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Rating: N/A')).toBeInTheDocument();
+    });
+
+    const images = screen.getAllByRole('img');
+    expect(images).toHaveLength(1); // Only one restaurant has an image
+  });
+
+  test('renders navigation buttons for each restaurant', async () => {
+    await act(async () => {
+      render(
+        <Router>
+          <Restaurant />
+        </Router>
+      );
+    });
+
+    await waitFor(() => {
+      const menuButtons = screen.getAllByText('Menu');
+      const reservationButtons = screen.getAllByText('Reservation');
+      const moreInfoButtons = screen.getAllByText('More Info');
+
+      expect(menuButtons).toHaveLength(2);
+      expect(reservationButtons).toHaveLength(2);
+      expect(moreInfoButtons).toHaveLength(2);
+    });
+  });
+
+  test('handles fetch error', async () => {
+    global.fetch.mockRejectedValueOnce(new Error('Fetch failed'));
+    console.error = jest.fn();
+
+    await act(async () => {
+      render(
+        <Router>
+          <Restaurant />
+        </Router>
+      );
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Error: Failed to load restaurant data')).toBeInTheDocument();
+      expect(console.error).toHaveBeenCalledWith('Error fetching restaurants:', expect.any(Error));
     });
   });
 
-  test('renders "No restaurant data available" when the list is empty', async () => {
-    getDocs.mockResolvedValue({ docs: [] });
+  test('displays message when no restaurant data is available', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve([]),
+    });
 
-    renderWithRouter(<Restaurant />);
+    await act(async () => {
+      render(
+        <Router>
+          <Restaurant />
+        </Router>
+      );
+    });
 
     await waitFor(() => {
       expect(screen.getByText('No restaurant data available')).toBeInTheDocument();
     });
   });
 
-  test('renders Header and Footer components', async () => {
-    renderWithRouter(<Restaurant />);
+  test('shows loading state', async () => {
+    render(
+      <Router>
+        <Restaurant />
+      </Router>
+    );
+
+    expect(screen.getByTestId('mock-load-modal')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByTestId('mock-header')).toBeInTheDocument();
-      expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
-    });
-  });
-
-  test('renders correct number of restaurant items', async () => {
-    renderWithRouter(<Restaurant />);
-
-    await waitFor(() => {
-      const restaurantItems = screen.getAllByRole('article');
-      expect(restaurantItems).toHaveLength(mockRestaurants.length);
-    });
-  });
-
-  test('renders restaurant images when available', async () => {
-    renderWithRouter(<Restaurant />);
-
-    await waitFor(() => {
-      const images = screen.getAllByRole('img');
-      expect(images).toHaveLength(mockRestaurants.length);
-      expect(images[0]).toHaveAttribute('src', mockRestaurants[0].restImg);
-      expect(images[1]).toHaveAttribute('src', mockRestaurants[1].restImg);
-    });
-  });
-
-  test('renders Menu and More Info buttons for each restaurant', async () => {
-    renderWithRouter(<Restaurant />);
-
-    await waitFor(() => {
-      const menuButtons = screen.getAllByText('Menu');
-      const moreInfoButtons = screen.getAllByText('More Info');
-      expect(menuButtons).toHaveLength(mockRestaurants.length);
-      expect(moreInfoButtons).toHaveLength(mockRestaurants.length);
-    });
+      expect(screen.queryByTestId('mock-load-modal')).not.toBeInTheDocument();
+    }, { timeout: 1000 });
   });
 });
