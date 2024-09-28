@@ -16,23 +16,38 @@ function Restaurant() {
     useEffect(() => {
         const fetchRestaurants = async () => {
             try {
-                setLoading(true);
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/restaurants`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch restaurants');
-                }
-                const restaurantsList = await response.json();
+                // setLoading(true);
+                // const response = await fetch(`${process.env.REACT_APP_API_URL}/restaurants`);
+                // if (!response.ok) {
+                //     throw new Error('Failed to fetch restaurants');
+                // }
+                // const restaurantsList = await response.json();
+                // setRestaurants(restaurantsList);
+                // setTimeout(() => setLoading(false), 500); // 0.5-second delay before hiding the loader
+                const restaurantsCollection = collection(db, 'restaurants');
+                const restaurantsSnapshot = await getDocs(restaurantsCollection);
+                const restaurantsList = await Promise.all(restaurantsSnapshot.docs.map(async doc => {
+                    const data = doc.data();
+                    const averageRating = await calculateAverageRating(doc.id);
+                    return {
+                        id: doc.id,
+                        ...data,
+                        averageRating
+                    };
+                }));
                 setRestaurants(restaurantsList);
-                setTimeout(() => setLoading(false), 500); // 0.5-second delay before hiding the loader
+                setLoading(false);
             } catch (err) {
                 console.error("Error fetching restaurants:", err);
                 setError("Failed to load restaurant data");
-                setTimeout(() => setLoading(false), 500); // 0.5-second delay even on error
+                setLoading(false);
+                // setTimeout(() => setLoading(false), 500); // 0.5-second delay even on error
             }
         };
 
     fetchRestaurants();
   }, []);
+
 
 
     if (error) return <div>Error: {error}</div>;
@@ -53,7 +68,7 @@ function Restaurant() {
                                 <p>
                                     Hours: {restaurant.opening_time} - {restaurant.closing_time}
                                 </p>
-                                <p>Rating: {restaurant.rating || 'N/A'}</p>
+                                <p>Rating: {restaurant.averageRating || 'N/A'}</p>
                             </div>
                             <div>
                                 <ul>
