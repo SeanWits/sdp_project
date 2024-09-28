@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../../utils/userContext';
 import { styles } from '../styles';
+import LoadModal from '../../../components/LoadModal/LoadModal'; // Add this import
 
 const HistoryPage = () => {
   const [reservations, setReservations] = useState([]);
@@ -33,11 +34,12 @@ const HistoryPage = () => {
 
       const reservationsData = await response.json();
       setReservations(reservationsData);
+      setTimeout(() => setLoading(false), 200); 
     } catch (error) {
       console.error("Error fetching reservations: ", error);
       alert("Failed to fetch reservations. Please try again.");
+      setTimeout(() => setLoading(false), 200);
     }
-    setLoading(false);
   };
 
   const handleCancel = async (reservationId, reservationDate) => {
@@ -98,13 +100,12 @@ const HistoryPage = () => {
 
   return (
     <div style={styles.pageWrapper}>
+      <LoadModal loading={loading} />
       <div style={styles.container}>
         <div style={styles.yellowBox}>
           <h1>Reservation History</h1>
         </div>
-        {loading ? (
-          <p>Loading reservations...</p>
-        ) : (
+        {!loading && (
           <div>
             {reservations.map((reservation) => (
               <div key={reservation.id} style={styles.reservationItem}>

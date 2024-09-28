@@ -2,9 +2,11 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../../utils/userContext';
 import { styles } from '../styles';
+import LoadModal from '../../../components/LoadModal/LoadModal'; // Add this import
 
 const OrderSummaryPage = () => {
   const [data, setData] = useState({});
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { user } = useContext(UserContext);
 
@@ -21,6 +23,7 @@ const OrderSummaryPage = () => {
         return;
       }
 
+      setLoading(true);
       try {
         const idToken = await user.getIdToken();
         const response = await fetch(`${process.env.REACT_APP_API_URL}/reservations/${reservationId}`, {
@@ -35,9 +38,13 @@ const OrderSummaryPage = () => {
 
         const reservationData = await response.json();
         setData(reservationData);
+        setTimeout(() => setLoading(false), 200);
       } catch (error) {
         console.error('Error fetching reservation: ', error);
-        navigate('/');
+        setTimeout(() => {
+          setLoading(false);
+          navigate('/');
+        }, 200); 
       }
     };
 
@@ -64,14 +71,19 @@ const OrderSummaryPage = () => {
 
   return (
     <div style={styles.pageWrapper}>
+      <LoadModal loading={loading} />
       <div style={styles.container}>
         <div style={styles.yellowBox}>
           <h1>Reservation Summary</h1>
         </div>
 
-        <p><strong>Restaurant:</strong> {data.restaurantName || 'Not specified'}</p>
-        <p><strong>Date:</strong> {formatDate(data.date)}</p>
-        <p><strong>Number of People:</strong> {data.numberOfPeople || 'Not specified'}</p>
+        {!loading && (
+          <>
+            <p><strong>Restaurant:</strong> {data.restaurantName || 'Not specified'}</p>
+            <p><strong>Date:</strong> {formatDate(data.date)}</p>
+            <p><strong>Number of People:</strong> {data.numberOfPeople || 'Not specified'}</p>
+          </>
+        )}
 
         <button onClick={handleDone} style={styles.button}>Done</button>
       </div>

@@ -3,6 +3,7 @@ import './Checkout.css';
 import { UserContext } from '../../utils/userContext';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+import LoadModal from '../../components/LoadModal/LoadModal';
 import { Link, useNavigate } from "react-router-dom";
 
 const Checkout = () => {
@@ -11,6 +12,7 @@ const Checkout = () => {
   const [selectedPayment, setSelectedPayment] = useState('wallet');
   const [walletBalance, setWalletBalance] = useState(0);
   const [voucherCode, setVoucherCode] = useState('');
+  const [loading, setLoading] = useState(true);
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const restaurantID = "rest001";
@@ -25,6 +27,7 @@ const Checkout = () => {
   }, [user, navigate]);
 
   const fetchCart = async () => {
+    setLoading(true);
     try {
       const idToken = await user.getIdToken();
       const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/${restaurantID}`, {
@@ -38,8 +41,10 @@ const Checkout = () => {
       const cartData = await response.json();
       setCartItems(cartData.items || []);
       calculateTotal(cartData.items || []);
+      setTimeout(() => setLoading(false), 200);
     } catch (error) {
       console.error("Error fetching cart:", error);
+      setTimeout(() => setLoading(false), 200);
     }
   };
 
@@ -105,6 +110,7 @@ const Checkout = () => {
       return;
     }
 
+    setLoading(true);
     try {
       const idToken = await user.getIdToken();
       const response = await fetch(`${process.env.REACT_APP_API_URL}/checkout`, {
@@ -126,26 +132,32 @@ const Checkout = () => {
         throw new Error(errorData.error || 'Checkout failed');
       }
       const result = await response.json();
-      alert('Purchase confirmed! Order ID: ' + result.orderId);
-      // Clear local cart state
-      setCartItems([]);
-      setTotal(0);
-      // Update wallet balance if paid from wallet
-      if (selectedPayment === 'wallet') {
-        setWalletBalance(prevBalance => prevBalance - total);
-      }
-      // Redirect to a confirmation page or back to the menu
-      navigate('/orders');
+      setTimeout(() => {
+        setLoading(false);
+        alert('Purchase confirmed! Order ID: ' + result.orderId);
+        // Clear local cart state
+        setCartItems([]);
+        setTotal(0);
+        // Update wallet balance if paid from wallet
+        if (selectedPayment === 'wallet') {
+          setWalletBalance(prevBalance => prevBalance - total);
+        }
+        // Redirect to a confirmation page or back to the menu
+        navigate('/orders');
+      }, 2000);
     } catch (error) {
       console.error("Error during checkout:", error);
-      alert('An error occurred while processing your order: ' + error.message);
+      setTimeout(() => {
+        setLoading(false);
+        alert('An error occurred while processing your order: ' + error.message);
+      }, 2000);
     }
   };
 
-  
   return (
     <>
       <Header disableCart={true} disableOrders={false}/>
+      <LoadModal loading={loading} /> {/* Add this line */}
       <header className="checkoutHeader">
         <Link to="/" className="back-arrow-checkout">&#8592;</Link>
         <h1 className="checkoutHeading">Checkout</h1>
