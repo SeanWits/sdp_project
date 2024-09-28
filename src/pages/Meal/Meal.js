@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
+import React, {useState, useEffect, useContext} from "react";
+import {Link, useLocation, useParams, useNavigate} from "react-router-dom";
 import "./Meal.css";
 import {collection, db} from '../../firebase';
 import {doc, getDoc, setDoc, updateDoc, arrayUnion, getDocs, query, where} from 'firebase/firestore';
@@ -8,20 +8,20 @@ import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import Popup from "../Reviews/Popup/Popup";
 import {Reviews} from "../Reviews/Reviews";
-import {calculateAverageRating} from "../../utils/averageRating";
 
 function Meal() {
-  const [size, setSize] = useState("small");
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { restaurantId, itemName } = useParams();
-  const [item, setItem] = useState(location.state?.item || null);
-  const [restaurantName, setRestaurantName] = useState(
-    location.state?.restaurantName || "Restaurant/Dining Hall"
-  );
-  const [loading, setLoading] = useState(!item);
-  const [error, setError] = useState(null);
-  const { user } = useContext(UserContext);
+    const [size, setSize] = useState("small");
+    const location = useLocation();
+    const navigate = useNavigate();
+    const {restaurantId, itemName} = useParams();
+    const [item, setItem] = useState(location.state?.item || null);
+    const [restaurantName, setRestaurantName] = useState(
+        location.state?.restaurantName || "Restaurant/Dining Hall"
+    );
+    const [loading, setLoading] = useState(!item);
+    const [error, setError] = useState(null);
+    const {user} = useContext(UserContext);
+    const [reviews, setReviews] = useState([]);
 
     //pop up
     const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -29,126 +29,154 @@ function Meal() {
         setIsPopupOpen((prev) => !prev);
     };
 
-  useEffect(() => {
-    const fetchItem = async () => {
-      if (!item) {
-        try {
-          const response = await fetch(`${process.env.REACT_APP_API_URL}/${restaurantId}/menu-item/${encodeURIComponent(itemName)}`);
-          if (!response.ok) {
-            throw new Error('Failed to fetch menu item');
-          }
-          const data = await response.json();
-          setItem(data.item);
-          setRestaurantName(data.restaurantName);
-        } catch (err) {
-          console.error("Error fetching item:", err);
-          setError("Failed to load item data");
-        }
-        setLoading(false);
-      }
-    };
+    useEffect(() => {
+        const fetchItem = async () => {
+            if (!item) {
+                try {
+                    const response = await fetch(`${process.env.REACT_APP_API_URL}/${restaurantId}/menu-item/${encodeURIComponent(itemName)}`);
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch menu item');
+                    }
+                    const data = await response.json();
+                    setItem(data.item);
+                    setRestaurantName(data.restaurantName);
+                } catch (err) {
+                    console.error("Error fetching item:", err);
+                    setError("Failed to load item data");
+                }
+                setLoading(false);
+            }
+            setLoading(true);
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/restaurant/${restaurantId}/mealReviews`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch meal reviews');
+                }
+                const data = await response.json();
+                setReviews(data);
+            } catch (err) {
+                console.error("Error fetching reviews:", err);
+                setError("Failed to load review data");
+            }
+            setLoading(false);
+        };
 
         fetchItem();
     }, [restaurantId, itemName, item]);
 
-  const handleAddToCart = async () => {
-    if (!user) {
-      console.log("User not logged in");
-      navigate("/login", { state: { from: location } });
-      return;
+    let averageRating = 0;
+    let countRating = 0;
+
+    console.log(reviews);
+
+    for (let doc in reviews) {
+        console.log(reviews[doc].productID);
+        if (reviews[doc].productID == item.productID) {
+            averageRating += reviews[doc].rating;
+            countRating++;
+        }
     }
+    averageRating /= countRating;
 
-    try {
-      const idToken = await user.getIdToken();
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/add`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
-        },
-        body: JSON.stringify({
-          restaurantId,
-          item
-        })
-      });
+    const handleAddToCart = async () => {
+        if (!user) {
+            console.log("User not logged in");
+            navigate("/login", {state: {from: location}});
+            return;
+        }
 
-      if (!response.ok) {
-        throw new Error('Failed to add item to cart');
-      }
+        try {
+            const idToken = await user.getIdToken();
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/add`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${idToken}`
+                },
+                body: JSON.stringify({
+                    restaurantId,
+                    item
+                })
+            });
 
-      console.log("Item added to cart");
+            if (!response.ok) {
+                throw new Error('Failed to add item to cart');
+            }
 
-      // Dispatch custom event to notify of cart update
-      window.dispatchEvent(new CustomEvent("cartUpdated"));
+            console.log("Item added to cart");
 
-      // Implement user feedback for successful add to cart
-    } catch (error) {
-      console.error("Error adding item to cart:", error);
-      // Implement user feedback for error
-    }
-  };
+            // Dispatch custom event to notify of cart update
+            window.dispatchEvent(new CustomEvent("cartUpdated"));
+
+            // Implement user feedback for successful add to cart
+        } catch (error) {
+            console.error("Error adding item to cart:", error);
+            // Implement user feedback for error
+        }
+    };
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
     if (!item) return <div>No item data available</div>;
 
-  return (
-    <>
-      <Header />
-      <div className="restaurant-list">
-        <header className="menuHeader">
-          <Link to={`/menu/${restaurantId}`} className="back-arrow">
-            &#8592;
-          </Link>
-          {restaurantName}
-        </header>
-        <h1>{item.name}</h1>
-        <div className="separator-line"></div>
-        <section id="mainThing">
-          <article>
-            <div className="MealDivBox" id="longerThings">
-              {item.description}
-            </div>
-          </article>
-          <article>
-            <div className="MealDivBox">
-              <h3 className="text-lg font-semibold mb-2">Customise order</h3>
-              <div className="flex flex-col">
-                <label className="flex flex-col mb-2">
-                  <input
-                    type="radio"
-                    className="form-radio"
-                    checked={size === "small"}
-                    onChange={() => setSize("small")}
-                  />
-                  <span className="mt-1">Small</span>{" "}
-                  {/* Added margin-top for spacing */}
-                </label>
+    return (
+        <>
+            <Header/>
+            <div className="restaurant-list">
+                <header className="menuHeader">
+                    <Link to={`/menu/${restaurantId}`} className="back-arrow">
+                        &#8592;
+                    </Link>
+                    {restaurantName}
+                </header>
+                <h1>{item.name}</h1>
+                <div className="separator-line"></div>
+                <section id="mainThing">
+                    <article>
+                        <div className="MealDivBox" id="longerThings">
+                            <p>{item.description}</p>
+                            <p>Rating: {averageRating}</p>
+                        </div>
+                    </article>
+                    <article>
+                        <div className="MealDivBox">
+                            <h3 className="text-lg font-semibold mb-2">Customise order</h3>
+                            <div className="flex flex-col">
+                                <label className="flex flex-col mb-2">
+                                    <input
+                                        type="radio"
+                                        className="form-radio"
+                                        checked={size === "small"}
+                                        onChange={() => setSize("small")}
+                                    />
+                                    <span className="mt-1">Small</span>{" "}
+                                    {/* Added margin-top for spacing */}
+                                </label>
 
-                <label className="flex flex-col">
-                  <input
-                    type="radio"
-                    className="form-radio"
-                    checked={size === "large"}
-                    onChange={() => setSize("large")}
-                  />
-                  <span className="mt-1">Large</span>{" "}
-                  {/* Added margin-top for spacing */}
-                </label>
-              </div>
-            </div>
-            Total: R{item.price.toFixed(2)}{" "}
-            <button
-              className="menuButton"
-              id="mealButton"
-              onClick={handleAddToCart}
-            >
-              Add to cart
-            </button>
-          </article>
-          <img src={item.image_url} alt={item.name} className="item-image" />
-        </section>
-        <div className="separator-line"></div>
+                                <label className="flex flex-col">
+                                    <input
+                                        type="radio"
+                                        className="form-radio"
+                                        checked={size === "large"}
+                                        onChange={() => setSize("large")}
+                                    />
+                                    <span className="mt-1">Large</span>{" "}
+                                    {/* Added margin-top for spacing */}
+                                </label>
+                            </div>
+                        </div>
+                        Total: R{item.price.toFixed(2)}{" "}
+                        <button
+                            className="menuButton"
+                            id="mealButton"
+                            onClick={handleAddToCart}
+                        >
+                            Add to cart
+                        </button>
+                    </article>
+                    <img src={item.image_url} alt={item.name} className="item-image"/>
+                </section>
+                <div className="separator-line"></div>
 
                 <button className="menuButton" id="menuInfoButton" onClick={togglePopup}>
                     Click For Review
