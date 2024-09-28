@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
 import "./RestaurantInfo.css";
 import LoadModal from '../../components/LoadModal/LoadModal';
+import Popup from "../Reviews/Popup/Popup";
+import {Reviews} from "../Reviews/Reviews";
 
 function RestaurantInfo() {
   const { id } = useParams();
@@ -9,6 +11,12 @@ function RestaurantInfo() {
   const [restaurant, setRestaurant] = useState(location.state?.restaurant || null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  //pop up
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const togglePopup = () => {
+    setIsPopupOpen((prev) => !prev);
+  };
 
   useEffect(() => {
     const fetchRestaurant = async () => {
@@ -30,6 +38,7 @@ function RestaurantInfo() {
 
     fetchRestaurant();
   }, [id, restaurant]);
+
 
   if (error) return <div>Error: {error}</div>;
   if (!restaurant && !loading) return <div>No restaurant data available</div>;
@@ -71,9 +80,12 @@ function RestaurantInfo() {
             </section>
           </section>
 
-          <button className="menuButton" id="RestaurantInfoButton">
+          <button onClick={togglePopup} className="menuButton" id="RestaurantInfoButton">
             Click For Review
           </button>
+          <Popup isOpen={isPopupOpen} onClose={togglePopup}>
+            <Reviews restaurantID={restaurant.id} mealID={null}/>
+          </Popup>
         </>
       )}
     </div>
