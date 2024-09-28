@@ -9,6 +9,11 @@
 #menuFoodBanner {
   background-color: #003B5C;
   margin-left: 4%;
+  margin-right: 4%;
+  margin-bottom: 1%;
+  border-radius: 20px;
+  padding-top: 0.0157px;
+  padding-bottom: 0.0157px;
   color: white;
 }
 
@@ -25,13 +30,14 @@
 
 .category-item {
   cursor: pointer;
+  margin-bottom: -10px;
   padding: 10px 20px;
   border-radius: 5px;
-  background-color: #f2f2f2;
+  background-color: #ffffff;
 }
 
 .category-item.active {
-  background-color: #007bff;
+  background-color: #003a5ce9;
   color: white;
 }
 
