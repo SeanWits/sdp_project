@@ -63,14 +63,18 @@ describe('Checkout Component', () => {
 
     expect(screen.getByTestId('mock-header')).toBeInTheDocument();
     expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
+    
+    // Check for loading state
     expect(screen.getByTestId('mock-load-modal')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByText('Checkout')).toBeInTheDocument();
-      expect(screen.getByText('Item 1 (x2)')).toBeInTheDocument();
-      expect(screen.getByText('Item 2 (x1)')).toBeInTheDocument();
-      expect(screen.getByText('Total: R35.00')).toBeInTheDocument();
+      expect(screen.queryByTestId('mock-load-modal')).not.toBeInTheDocument();
     });
+
+    expect(screen.getByText('Checkout')).toBeInTheDocument();
+    expect(screen.getByText('Item 1 (x2)')).toBeInTheDocument();
+    expect(screen.getByText('Item 2 (x1)')).toBeInTheDocument();
+    expect(screen.getByText('Total: R35.00')).toBeInTheDocument();
   });
 
   test('handles payment method selection', async () => {
@@ -83,7 +87,10 @@ describe('Checkout Component', () => {
     expect(screen.getByLabelText('Voucher Code:')).toBeInTheDocument();
 
     fireEvent.click(screen.getByText('Pay from Wallet'));
-    expect(screen.getByText('Current Wallet Balance: R100.00')).toBeInTheDocument();
+    
+    await waitFor(() => {
+      expect(screen.getByText('Current Wallet Balance: R100.00')).toBeInTheDocument();
+    });
   });
 
   test('handles item removal from cart', async () => {
@@ -101,6 +108,7 @@ describe('Checkout Component', () => {
   });
 
   test('handles successful checkout', async () => {
+    jest.useFakeTimers();
     global.fetch.mockImplementation((url) => {
       if (url.includes('/checkout')) {
         return Promise.resolve({
@@ -111,22 +119,28 @@ describe('Checkout Component', () => {
       // Keep the previous implementations for other URLs
       return global.fetch(url);
     });
-
+  
     global.alert = jest.fn();
-
+  
     renderWithContext(<Checkout />);
-
+  
     await waitFor(() => {
       fireEvent.click(screen.getByText('Confirm Purchase'));
     });
-
+  
+    // Fast-forward time
+    jest.advanceTimersByTime(2000);
+  
     await waitFor(() => {
       expect(global.alert).toHaveBeenCalledWith('Purchase confirmed! Order ID: mock-order-id');
       expect(mockNavigate).toHaveBeenCalledWith('/orders');
     });
+  
+    jest.useRealTimers();
   });
 
   test('handles checkout failure', async () => {
+    jest.useFakeTimers();
     global.fetch.mockImplementation((url) => {
       if (url.includes('/checkout')) {
         return Promise.resolve({
@@ -137,18 +151,23 @@ describe('Checkout Component', () => {
       // Keep the previous implementations for other URLs
       return global.fetch(url);
     });
-
+  
     global.alert = jest.fn();
-
+  
     renderWithContext(<Checkout />);
-
+  
     await waitFor(() => {
       fireEvent.click(screen.getByText('Confirm Purchase'));
     });
-
+  
+    // Fast-forward time
+    jest.advanceTimersByTime(2000);
+  
     await waitFor(() => {
       expect(global.alert).toHaveBeenCalledWith('An error occurred while processing your order: Checkout failed');
     });
+  
+    jest.useRealTimers();
   });
 
   test('redirects to login if user is not authenticated', () => {
