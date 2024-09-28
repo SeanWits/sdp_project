@@ -5,18 +5,21 @@ import { logoutUser } from '../../utils/authFunctions';
 import './Dashboard.css';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
-import LoadModal from '../../components/LoadModal/LoadModal'; // Add this import
+import LoadModal from '../../components/LoadModal/LoadModal';
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [walletAmount, setWalletAmount] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('Dashboard useEffect triggered');
     if (!user) {
+      console.log('No user, navigating to login');
       navigate('/login');
       return;
     }
@@ -24,8 +27,10 @@ const Dashboard = () => {
   }, [user, navigate]);
 
   const fetchUserData = async () => {
+    console.log('Fetching user data');
     try {
       setLoading(true);
+      setError(null);
       const idToken = await user.getIdToken();
       const response = await fetch(`${process.env.REACT_APP_API_URL}/user`, {
         headers: {
@@ -36,12 +41,14 @@ const Dashboard = () => {
         throw new Error('Failed to fetch user data');
       }
       const userData = await response.json();
+      console.log('User data fetched:', userData);
       setUserData(userData);
       await fetchRecentTransactions(idToken);
-      setTimeout(() => setLoading(false), 200);
     } catch (err) {
       console.error("Error fetching user data:", err);
-      setTimeout(() => setLoading(false), 200);
+      setError("Failed to load user data. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -108,6 +115,8 @@ const Dashboard = () => {
     }
   };
   
+  console.log('Rendering Dashboard, userData:', userData);
+
   return (
     <>
       <Header/>
@@ -121,42 +130,48 @@ const Dashboard = () => {
         
         <div className="balance">
           <h2>Account Balance</h2>
-          <p className="balance-amount">R{(userData?.wallet || 0).toFixed(2)}</p>
+          <p className="balance-amount" data-testid="balance-amount">
+            R{userData ? userData.wallet.toFixed(2) : '0.00'}
+          </p>
         </div>
 
         <div className="transactions">
           <h2>Recent Transactions</h2>
-          {recentTransactions.map(transaction => (
-            <div key={transaction.id} className="transaction">
-              <span>{transaction.restaurantDetails?.name || 'Unknown Restaurant'}</span>
-              <span className="debit">
-                -R{transaction.totalAmount ? transaction.totalAmount.toFixed(2) : '0.00'}
-              </span>
-            </div>
-          ))}
+          {recentTransactions.length > 0 ? (
+            recentTransactions.map(transaction => (
+              <div key={transaction.id} className="transaction">
+                <span>{transaction.restaurantDetails?.name || 'Unknown Restaurant'}</span>
+                <span className="debit">
+                  -R{transaction.totalAmount ? transaction.totalAmount.toFixed(2) : '0.00'}
+                </span>
+              </div>
+            ))
+          ) : (
+            <p>No recent transactions</p>
+          )}
         </div>
 
-      <button onClick={handleViewTransactionHistory} className="action-button">
-        View Transaction History
-      </button>
+        <button onClick={handleViewTransactionHistory} className="action-button">
+          View Transaction History
+        </button>
 
-      <div className="add-to-wallet">
-        <input
-          type="number"
-          value={walletAmount}
-          onChange={(e) => setWalletAmount(e.target.value)}
-          placeholder="Enter amount"
-        />
-        <button onClick={handleAddToWallet} className="action-button">
-          Add to Wallet
+        <div className="add-to-wallet">
+          <input
+            type="number"
+            value={walletAmount}
+            onChange={(e) => setWalletAmount(e.target.value)}
+            placeholder="Enter amount"
+          />
+          <button onClick={handleAddToWallet} className="action-button">
+            Add to Wallet
+          </button>
+        </div>
+
+        <button onClick={handleLogout} className="action-button logout-button">
+          Log Out
         </button>
       </div>
-
-      <button onClick={handleLogout} className="action-button logout-button">
-        Log Out
-      </button>
-    </div>
-    <Footer/>
+      <Footer/>
     </>
   );
 };
