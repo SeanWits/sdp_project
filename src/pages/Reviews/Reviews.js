@@ -3,43 +3,49 @@ import Popup from "./Popup/Popup";
 import React, {useState, useContext, useEffect} from "react";
 import {UserContext} from "../../utils/userContext";
 import {AddReview} from "./AddReview";
-import {collection, db} from "../../firebase";
-import {getDocs, where, query} from "firebase/firestore";
+import {db, doc, getDoc} from "../../firebase";
 
-export function Reviews(restaurantID, mealID) {
-
-    //get reviews from database
+export function Reviews({restaurantID, mealID}) {
     const [reviews, setReviews] = useState([]);
-
-    mealID = restaurantID.mealID;
-    restaurantID = restaurantID.restaurantID;
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const {user} = useContext(UserContext);
 
     useEffect(() => {
         const fetchReviews = async () => {
-            if (!user) {
-                console.error("User not signed in");
+            if (!restaurantID) {
+                console.error("Restaurant ID is required");
                 return;
             }
             try {
-                let reviewsRef;
-                if (mealID) {
-                    // If mealID is present, filter by productID
-                    reviewsRef = query(
-                        collection(db, `restaurants/${restaurantID}/mealReviews`),
-                        where("productID", "==", mealID)
-                    );
-                } else {
-                    reviewsRef = collection(
-                        db,
-                        `restaurants/${restaurantID}/restaurantReviews`
-                    );
+                const restaurantRef = doc(db, `restaurants/${restaurantID}`);
+                const restaurantDoc = await getDoc(restaurantRef);
+
+                if (!restaurantDoc.exists()) {
+                    console.error("Restaurant not found");
+                    return;
                 }
-                const querySnapshot = await getDocs(reviewsRef);
-                const fetchedReviews = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()  //spread data in array
-                }));
-                setReviews(fetchedReviews);
+
+                const restaurantData = restaurantDoc.data();
+
+                if (mealID) {
+                    // Fetch meal-specific reviews
+                    let mealReviews = [];
+                    const categories = restaurantData.categories || [];
+                    for (let category of categories) {
+                        const menuItems = category.menu_items || [];
+                        for (let item of menuItems) {
+                            if (item.id === mealID) {
+                                mealReviews = item.reviews || [];
+                                break;
+                            }
+                        }
+                        if (mealReviews.length > 0) break;
+                    }
+                    setReviews(mealReviews);
+                } else {
+                    // Fetch restaurant reviews
+                    setReviews(restaurantData.reviews || []);
+                }
             } catch (error) {
                 console.error("Error fetching reviews:", error);
             }
@@ -47,18 +53,10 @@ export function Reviews(restaurantID, mealID) {
         fetchReviews();
     }, [restaurantID, mealID]);
 
-
-    //pop up
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-    //get user id
-    const {user} = useContext(UserContext);
-
     const togglePopup = () => {
         setIsPopupOpen((prev) => !prev);
     };
 
-    //if user not logged in
     const handleReview = () => {
         if (!user) {
             alert("Please log in to leave a review");
@@ -79,23 +77,23 @@ export function Reviews(restaurantID, mealID) {
                         Reviews
                     </h2>
                     <section id="reviews_icons">
-                    <span
-                        className="material-symbols-outlined icon filled"
-                        onClick={handleReview}
-                    >
-                        add_box
-                    </span>
+                        <span
+                            className="material-symbols-outlined icon filled"
+                            onClick={handleReview}
+                        >
+                            add_box
+                        </span>
                         <span className="material-symbols-outlined icon filled">
-                        filter_alt
-                    </span>
+                            filter_alt
+                        </span>
                         <span className="material-symbols-outlined icon filled">
-                        swap_vertical_circle
-                    </span>
+                            swap_vertical_circle
+                        </span>
                     </section>
                 </header>
                 <section id="review_section">
-                    {reviews.map((review) => (
-                        <div key={review.id} className="review-item">
+                    {reviews.map((review, index) => (
+                        <div key={index} className="review-item">
                             <section id="rating_section">
                                 <section
                                     className="flex-direction-row"

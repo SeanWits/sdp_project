@@ -1,56 +1,93 @@
 import {useContext, useState} from "react";
-import {db, doc, setDoc, serverTimestamp, collection} from "../../firebase";
+import {db, doc, updateDoc, serverTimestamp} from "../../firebase";
+import {arrayRemove, runTransaction, arrayUnion, Timestamp} from "firebase/firestore";
 import {UserContext} from "../../utils/userContext";
 import "./Reviews.css"
 
-export function AddReview(restaurantID, mealID) {
-    const [restaurantRating, setRestaurantRating] = useState(0);
-    const [restaurantReview, setRestaurantReview] = useState("");
+export function AddReview({restaurantID, mealID}) {
+    const [rating, setRating] = useState(0);
+    const [review, setReview] = useState("");
 
     const {user} = useContext(UserContext);
 
-    mealID = restaurantID.mealID;
-    restaurantID = restaurantID.restaurantID;
-
-    const addRestaurantReview = async () => {
+    const addReview = async () => {
         if (!user) {
             console.error("User not signed in");
             return;
         }
+
+        const reviewData = {
+            user_id: user.uid,
+            rating: rating,
+            review: review,
+            dateCreated: Timestamp.now() // Use Timestamp.now() instead of serverTimestamp()
+        };
+
         try {
-            let reviewRef;
-            if (mealID) {
-                // For meal reviews, create a new document with a unique ID
-                let autoID = doc(collection(db, `restaurants/${restaurantID}/mealReviews`)).id;
-                reviewRef = doc(db, `restaurants/${restaurantID}/mealReviews/${autoID}`);
+            const restaurantRef = doc(db, `restaurants/${restaurantID}`);
+
+            if (!mealID) {
+                // Restaurant review
+                await runTransaction(db, async (transaction) => {
+                    const restaurantDoc = await transaction.get(restaurantRef);
+                    if (!restaurantDoc.exists()) {
+                        throw "Restaurant document does not exist!";
+                    }
+
+                    const reviews = restaurantDoc.data().reviews || [];
+                    const updatedReviews = reviews.filter(r => r.user_id !== user.uid);
+                    updatedReviews.push(reviewData);
+
+                    transaction.update(restaurantRef, {reviews: updatedReviews});
+                });
             } else {
-                // For restaurant reviews, use the user's ID
-                reviewRef = doc(db, `restaurants/${restaurantID}/restaurantReviews/${user.uid}`);
-            }
-            const reviewData = {
-                rating: restaurantRating,
-                review: restaurantReview,
-                dateCreated: serverTimestamp(),
-            };
+                // Meal review
+                await runTransaction(db, async (transaction) => {
+                    const restaurantDoc = await transaction.get(restaurantRef);
+                    if (!restaurantDoc.exists()) {
+                        throw "Restaurant document does not exist!";
+                    }
 
-            // Add user_Id and productID only if mealID is not null
-            if (mealID) {
-                reviewData.user_Id = user.uid;
-                reviewData.productID = mealID;
+                    const restaurantData = restaurantDoc.data();
+                    let categories = restaurantData.categories || [];
+                    let updated = false;
+
+                    for (let category of categories) {
+                        let menuItems = category.menu_items || [];
+                        for (let item of menuItems) {
+                            if (item.id === mealID) {
+                                let reviews = item.reviews || [];
+                                // Remove existing review by this user, if any
+                                reviews = reviews.filter(r => r.user_id !== user.uid);
+                                // Add the new review
+                                reviews.push(reviewData);
+                                item.reviews = reviews;
+                                updated = true;
+                                break;
+                            }
+                        }
+                        if (updated) break;
+                    }
+
+                    if (!updated) {
+                        throw "Meal not found in the restaurant's menu!";
+                    }
+
+                    transaction.update(restaurantRef, {categories: categories});
+                });
             }
 
-            await setDoc(reviewRef, reviewData);
             alert(`${mealID ? "Meal" : "Restaurant"} review added successfully`);
             // Reset form fields
-            setRestaurantRating(0);
-            setRestaurantReview("");
+            setRating(0);
+            setReview("");
         } catch (error) {
-            console.error("Error adding restaurant review: ", error);
+            console.error("Error adding review: ", error);
         }
     };
 
     const handleStarClick = (starRating) => {
-        setRestaurantRating(starRating);
+        setRating(starRating);
     };
 
     return (
@@ -73,11 +110,11 @@ export function AddReview(restaurantID, mealID) {
                                     <span
                                         key={starValue}
                                         className={`material-symbols-outlined text-3xl cursor-pointer transition-all duration-150 ${
-                                            starValue <= restaurantRating ? 'star-filled' : 'star-outlined'
+                                            starValue <= rating ? 'star-filled' : 'star-outlined'
                                         }`}
                                         onClick={() => handleStarClick(starValue)}
                                         style={{
-                                            fontVariationSettings: starValue <= restaurantRating
+                                            fontVariationSettings: starValue <= rating
                                                 ? "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48"
                                                 : "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48"
                                         }}
@@ -92,14 +129,14 @@ export function AddReview(restaurantID, mealID) {
                         <h3 id="review_text_heading">Review</h3>
                         <textarea
                             id={"review_text_input"}
-                            value={restaurantReview}
-                            onChange={(e) => setRestaurantReview(e.target.value)}
+                            value={review}
+                            onChange={(e) => setReview(e.target.value)}
                             placeholder="Enter a review"
                         />
                     </section>
                     <button className={"menuButton"}
                             type="button"
-                            onClick={addRestaurantReview}
+                            onClick={addReview}
                             id="confirm_button"
                     >
                         Confirm
