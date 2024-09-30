@@ -33,7 +33,7 @@ function Meal() {
         const fetchItem = async () => {
             if (!item) {
                 try {
-                    const response = await fetch(`${process.env.REACT_APP_API_URL}/${restaurantId}/menu-item/${encodeURIComponent(itemName)}`);
+                    const response = await fetch(`${process.env.REACT_APP_API_URL}/restaurant/${restaurantId}/menu-item/${encodeURIComponent(itemName)}`);
                     if (!response.ok) {
                         throw new Error('Failed to fetch menu item');
                     }
@@ -46,37 +46,10 @@ function Meal() {
                 }
                 setLoading(false);
             }
-            setLoading(true);
-            try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/restaurant/${restaurantId}/mealReviews`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch meal reviews');
-                }
-                const data = await response.json();
-                setReviews(data);
-            } catch (err) {
-                console.error("Error fetching reviews:", err);
-                setError("Failed to load review data");
-            }
-            setLoading(false);
         };
 
         fetchItem();
     }, [restaurantId, itemName, item]);
-
-    let averageRating = 0;
-    let countRating = 0;
-
-    console.log(reviews);
-
-    for (let doc in reviews) {
-        console.log(reviews[doc].productID);
-        if (reviews[doc].productID == item.productID) {
-            averageRating += reviews[doc].rating;
-            countRating++;
-        }
-    }
-    averageRating /= countRating;
 
     const handleAddToCart = async () => {
         if (!user) {
@@ -115,6 +88,21 @@ function Meal() {
         }
     };
 
+    const handleRatingChanged = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/restaurant/${restaurantId}/menu-item/${encodeURIComponent(itemName)}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch menu item');
+            }
+            const data = await response.json();
+            setItem(data.item);
+            setRestaurantName(data.restaurantName);
+        } catch (err) {
+            console.error("Error fetching item:", err);
+            setError("Failed to load item data");
+        }
+    };
+
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
     if (!item) return <div>No item data available</div>;
@@ -135,7 +123,7 @@ function Meal() {
                     <article>
                         <div className="MealDivBox" id="longerThings">
                             <p>{item.description}</p>
-                            <p>Rating: {averageRating}</p>
+                            <p>Rating: {item.rating || "No Rating."}</p>
                         </div>
                     </article>
                     <article>
@@ -183,7 +171,7 @@ function Meal() {
                 </button>
 
                 <Popup isOpen={isPopupOpen} onClose={togglePopup}>
-                    <Reviews restaurantID={restaurantId} mealID={item.productID}/>
+                    <Reviews restaurantID={restaurantId} mealID={item.productID} onRatingChanged={handleRatingChanged}/>
                 </Popup>
             </div>
             <Footer/>
