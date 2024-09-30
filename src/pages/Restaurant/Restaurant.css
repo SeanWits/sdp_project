@@ -24,8 +24,15 @@
 }
 
 .restaurant-details h2 {
-    margin-top: 0;
-    color: #003b5c;
+    padding-top: 10px;
+}
+
+.restaurant-article {
+    background-color: white;
+    height: 200px;
+    margin-left: 3%;
+    margin-right: 3%;
+    border-radius: 20px;
 }
 
 #main-section {

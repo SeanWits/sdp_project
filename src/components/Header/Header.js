@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import "./Header.css";
 import { UserContext } from '../../utils/userContext';
-import { db, doc, getDoc } from '../../firebase';
 import Cart from '../Cart/Cart';
 
 function Header({ disableCart = false, disableOrders = false }) {
@@ -30,15 +29,21 @@ function Header({ disableCart = false, disableOrders = false }) {
     const fetchCart = async () => {
         if (!user) return;
 
-        const cartRef = doc(db, `users/${user.uid}/carts/${restaurantID}`);
-        const cartSnap = await getDoc(cartRef);
-        if (cartSnap.exists()) {
-            const items = cartSnap.data().items || [];
-            setCartItems(items);
-            updateCartItemCount(items);
-        } else {
-            setCartItems([]);
-            updateCartItemCount([]);
+        try {
+            const idToken = await user.getIdToken();
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/${restaurantID}`, {
+                headers: {
+                    'Authorization': `Bearer ${idToken}`
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch cart');
+            }
+            const cartData = await response.json();
+            setCartItems(cartData.items || []);
+            updateCartItemCount(cartData.items || []);
+        } catch (error) {
+            console.error("Error fetching cart:", error);
         }
     };
 
@@ -118,6 +123,7 @@ function Header({ disableCart = false, disableOrders = false }) {
                     items={cartItems}
                     restaurantID={restaurantID}
                     userID={user.uid}
+                    fetchCart={fetchCart}
                 />
             )}
         </>

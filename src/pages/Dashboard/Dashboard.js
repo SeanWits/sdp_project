@@ -1,78 +1,68 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { collection, query, where, getDocs, orderBy, limit, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
 import { UserContext } from '../../utils/userContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { logoutUser } from '../../utils/authFunctions';
 import './Dashboard.css';
-import {Link} from "react-router-dom";
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+import LoadModal from '../../components/LoadModal/LoadModal';
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [walletAmount, setWalletAmount] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user?.uid) {
-      fetchUserData();
-    } else {
-      // If there's no user, redirect to login
+    console.log('Dashboard useEffect triggered');
+    if (!user) {
+      console.log('No user, navigating to login');
       navigate('/login');
+      return;
     }
+    fetchUserData();
   }, [user, navigate]);
 
   const fetchUserData = async () => {
+    console.log('Fetching user data');
     try {
-      const userRef = doc(db, 'users', user.uid);
-      const userSnap = await getDoc(userRef);
-
-      if (userSnap.exists()) {
-        setUserData(userSnap.data());
+      setLoading(true);
+      setError(null);
+      const idToken = await user.getIdToken();
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/user`, {
+        headers: {
+          'Authorization': `Bearer ${idToken}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data');
       }
-
-      await fetchRecentTransactions();
-      setLoading(false);
+      const userData = await response.json();
+      console.log('User data fetched:', userData);
+      setUserData(userData);
+      await fetchRecentTransactions(idToken);
     } catch (err) {
       console.error("Error fetching user data:", err);
+      setError("Failed to load user data. Please try again later.");
+    } finally {
       setLoading(false);
     }
   };
 
-  const fetchRecentTransactions = async () => {
+  const fetchRecentTransactions = async (idToken) => {
     try {
-      const ordersRef = collection(db, 'orders');
-      const q = query(
-        ordersRef,
-        where('userId', '==', user.uid),
-        orderBy('createdAt', 'desc'),
-        limit(3)
-      );
-      const querySnapshot = await getDocs(q);
-      
-      const transactionsData = await Promise.all(querySnapshot.docs.map(async (docSnapshot) => {
-        const orderData = docSnapshot.data();
-        let restaurantName = 'Unknown Restaurant';
-        
-        if (orderData.restaurantId) {
-          const restaurantRef = doc(db, 'restaurants', orderData.restaurantId);
-          const restaurantSnap = await getDoc(restaurantRef);
-          if (restaurantSnap.exists()) {
-            restaurantName = restaurantSnap.data().name;
-          }
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/orders?limit=3`, {
+        headers: {
+          'Authorization': `Bearer ${idToken}`
         }
-
-        return {
-          id: docSnapshot.id,
-          restaurantName,
-          amount: orderData.totalAmount
-        };
-      }));
-
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch recent transactions');
+      }
+      const transactionsData = await response.json();
       setRecentTransactions(transactionsData);
     } catch (err) {
       console.error("Error fetching recent transactions:", err);
@@ -87,11 +77,25 @@ const Dashboard = () => {
     if (!userData || !walletAmount) return;
 
     try {
-      const userRef = doc(db, 'users', user.uid);
-      const newWalletAmount = (userData.wallet || 0) + parseFloat(walletAmount);
-      await updateDoc(userRef, { wallet: newWalletAmount });
+      const idToken = await user.getIdToken();
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/user/update-wallet`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ amount: parseFloat(walletAmount) })
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update wallet balance');
+      }
       
-      setUserData(prevData => ({ ...prevData, wallet: newWalletAmount }));
+      // Update the local state immediately
+      setUserData(prevData => ({
+        ...prevData,
+        wallet: (prevData.wallet || 0) + parseFloat(walletAmount)
+      }));
+      
       setWalletAmount('');
       alert('Wallet updated successfully!');
     } catch (err) {
@@ -103,66 +107,71 @@ const Dashboard = () => {
   const handleLogout = async () => {
     try {
       await logoutUser();
-      if (typeof setUser === 'function') {
-        setUser(null); // Clear the user context if setUser is available
-      }
-      navigate('/login'); // Redirect to login page
+      setUser(null);
+      navigate('/login');
     } catch (error) {
       console.error("Error logging out:", error);
       alert('Failed to log out. Please try again.');
     }
   };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  
+  console.log('Rendering Dashboard, userData:', userData);
 
   return (
     <>
       <Header/>
+      <LoadModal loading={loading} />
       <header className="orderHeader">
         <Link to="/" className="back-arrow-dash">&#8592;</Link>
         <h1 className="dashHeading">Meal Credit Dashboard</h1>
       </header>
       <div className="dashboard">
-      <p className="user-greeting">Welcome, {userData?.name || 'User'}</p>
-      
-      <div className="balance">
-        <h2>Account Balance</h2>
-        <p className="balance-amount">R{(userData?.wallet || 0).toFixed(2)}</p>
-      </div>
+        <p className="user-greeting">Welcome, {userData?.name || 'User'}</p>
+        
+        <div className="balance">
+          <h2>Account Balance</h2>
+          <p className="balance-amount" data-testid="balance-amount">
+            R{userData ? userData.wallet.toFixed(2) : '0.00'}
+          </p>
+        </div>
 
-      <div className="transactions">
-        <h2>Recent Transactions</h2>
-        {recentTransactions.map(transaction => (
-          <div key={transaction.id} className="transaction">
-            <span>{transaction.restaurantName}</span>
-            <span className="debit">-R{transaction.amount.toFixed(2)}</span>
-          </div>
-        ))}
-      </div>
+        <div className="transactions">
+          <h2>Recent Transactions</h2>
+          {recentTransactions.length > 0 ? (
+            recentTransactions.map(transaction => (
+              <div key={transaction.id} className="transaction">
+                <span>{transaction.restaurantDetails?.name || 'Unknown Restaurant'}</span>
+                <span className="debit">
+                  -R{transaction.totalAmount ? transaction.totalAmount.toFixed(2) : '0.00'}
+                </span>
+              </div>
+            ))
+          ) : (
+            <p>No recent transactions</p>
+          )}
+        </div>
 
-      <button onClick={handleViewTransactionHistory} className="action-button">
-        View Transaction History
-      </button>
+        <button onClick={handleViewTransactionHistory} className="action-button">
+          View Transaction History
+        </button>
 
-      <div className="add-to-wallet">
-        <input
-          type="number"
-          value={walletAmount}
-          onChange={(e) => setWalletAmount(e.target.value)}
-          placeholder="Enter amount"
-        />
-        <button onClick={handleAddToWallet} className="action-button">
-          Add to Wallet
+        <div className="add-to-wallet">
+          <input
+            type="number"
+            value={walletAmount}
+            onChange={(e) => setWalletAmount(e.target.value)}
+            placeholder="Enter amount"
+          />
+          <button onClick={handleAddToWallet} className="action-button">
+            Add to Wallet
+          </button>
+        </div>
+
+        <button onClick={handleLogout} className="action-button logout-button">
+          Log Out
         </button>
       </div>
-
-      <button onClick={handleLogout} className="action-button logout-button">
-        Log Out
-      </button>
-    </div>
-    <Footer/>
+      <Footer/>
     </>
   );
 };

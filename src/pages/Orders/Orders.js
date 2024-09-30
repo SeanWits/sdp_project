@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { collection, query, where, getDocs, orderBy, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
-import {Link} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from '../../utils/userContext';
 import OrderCard from '../../components/OrderCard/OrderCard';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+import LoadModal from '../../components/LoadModal/LoadModal'; // Add this import
 import './Orders.css';
 
 const Orders = () => {
@@ -13,62 +12,52 @@ const Orders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useContext(UserContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchOrdersAndRestaurants();
-  }, [user]);
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    fetchOrders();
+  }, [user, navigate]);
 
-  const fetchOrdersAndRestaurants = async () => {
-    if (!user) return;
-
+  const fetchOrders = async () => {
     try {
-      const ordersRef = collection(db, 'orders');
-      const q = query(
-        ordersRef,
-        where('userId', '==', user.uid),
-        orderBy('createdAt', 'desc')
-      );
-      const querySnapshot = await getDocs(q);
-      
-      const ordersData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt.toDate(),
-        updatedAt: doc.data().updatedAt.toDate()
-      }));
-
-      // Fetch restaurant details for each unique restaurantId
-      const uniqueRestaurantIds = [...new Set(ordersData.map(order => order.restaurantId))];
-      const restaurantDetails = {};
-
-      for (const restaurantId of uniqueRestaurantIds) {
-        const restaurantDoc = await getDoc(doc(db, 'restaurants', restaurantId));
-        if (restaurantDoc.exists()) {
-          restaurantDetails[restaurantId] = restaurantDoc.data();
+      setLoading(true);
+      const idToken = await user.getIdToken();
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/orders`, {
+        headers: {
+          'Authorization': `Bearer ${idToken}`
         }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch orders');
       }
-
-      // Combine order data with restaurant details
-      const ordersWithRestaurantDetails = ordersData.map(order => ({
-        ...order,
-        restaurantDetails: restaurantDetails[order.restaurantId] || {}
-      }));
-
-      setOrders(ordersWithRestaurantDetails);
-      setLoading(false);
+      const ordersData = await response.json();
+      setOrders(ordersData);
+      setTimeout(() => setLoading(false), 200); // 2-second delay before hiding the loader
     } catch (err) {
       console.error("Error fetching orders:", err);
       setError("Failed to load orders. Please try again.");
-      setLoading(false);
+      setTimeout(() => setLoading(false), 200); // 2-second delay even on error
     }
   };
 
   const handleStatusUpdate = async (orderId, newStatus) => {
     try {
-      const orderRef = doc(db, 'orders', orderId);
-      await updateDoc(orderRef, { status: newStatus });
-
-      // Update the local state
+      const idToken = await user.getIdToken();
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/orders/${orderId}/update-status`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ newStatus })
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update order status');
+      }
       setOrders(prevOrders =>
         prevOrders.map(order =>
           order.id === orderId ? { ...order, status: newStatus } : order
@@ -80,12 +69,12 @@ const Orders = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
     <>
       <Header disableCart={true} disableOrders={true}/>
+      <LoadModal loading={loading} />
       <header className="orderHeader">
         <Link to="/" className="back-arrow-orders">&#8592;</Link>
         <h1 className="orderHeading">Orders</h1>
