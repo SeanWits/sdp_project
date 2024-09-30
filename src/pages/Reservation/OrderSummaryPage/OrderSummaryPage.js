@@ -2,9 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../../utils/userContext';
 import { styles } from '../styles';
-import LoadModal from '../../../components/LoadModal/LoadModal';
-import Header from '../../../components/Header/Header';  // Add this import
-import Footer from '../../../components/Footer/Footer';  // Add this import
+import LoadModal from '../../../components/LoadModal/LoadModal'; // Add this import
 
 const OrderSummaryPage = () => {
   const [data, setData] = useState({});
@@ -72,28 +70,24 @@ const OrderSummaryPage = () => {
   };
 
   return (
-    <>
-      <Header /> {/* Add Header */}
-      <div style={styles.pageWrapper}>
-        <LoadModal loading={loading} />
-        <div style={styles.container}>
-          <div style={styles.yellowBox}>
-            <h1>Reservation Summary</h1>
-          </div>
-
-          {!loading && (
-            <>
-              <p><strong>Restaurant:</strong> {data.restaurantName || 'Not specified'}</p>
-              <p><strong>Date:</strong> {formatDate(data.date)}</p>
-              <p><strong>Number of People:</strong> {data.numberOfPeople || 'Not specified'}</p>
-            </>
-          )}
-
-          <button onClick={handleDone} style={styles.button}>Done</button>
+    <div style={styles.pageWrapper}>
+      <LoadModal loading={loading} />
+      <div style={styles.container}>
+        <div style={styles.yellowBox}>
+          <h1>Reservation Summary</h1>
         </div>
+
+        {!loading && (
+          <>
+            <p><strong>Restaurant:</strong> {data.restaurantName || 'Not specified'}</p>
+            <p><strong>Date:</strong> {formatDate(data.date)}</p>
+            <p><strong>Number of People:</strong> {data.numberOfPeople || 'Not specified'}</p>
+          </>
+        )}
+
+        <button onClick={handleDone} style={styles.button}>Done</button>
       </div>
-      <Footer /> {/* Add Footer */}
-    </>
+    </div>
   );
 };
 
