@@ -4,54 +4,67 @@ import React, {useState, useContext, useEffect} from "react";
 import {UserContext} from "../../utils/userContext";
 import {AddReview} from "./AddReview";
 import {db, doc, getDoc} from "../../firebase";
+import meal from "../Meal/Meal";
 
-export function Reviews({restaurantID, mealID}) {
+export function Reviews({restaurantID, mealID, onRatingChanged}) {
     const [reviews, setReviews] = useState([]);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const {user} = useContext(UserContext);
 
     useEffect(() => {
         const fetchReviews = async () => {
-            if (!restaurantID) {
-                console.error("Restaurant ID is required");
-                return;
-            }
             try {
-                const restaurantRef = doc(db, `restaurants/${restaurantID}`);
-                const restaurantDoc = await getDoc(restaurantRef);
-
-                if (!restaurantDoc.exists()) {
-                    console.error("Restaurant not found");
-                    return;
-                }
-
-                const restaurantData = restaurantDoc.data();
-
+                let url;
                 if (mealID) {
-                    // Fetch meal-specific reviews
-                    let mealReviews = [];
-                    const categories = restaurantData.categories || [];
-                    for (let category of categories) {
-                        const menuItems = category.menu_items || [];
-                        for (let item of menuItems) {
-                            if (item.id === mealID) {
-                                mealReviews = item.reviews || [];
-                                break;
-                            }
-                        }
-                        if (mealReviews.length > 0) break;
-                    }
-                    setReviews(mealReviews);
+                    url = `/restaurant/${restaurantID}/mealReviews/${mealID}`;
                 } else {
-                    // Fetch restaurant reviews
-                    setReviews(restaurantData.reviews || []);
+                    url = `/restaurant/${restaurantID}/restaurantReviews`;
                 }
+
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/${url}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch reviews');
+                }
+                const data = await response.json();
+                setReviews(data);
             } catch (error) {
-                console.error("Error fetching reviews:", error);
+                console.error('Error fetching reviews:', error);
+                alert('Failed to fetch reviews');
             }
         };
+
+
         fetchReviews();
+
     }, [restaurantID, mealID]);
+
+    const handleReviewAdded = () => {
+        const fetchReviews = async () => {
+            try {
+                let url;
+                if (mealID) {
+                    url = `/restaurant/${restaurantID}/mealReviews/${mealID}`;
+                } else {
+                    url = `/restaurant/${restaurantID}/restaurantReviews`;
+                }
+
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/${url}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch reviews');
+                }
+                const data = await response.json();
+                setReviews(data);
+            } catch (error) {
+                console.error('Error fetching reviews:', error);
+                alert('Failed to fetch reviews');
+            }
+        };
+
+        fetchReviews();
+        onRatingChanged();
+        togglePopup();
+    };
+
 
     const togglePopup = () => {
         setIsPopupOpen((prev) => !prev);
@@ -64,6 +77,7 @@ export function Reviews({restaurantID, mealID}) {
             togglePopup();
         }
     };
+
 
     return (
         <>
@@ -108,7 +122,7 @@ export function Reviews({restaurantID, mealID}) {
                                 >
                                     <h3 className="centre_no_margin">Date Posted:</h3>
                                     <p id="date_posted_paragraph">
-                                        {review.dateCreated ? new Date(review.dateCreated.seconds * 1000).toLocaleDateString() : 'N/A'}
+                                        {review.dateCreated ? new Date(review.dateCreated._seconds * 1000).toLocaleDateString() : 'N/A'}
                                     </p>
                                 </section>
                             </section>
@@ -127,7 +141,7 @@ export function Reviews({restaurantID, mealID}) {
                     ))}
                 </section>
                 <Popup isOpen={isPopupOpen} onClose={togglePopup}>
-                    <AddReview restaurantID={restaurantID} mealID={mealID}/>
+                    <AddReview restaurantID={restaurantID} mealID={mealID} onReviewAdded={handleReviewAdded}/>
                 </Popup>
             </article>
         </>
