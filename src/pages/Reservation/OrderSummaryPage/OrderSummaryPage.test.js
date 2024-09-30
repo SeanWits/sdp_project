@@ -94,6 +94,23 @@ describe('OrderSummaryPage Component', () => {
     });
   });
 
+  test('handles non-OK fetch response', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: false, // Simulate non-OK response
+      json: () => Promise.resolve({}),
+    });
+    console.error = jest.fn();
+
+    await act(async () => {
+      renderWithContext(<OrderSummaryPage />);
+    });
+
+    await waitFor(() => {
+      expect(console.error).toHaveBeenCalledWith('Error fetching reservation: ', expect.any(Error));
+      expect(mockNavigate).toHaveBeenCalledWith('/');
+    });
+  });
+
   test('handles "Done" button click', async () => {
     global.fetch.mockResolvedValueOnce({
       ok: true,
