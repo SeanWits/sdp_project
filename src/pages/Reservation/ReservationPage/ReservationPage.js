@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { UserContext } from '../../../utils/userContext';
 import { styles } from '../styles';
+import Header from "../../../components/Header/Header"; // Import the Header
+import Footer from "../../../components/Footer/Footer"; // Import the Footer
 
 const ReservationPage = () => {
   const [date, setDate] = useState('');
@@ -123,51 +125,55 @@ const ReservationPage = () => {
   }
 
   return (
-    <div style={styles.pageWrapper}>
-      <div style={styles.container}>
-        <div style={styles.yellowBox}>
-          <h1>Reservation for {restaurant.name}</h1>
+    <>
+      <Header /> {/* Add the Header here */}
+      <div style={styles.pageWrapper}>
+        <div style={styles.container}>
+          <div style={styles.yellowBox}>
+            <h1>Reservation for {restaurant.name}</h1>
+          </div>
+
+          <label htmlFor="date" style={styles.label}>Select Date:</label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            style={styles.input}
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+
+          <label htmlFor="time-slot" style={styles.label}>Select Time Slot:</label>
+          <select
+            id="time-slot"
+            name="time-slot"
+            style={styles.input}
+            value={timeSlot}
+            onChange={(e) => setTimeSlot(e.target.value)}
+          >
+            <option value="">Select a time slot</option>
+            {timeSlots.map((time) => (
+              <option key={time} value={time}>{time}</option>
+            ))}
+          </select>
+
+          <label htmlFor="people" style={styles.label}>Number of People:</label>
+          <input
+            type="number"
+            id="people"
+            name="people"
+            min="1"
+            max="10"
+            style={styles.input}
+            value={people}
+            onChange={(e) => setPeople(Number(e.target.value))}
+          />
+
+          <button onClick={handleConfirm} style={styles.button}>Confirm Reservation</button>
         </div>
-
-        <label htmlFor="date" style={styles.label}>Select Date:</label>
-        <input
-          type="date"
-          id="date"
-          name="date"
-          style={styles.input}
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
-
-        <label htmlFor="time-slot" style={styles.label}>Select Time Slot:</label>
-        <select
-          id="time-slot"
-          name="time-slot"
-          style={styles.input}
-          value={timeSlot}
-          onChange={(e) => setTimeSlot(e.target.value)}
-        >
-          <option value="">Select a time slot</option>
-          {timeSlots.map((time) => (
-            <option key={time} value={time}>{time}</option>
-          ))}
-        </select>
-
-        <label htmlFor="people" style={styles.label}>Number of People:</label>
-        <input
-          type="number"
-          id="people"
-          name="people"
-          min="1"
-          max="10"
-          style={styles.input}
-          value={people}
-          onChange={(e) => setPeople(Number(e.target.value))}
-        />
-
-        <button onClick={handleConfirm} style={styles.button}>Confirm Reservation</button>
       </div>
-    </div>
+      <Footer /> {/* Add the Footer here */}
+    </>
   );
 };
 

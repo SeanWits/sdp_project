@@ -2,10 +2,17 @@ export const styles = {
   pageWrapper: {
     display: 'flex',
     justifyContent: 'center',
+    flexDirection: 'column',
     alignItems: 'center',
     minHeight: '100vh',
     backgroundColor: '#f4f4f9',
   },
+
+  flexContainer: {
+    flex: '1 0 auto', // Allows the container to grow and push the footer down
+  },
+
+
   container: {
     backgroundColor: 'white',
     padding: '30px',
