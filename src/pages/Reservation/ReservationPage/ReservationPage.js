@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import Header from "../../../components/Header/Header";
+import Footer from "../../../components/Footer/Footer";
 import { UserContext } from '../../../utils/userContext';
 import { styles } from '../styles';
 
@@ -7,6 +9,7 @@ const ReservationPage = () => {
   const [date, setDate] = useState('');
   const [timeSlot, setTimeSlot] = useState('');
   const [people, setPeople] = useState(1);
+  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
@@ -26,7 +29,15 @@ const ReservationPage = () => {
       checkActiveReservation();
       checkPerformed.current = true;
     }
-  }, []); // Empty dependency array
+  }, []);
+
+  useEffect(() => {
+    if (date && restaurant) {
+      const slots = generateTimeSlots(restaurant.opening_time, restaurant.closing_time, date);
+      setAvailableTimeSlots(slots);
+      setTimeSlot(''); // Reset time slot when date changes
+    }
+  }, [date, restaurant]);
 
   const checkActiveReservation = async () => {
     try {
@@ -52,23 +63,27 @@ const ReservationPage = () => {
     }
   };
 
-  const generateTimeSlots = (open, close) => {
+  const generateTimeSlots = (open, close, selectedDate) => {
     const timeSlots = [];
     const [openHour, openMin] = open.split(':').map(Number);
     const [closeHour, closeMin] = close.split(':').map(Number);
 
-    let currentHour = openHour;
-    let currentMin = openMin;
+    let currentDate = new Date(selectedDate);
+    currentDate.setHours(openHour, openMin, 0, 0);
 
-    while (currentHour < closeHour || (currentHour === closeHour && currentMin <= closeMin)) {
-      const formattedTime = `${String(currentHour).padStart(2, '0')}:${String(currentMin).padStart(2, '0')}`;
-      timeSlots.push(formattedTime);
+    const closeDate = new Date(selectedDate);
+    closeDate.setHours(closeHour, closeMin, 0, 0);
 
-      currentMin += 30;
-      if (currentMin >= 60) {
-        currentHour += 1;
-        currentMin = 0;
+    const now = new Date();
+    const isToday = now.toDateString() === currentDate.toDateString();
+
+    while (currentDate < closeDate) {
+      if (!isToday || currentDate > now) {
+        const formattedTime = currentDate.toTimeString().slice(0, 5);
+        timeSlots.push(formattedTime);
       }
+
+      currentDate.setMinutes(currentDate.getMinutes() + 30);
     }
 
     return timeSlots;
@@ -123,51 +138,58 @@ const ReservationPage = () => {
   }
 
   return (
-    <div style={styles.pageWrapper}>
-      <div style={styles.container}>
-        <div style={styles.yellowBox}>
-          <h1>Reservation for {restaurant.name}</h1>
+    <>
+      <Header />
+      <div style={styles.pageWrapper}>
+        <div style={styles.container}>
+          <div style={styles.yellowBox}>
+            <h1>Reservation for {restaurant.name}</h1>
+          </div>
+
+          <label htmlFor="date" style={styles.label}>Select Date:</label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            style={styles.input}
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+
+          <label htmlFor="time-slot" style={styles.label}>Select Time Slot:</label>
+          <select
+            id="time-slot"
+            name="time-slot"
+            style={styles.input}
+            value={timeSlot}
+            onChange={(e) => setTimeSlot(e.target.value)}
+            disabled={!date}
+          >
+            <option value="">Select a time slot</option>
+            {availableTimeSlots.map((time) => (
+              <option key={time} value={time}>{time}</option>
+            ))}
+          </select>
+
+          <label htmlFor="people" style={styles.label}>Number of People:</label>
+          <input
+            type="number"
+            id="people"
+            name="people"
+            min="1"
+            max="10"
+            style={styles.input}
+            value={people}
+            onChange={(e) => setPeople(Number(e.target.value))}
+          />
+
+          <button onClick={handleConfirm} style={styles.button} disabled={!date || !timeSlot}>
+            Confirm Reservation
+          </button>
         </div>
-
-        <label htmlFor="date" style={styles.label}>Select Date:</label>
-        <input
-          type="date"
-          id="date"
-          name="date"
-          style={styles.input}
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
-
-        <label htmlFor="time-slot" style={styles.label}>Select Time Slot:</label>
-        <select
-          id="time-slot"
-          name="time-slot"
-          style={styles.input}
-          value={timeSlot}
-          onChange={(e) => setTimeSlot(e.target.value)}
-        >
-          <option value="">Select a time slot</option>
-          {timeSlots.map((time) => (
-            <option key={time} value={time}>{time}</option>
-          ))}
-        </select>
-
-        <label htmlFor="people" style={styles.label}>Number of People:</label>
-        <input
-          type="number"
-          id="people"
-          name="people"
-          min="1"
-          max="10"
-          style={styles.input}
-          value={people}
-          onChange={(e) => setPeople(Number(e.target.value))}
-        />
-
-        <button onClick={handleConfirm} style={styles.button}>Confirm Reservation</button>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 

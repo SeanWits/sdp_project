@@ -75,4 +75,19 @@ export const styles = {
     cursor: 'pointer',
     transition: 'background-color 0.3s',
   },
+
+  // Add these to your styles object
+errorMessage: {
+  color: 'red',
+  marginBottom: '15px',
+},
+retryButton: {
+  marginTop: '15px',
+  padding: '10px',
+  backgroundColor: '#fcb040',
+  color: '#003b5c',
+  border: 'none',
+  borderRadius: '5px',
+  cursor: 'pointer',
+},
 };
