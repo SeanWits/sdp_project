@@ -1,28 +1,27 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import App from './App';
 
-// Mock the UserProvider
+// Mock all the page components
+jest.mock('./pages/Restaurant/Restaurant', () => () => <div data-testid="restaurant-page">Restaurant Page</div>);
+jest.mock('./pages/Login/Login', () => () => <div data-testid="login-page">Login Page</div>);
+jest.mock('./pages/Register/Register', () => () => <div data-testid="register-page">Register Page</div>);
+jest.mock('./pages/Checkout/Checkout', () => () => <div data-testid="checkout-page">Checkout Page</div>);
+jest.mock('./pages/Orders/Orders', () => () => <div data-testid="orders-page">Orders Page</div>);
+jest.mock('./pages/Admin/Admin', () => () => <div data-testid="admin-page">Admin Page</div>);
+jest.mock('./pages/Dashboard/Dashboard', () => () => <div data-testid="dashboard-page">Dashboard Page</div>);
+jest.mock('./pages/Menu/Menu', () => () => <div data-testid="menu-page">Menu Page</div>);
+jest.mock('./pages/Meal/Meal', () => () => <div data-testid="meal-page">Meal Page</div>);
+jest.mock('./pages/RestaurantInfo/RestaurantInfo', () => () => <div data-testid="restaurant-info-page">Restaurant Info Page</div>);
+jest.mock('./pages/Reservation/ReservationPage/ReservationPage', () => () => <div data-testid="reservation-page">Reservation Page</div>);
+jest.mock('./pages/Reservation/OrderSummaryPage/OrderSummaryPage', () => () => <div data-testid="order-summary-page">Order Summary Page</div>);
+jest.mock('./pages/Reservation/HistoryPage/HistoryPage', () => () => <div data-testid="history-page">History Page</div>);
+jest.mock('./pages/Sean', () => () => <div data-testid="sean-page">Sean Page</div>);
+
+// Mock UserProvider
 jest.mock('./utils/userContext', () => ({
   UserProvider: ({ children }) => <div data-testid="user-provider">{children}</div>,
 }));
-
-// Mock all the page components
-jest.mock('./pages/Restaurant/Restaurant', () => () => <div>Restaurant Page</div>);
-jest.mock('./pages/Login/Login', () => () => <div>Login Page</div>);
-jest.mock('./pages/Register/Register', () => () => <div>Register Page</div>);
-jest.mock('./pages/Checkout/Checkout', () => () => <div>Checkout Page</div>);
-jest.mock('./pages/Orders/Orders', () => () => <div>Orders Page</div>);
-jest.mock('./pages/Admin/Admin', () => () => <div>Admin Page</div>);
-jest.mock('./pages/Dashboard/Dashboard', () => () => <div>Dashboard Page</div>);
-jest.mock('./pages/Menu/Menu', () => () => <div>Menu Page</div>);
-jest.mock('./pages/Meal/Meal', () => () => <div>Meal Page</div>);
-jest.mock('./pages/RestaurantInfo/RestaurantInfo', () => () => <div>Restaurant Info Page</div>);
-jest.mock('./pages/Reservation/ReservationPage/ReservationPage', () => () => <div>Reservation Page</div>);
-jest.mock('./pages/Reservation/OrderSummaryPage/OrderSummaryPage', () => () => <div>Order Summary Page</div>);
-jest.mock('./pages/Reservation/HistoryPage/HistoryPage', () => () => <div>History Page</div>);
-jest.mock('./pages/Sean', () => () => <div>Sean Page</div>);
 
 const renderWithRouter = (ui, { route = '/' } = {}) => {
   return render(
@@ -34,77 +33,78 @@ const renderWithRouter = (ui, { route = '/' } = {}) => {
 
 describe('App Component', () => {
   test('renders UserProvider', () => {
-    renderWithRouter(<App />);
+    renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />);
     expect(screen.getByTestId('user-provider')).toBeInTheDocument();
   });
 
   test('renders Restaurant page on default route', () => {
-    renderWithRouter(<App />);
-    expect(screen.getByText('Restaurant Page')).toBeInTheDocument();
+    renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />);
+    expect(screen.getByTestId('restaurant-page')).toBeInTheDocument();
   });
 
   test('renders Login page on /login route', () => {
-    renderWithRouter(<App />, { route: '/login' });
-    expect(screen.getByText('Login Page')).toBeInTheDocument();
+    renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />, { route: '/login' });
+    expect(screen.getByTestId('login-page')).toBeInTheDocument();
   });
 
   test('renders Register page on /register route', () => {
-    renderWithRouter(<App />, { route: '/register' });
-    expect(screen.getByText('Register Page')).toBeInTheDocument();
+    renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />, { route: '/register' });
+    expect(screen.getByTestId('register-page')).toBeInTheDocument();
   });
 
   test('renders Checkout page on /checkout route', () => {
-    renderWithRouter(<App />, { route: '/checkout' });
-    expect(screen.getByText('Checkout Page')).toBeInTheDocument();
+    renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />, { route: '/checkout' });
+    expect(screen.getByTestId('checkout-page')).toBeInTheDocument();
   });
 
   test('renders Orders page on /orders route', () => {
-    renderWithRouter(<App />, { route: '/orders' });
-    expect(screen.getByText('Orders Page')).toBeInTheDocument();
+    renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />, { route: '/orders' });
+    expect(screen.getByTestId('orders-page')).toBeInTheDocument();
   });
 
   test('renders Admin page on /admin route', () => {
-    renderWithRouter(<App />, { route: '/admin' });
-    expect(screen.getByText('Admin Page')).toBeInTheDocument();
+    renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />, { route: '/admin' });
+    expect(screen.getByTestId('admin-page')).toBeInTheDocument();
   });
 
   test('renders Dashboard page on /dashboard route', () => {
-    renderWithRouter(<App />, { route: '/dashboard' });
-    expect(screen.getByText('Dashboard Page')).toBeInTheDocument();
+    renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />, { route: '/dashboard' });
+    expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
   });
 
   test('renders Menu page on /menu/:restaurantId route', () => {
-    renderWithRouter(<App />, { route: '/menu/123' });
-    expect(screen.getByText('Menu Page')).toBeInTheDocument();
+    renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />, { route: '/menu/123' });
+    expect(screen.getByTestId('menu-page')).toBeInTheDocument();
   });
 
   test('renders Meal page on /menu/:restaurantId/:itemName route', () => {
-    renderWithRouter(<App />, { route: '/menu/123/burger' });
-    expect(screen.getByText('Meal Page')).toBeInTheDocument();
+    renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />, { route: '/menu/123/burger' });
+    expect(screen.getByTestId('meal-page')).toBeInTheDocument();
   });
 
   test('renders RestaurantInfo page on /restaurant-info/:id route', () => {
-    renderWithRouter(<App />, { route: '/restaurant-info/123' });
-    expect(screen.getByText('Restaurant Info Page')).toBeInTheDocument();
+    renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />, { route: '/restaurant-info/123' });
+    expect(screen.getByTestId('restaurant-info-page')).toBeInTheDocument();
   });
 
   test('renders ReservationPage on /reservation/:id route', () => {
-    renderWithRouter(<App />, { route: '/reservation/123' });
-    expect(screen.getByText('Reservation Page')).toBeInTheDocument();
+    renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />, { route: '/reservation/123' });
+    expect(screen.getByTestId('reservation-page')).toBeInTheDocument();
   });
 
   test('renders OrderSummaryPage on /order-summary route', () => {
-    renderWithRouter(<App />, { route: '/order-summary' });
-    expect(screen.getByText('Order Summary Page')).toBeInTheDocument();
+    renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />, { route: '/order-summary' });
+    expect(screen.getByTestId('order-summary-page')).toBeInTheDocument();
   });
 
   test('renders HistoryPage on /history route', () => {
-    renderWithRouter(<App />, { route: '/history' });
-    expect(screen.getByText('History Page')).toBeInTheDocument();
+    renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />, { route: '/history' });
+    expect(screen.getByTestId('history-page')).toBeInTheDocument();
   });
 
   test('renders Sean page on /sean route', () => {
-    renderWithRouter(<App />, { route: '/sean' });
-    expect(screen.getByText('Sean Page')).toBeInTheDocument();
+    renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />, { route: '/sean' });
+    expect(screen.getByTestId('sean-page')).toBeInTheDocument();
   });
+
 });

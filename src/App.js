@@ -1,9 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import firebase from "firebase/compat/app";
-// Required for side-effects
-import "firebase/firestore";
 import Checkout from './pages/Checkout/Checkout';
 import Orders from './pages/Orders/Orders';
 import Register from './pages/Register/Register'
@@ -20,10 +17,10 @@ import { UserProvider } from './utils/userContext';
 import RestaurantInfo from './pages/RestaurantInfo/RestaurantInfo';
 import Sean from './pages/Sean';
 
-function App() {
+function App({ RouterComponent = Router }) {
   return (
     <UserProvider>
-      <Router>
+      <RouterComponent>
         <div className="App">
           <Routes>
             <Route path="/" element={<Restaurant />} />
@@ -42,8 +39,9 @@ function App() {
             <Route path="/sean" element={<Sean />} />
           </Routes>
         </div>
-      </Router>
+      </RouterComponent>
     </UserProvider>
   );
 }
+
 export default App;
