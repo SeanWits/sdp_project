@@ -3,8 +3,6 @@ import Popup from "./Popup/Popup";
 import React, {useState, useContext, useEffect} from "react";
 import {UserContext} from "../../utils/userContext";
 import {AddReview} from "./AddReview";
-import {db, doc, getDoc} from "../../firebase";
-import meal from "../Meal/Meal";
 
 export function Reviews({restaurantID, mealID, onRatingChanged}) {
     const [reviews, setReviews] = useState([]);

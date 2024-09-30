@@ -1,6 +1,5 @@
 import {useContext, useState} from "react";
-import {db, doc, updateDoc, serverTimestamp, auth} from "../../firebase";
-import {arrayRemove, runTransaction, arrayUnion, Timestamp} from "firebase/firestore";
+import {auth} from "../../firebase";
 import {UserContext} from "../../utils/userContext";
 import "./Reviews.css"
 

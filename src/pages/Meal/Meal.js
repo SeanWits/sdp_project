@@ -1,8 +1,6 @@
 import React, {useState, useEffect, useContext} from "react";
 import {Link, useLocation, useParams, useNavigate} from "react-router-dom";
 import "./Meal.css";
-import {collection, db} from '../../firebase';
-import {doc, getDoc, setDoc, updateDoc, arrayUnion, getDocs, query, where} from 'firebase/firestore';
 import {UserContext} from '../../utils/userContext';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
