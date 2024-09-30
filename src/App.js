@@ -2,9 +2,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import firebase from "firebase/compat/app";
-// Required for side-effects
-import "firebase/firestore";
 import Checkout from './pages/Checkout/Checkout';
 import Orders from './pages/Orders/Orders';
 import Register from './pages/Register/Register'
@@ -21,10 +18,10 @@ import { UserProvider } from './utils/userContext';
 import RestaurantInfo from './pages/RestaurantInfo/RestaurantInfo';
 import Sean from './pages/Sean';
 
-function App() {
+function App({ RouterComponent = Router }) {
   return (
     <UserProvider>
-      <Router>
+      <RouterComponent>
         <div className="App">
           <Routes>
             <Route path="/" element={<Restaurant />} />
@@ -43,49 +40,9 @@ function App() {
             <Route path="/sean" element={<Sean />} />
           </Routes>
         </div>
-      </Router>
+      </RouterComponent>
     </UserProvider>
   );
 }
-export default App;
-
-
-/*
-
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import './App.css';
-import Checkout from './pages/Checkout/Checkout';
-import Orders from './pages/Orders/Orders';
-import Register from './pages/Register/Register'
-import Login from './pages/Login/Login';
-import Restaurant from "./pages/Restaurant/Restaurant";
-import Menu from "./pages/Menu/Menu";
-import Meal from "./pages/Meal/Meal";
-import MenuInfo from "./pages/MenuInfo/MenuInfo";
-import Dashboard from './pages/Dashboard/Dashboard';
-import ReservationPage from './pages/Reservation/ReservationPage/ReservationPage';
-import OrderSummaryPage from './pages/Reservation/OrderSummaryPage/OrderSummaryPage';
-import HistoryPage from './pages/Reservation/HistoryPage/HistoryPage';
-import { auth } from './firebase';
-
-function App() {
-  return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<Restaurant />} />
-          
-          <Route path="/order-summary" element={<OrderSummaryPage />} />
-          <Route path="/history" element={<HistoryPage />} />
-        </Routes>
-      </div>
-    </Router>
-  );
-}
 
 export default App;
-
-//<Route path="/" element={<ReservationPage />} />
-
-*/
