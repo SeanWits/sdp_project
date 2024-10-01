@@ -48,11 +48,11 @@ function Restaurant() {
                         <section id="main-section">
                             <div id="restaurant-summary">
                                 <h2>{restaurant.name}</h2>
-                                <p>Location: {restaurant.location}</p>
+                                <p><b>Location:</b> {restaurant.location}</p>
                                 <p>
-                                    Hours: {restaurant.opening_time} - {restaurant.closing_time}
+                                    <b>Hours:</b> {restaurant.opening_time} - {restaurant.closing_time}
                                 </p>
-                                <p>Rating: {restaurant.rating || 'No Rating'}</p>
+                                <p><b>Rating:</b> {restaurant.rating || 'No Rating'}</p>
                             </div>
                             <div className="composite-buttons">
                                 <Link to={`/menu/${restaurant.id}`} state={{restaurant}}>
