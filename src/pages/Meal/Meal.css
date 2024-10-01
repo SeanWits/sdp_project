@@ -1,11 +1,3 @@
-.menuHeader {
-    height: 60px;
-    background-color: #003B5C;
-    color: white;
-    text-align: center;
-    margin-bottom: 20px;
-    align-content: center;
-}
 
 #mainThing {
     display: flex;
@@ -48,17 +40,17 @@
     max-height: 250px; /* Adjust as needed */
     object-fit: cover;
     border-radius: 8px;
-  }
+}
 
-  .MealDivBox{
+.MealDivBox {
     width: 250px;
     height: 100px;
     padding: 20px;
     margin-bottom: 30px;
     text-align: left;
     background-color: #FCB040;
-  }
+}
 
-  #mealButton{
+#mealButton {
     font-size: 20px;
-  }
+}
