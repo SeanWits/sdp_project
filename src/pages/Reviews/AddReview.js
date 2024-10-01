@@ -1,16 +1,19 @@
-import {useContext, useState} from "react";
+import React, {useContext, useState} from "react";
 import {auth} from "../../firebase";
 import {UserContext} from "../../utils/userContext";
 import "./Reviews.css"
+import LoadModal from "../../components/LoadModal/LoadModal";
 
 export function AddReview({restaurantID, mealID, onReviewAdded}) {
     const [rating, setRating] = useState(0);
     const [review, setReview] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const {user} = useContext(UserContext);
 
 
     const addReview = async () => {
+        setLoading(true);
         if (!rating) {
             alert('Please select a rating');
             return;
@@ -53,6 +56,7 @@ export function AddReview({restaurantID, mealID, onReviewAdded}) {
             console.error('Error adding review:', error);
             alert('Failed to add review. Please try again.');
         }
+        setTimeout(() => setLoading(false), 200);
     };
 
 
@@ -66,6 +70,8 @@ export function AddReview({restaurantID, mealID, onReviewAdded}) {
                 rel="stylesheet"
                 href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
             />
+            <LoadModal loading={loading}/>
+
             <article id={"add_review_page"}>
                 <header className={"header2"} id="reviews_header">
                     <h2 className={"centre_no_margin"}>Review {mealID ? "Meal" : "Restaurant"}</h2>
