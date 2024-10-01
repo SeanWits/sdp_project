@@ -4,6 +4,6 @@
     align-items: center;
     background-color: rgba(252, 176, 64, 1);
     bottom: 0;
-    position: fixed;
+    position: relative;
     width: -webkit-fill-available;
 }
