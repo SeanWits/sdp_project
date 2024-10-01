@@ -1,15 +1,48 @@
-.menuHeader {
-    height: 60px;
-    background-color: #003B5C;
-    color: white;
-    text-align: center;
-    margin-bottom: 20px;
-    align-content: center;
+
+#meal-details-section {
+    display: flex;
+    height: 350px;
+    justify-content: space-between;
+    width: 90%;
+    position: relative;
+    left: 5%;
+    padding-block: 0;
+    background-color: #FCB040;
+    margin-block: 2%;
 }
 
-#mainThing {
-    display: flex;
+.MealDivBox h4 {
+    font-size: 1.3em;
+    margin: 0;
+    padding-block-start: 2%;
+    padding-block-end: 2%;
 }
+
+.MealDivBox #description_heading {
+    padding-block-start: 5%;
+    padding-block-end: 2%;
+}
+
+.MealDivBox p {
+    margin: 0;
+    padding-block-end: 2%;
+}
+
+#meal-details-section #meal-details-article {
+    width: 50%;
+}
+
+#meal-image-article {
+    width: 34%;
+}
+
+.restaurant-list h3 {
+    margin: 0;
+    padding-block: 25px;
+    font-size: 1.3em;
+    color: #353535;
+}
+
 
 .menu3DivBox {
     width: 400px;
@@ -17,9 +50,6 @@
     background-color: #FCB040;
 }
 
-#longerThings {
-    height: 200px;
-}
 
 #reviews {
     margin-right: 5%;
@@ -43,22 +73,82 @@
     color: white; /* Assuming you want white text on the dark background */
 }
 
+.dietary-tag {
+    padding-block: 1%;
+    padding-inline: 5%;
+    margin-inline-end: 2%;
+    background-color: #cbd5dd;
+    border-radius: 15px;
+}
+
 .item-image {
-    width: 30%; /* Adjust as needed */
-    max-height: 250px; /* Adjust as needed */
+    max-width: 100%;
+    height: 100%;
     object-fit: cover;
-    border-radius: 8px;
-  }
+}
 
-  .MealDivBox{
-    width: 250px;
-    height: 100px;
-    padding: 20px;
-    margin-bottom: 30px;
-    text-align: left;
+.MealDivBox {
+    width: 100%;
+    height: 100%;
     background-color: #FCB040;
-  }
+}
 
-  #mealButton{
+#longerThings {
+    padding-inline-start: 5%;
+    width: 95%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-evenly;
+}
+
+#dietary_tags {
+    padding-block-end: 5%;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+#mealButton {
     font-size: 20px;
-  }
+}
+
+#view_reviews_section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 70%;
+}
+
+#customise_order {
+    width: 95%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.flex.flex-col {
+    margin-block-start: 2%;
+}
+
+#total_text {
+    font-size: 1.3em;
+}
+
+#customise_and_pay_article {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 25%;
+}
+
+#payment_section {
+    height: 50%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-block-start: 5%;
+}

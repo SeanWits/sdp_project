@@ -1,90 +1,64 @@
-import {useContext, useState} from "react";
-import {db, doc, updateDoc, serverTimestamp} from "../../firebase";
-import {arrayRemove, runTransaction, arrayUnion, Timestamp} from "firebase/firestore";
+import React, {useContext, useState} from "react";
+import {auth} from "../../firebase";
 import {UserContext} from "../../utils/userContext";
 import "./Reviews.css"
+import LoadModal from "../../components/LoadModal/LoadModal";
 
-export function AddReview({restaurantID, mealID}) {
+export function AddReview({restaurantID, mealID, onReviewAdded}) {
     const [rating, setRating] = useState(0);
     const [review, setReview] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const {user} = useContext(UserContext);
 
+
     const addReview = async () => {
-        if (!user) {
-            console.error("User not signed in");
+        setLoading(true);
+        if (!rating) {
+            alert('Please select a rating');
             return;
         }
 
+        const user_id = auth.currentUser.uid;
         const reviewData = {
-            user_id: user.uid,
             rating: rating,
-            review: review,
-            dateCreated: Timestamp.now() // Use Timestamp.now() instead of serverTimestamp()
+            review: review
         };
 
         try {
-            const restaurantRef = doc(db, `restaurants/${restaurantID}`);
-
-            if (!mealID) {
-                // Restaurant review
-                await runTransaction(db, async (transaction) => {
-                    const restaurantDoc = await transaction.get(restaurantRef);
-                    if (!restaurantDoc.exists()) {
-                        throw "Restaurant document does not exist!";
-                    }
-
-                    const reviews = restaurantDoc.data().reviews || [];
-                    const updatedReviews = reviews.filter(r => r.user_id !== user.uid);
-                    updatedReviews.push(reviewData);
-
-                    transaction.update(restaurantRef, {reviews: updatedReviews});
-                });
+            const idToken = await auth.currentUser.getIdToken();
+            let url;
+            if (mealID) {
+                url = `/restaurant/${restaurantID}/mealReview/${mealID}/${user_id}`;
             } else {
-                // Meal review
-                await runTransaction(db, async (transaction) => {
-                    const restaurantDoc = await transaction.get(restaurantRef);
-                    if (!restaurantDoc.exists()) {
-                        throw "Restaurant document does not exist!";
-                    }
-
-                    const restaurantData = restaurantDoc.data();
-                    let categories = restaurantData.categories || [];
-                    let updated = false;
-
-                    for (let category of categories) {
-                        let menuItems = category.menu_items || [];
-                        for (let item of menuItems) {
-                            if (item.id === mealID) {
-                                let reviews = item.reviews || [];
-                                // Remove existing review by this user, if any
-                                reviews = reviews.filter(r => r.user_id !== user.uid);
-                                // Add the new review
-                                reviews.push(reviewData);
-                                item.reviews = reviews;
-                                updated = true;
-                                break;
-                            }
-                        }
-                        if (updated) break;
-                    }
-
-                    if (!updated) {
-                        throw "Meal not found in the restaurant's menu!";
-                    }
-
-                    transaction.update(restaurantRef, {categories: categories});
-                });
+                url = `/restaurant/${restaurantID}/restaurantReview/${user_id}`;
             }
 
-            alert(`${mealID ? "Meal" : "Restaurant"} review added successfully`);
-            // Reset form fields
-            setRating(0);
-            setReview("");
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/${url}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${idToken}`
+                },
+                body: JSON.stringify(reviewData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to add review');
+            }
+
+            const result = await response.json();
+            console.log('Review added successfully:', result);
+            alert('Review added successfully');
+            // Handle successful review submission (e.g., close modal, refresh reviews)
+            onReviewAdded();
         } catch (error) {
-            console.error("Error adding review: ", error);
+            console.error('Error adding review:', error);
+            alert('Failed to add review. Please try again.');
         }
+        setTimeout(() => setLoading(false), 200);
     };
+
 
     const handleStarClick = (starRating) => {
         setRating(starRating);
@@ -96,6 +70,8 @@ export function AddReview({restaurantID, mealID}) {
                 rel="stylesheet"
                 href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
             />
+            <LoadModal loading={loading}/>
+
             <article id={"add_review_page"}>
                 <header className={"header2"} id="reviews_header">
                     <h2 className={"centre_no_margin"}>Review {mealID ? "Meal" : "Restaurant"}</h2>

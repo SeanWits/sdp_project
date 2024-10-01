@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate, useLocation } from "react-router-dom";
+import React, {useState, useEffect, useContext} from 'react';
+import {useNavigate, useLocation, Link} from "react-router-dom";
 import "./Header.css";
-import { UserContext } from '../../utils/userContext';
+import {UserContext} from '../../utils/userContext';
 import Cart from '../Cart/Cart';
+import {Hint} from "../Hint/hint";
 
-function Header({ disableCart = false, disableOrders = false }) {
+function Header({disableCart = false, disableOrders = false}) {
     const navigate = useNavigate();
     const location = useLocation();
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [cartItems, setCartItems] = useState([]);
     const [cartItemCount, setCartItemCount] = useState(0);
-    const { user } = useContext(UserContext);
+    const {user} = useContext(UserContext);
     const restaurantID = "rest001";
 
     useEffect(() => {
@@ -93,27 +94,40 @@ function Header({ disableCart = false, disableOrders = false }) {
                     <p id="logo_label">Campus Bites</p>
                 </section>
                 <section id="icons_on_header">
+                    <Hint hintText={"View your reservations"}>
+                        <Link to={"/history"}>
+                        <span className="material-symbols-outlined icon">
+                            event
+                        </span>
+                        </Link>
+                    </Hint>
+                    <Hint hintText={"View your account dashboard"}>
                     <span
                         className="material-symbols-outlined icon"
                         onClick={() => handleNavigation("/dashboard")}
                     >
                         person
                     </span>
+                    </Hint>
+                    <Hint hintText={"View your orders"}>
                     <span
                         className={`material-symbols-outlined icon ${disableOrders ? 'disabled' : ''}`}
                         onClick={handleOrdersClick}
                     >
                         receipt
                     </span>
-                    <div
-                        className={`cart-icon-container-header ${disableCart ? 'disabled' : ''}`}
-                        onClick={toggleCart}
-                    >
+                    </Hint>
+                    <Hint hintText={"View your cart"}>
+                        <div
+                            className={`cart-icon-container-header ${disableCart ? 'disabled' : ''}`}
+                            onClick={toggleCart}
+                        >
                         <span className="material-symbols-outlined icon">
                             shopping_basket
                         </span>
-                        {cartItemCount > 0 && <span className="cart-counter">{cartItemCount}</span>}
-                    </div>
+                            {cartItemCount > 0 && <span className="cart-counter">{cartItemCount}</span>}
+                        </div>
+                    </Hint>
                 </section>
             </header>
             {!disableCart && user && (

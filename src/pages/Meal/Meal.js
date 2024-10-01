@@ -1,8 +1,6 @@
 import React, {useState, useEffect, useContext} from "react";
 import {Link, useLocation, useParams, useNavigate} from "react-router-dom";
 import "./Meal.css";
-import {collection, db} from '../../firebase';
-import {doc, getDoc, setDoc, updateDoc, arrayUnion, getDocs, query, where} from 'firebase/firestore';
 import {UserContext} from '../../utils/userContext';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
@@ -33,7 +31,7 @@ function Meal() {
         const fetchItem = async () => {
             if (!item) {
                 try {
-                    const response = await fetch(`${process.env.REACT_APP_API_URL}/${restaurantId}/menu-item/${encodeURIComponent(itemName)}`);
+                    const response = await fetch(`${process.env.REACT_APP_API_URL}/restaurant/${restaurantId}/menu-item/${encodeURIComponent(itemName)}`);
                     if (!response.ok) {
                         throw new Error('Failed to fetch menu item');
                     }
@@ -46,37 +44,10 @@ function Meal() {
                 }
                 setLoading(false);
             }
-            setLoading(true);
-            try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/restaurant/${restaurantId}/mealReviews`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch meal reviews');
-                }
-                const data = await response.json();
-                setReviews(data);
-            } catch (err) {
-                console.error("Error fetching reviews:", err);
-                setError("Failed to load review data");
-            }
-            setLoading(false);
         };
 
         fetchItem();
     }, [restaurantId, itemName, item]);
-
-    let averageRating = 0;
-    let countRating = 0;
-
-    console.log(reviews);
-
-    for (let doc in reviews) {
-        console.log(reviews[doc].productID);
-        if (reviews[doc].productID == item.productID) {
-            averageRating += reviews[doc].rating;
-            countRating++;
-        }
-    }
-    averageRating /= countRating;
 
     const handleAddToCart = async () => {
         if (!user) {
@@ -115,6 +86,21 @@ function Meal() {
         }
     };
 
+    const handleRatingChanged = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/restaurant/${restaurantId}/menu-item/${encodeURIComponent(itemName)}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch menu item');
+            }
+            const data = await response.json();
+            setItem(data.item);
+            setRestaurantName(data.restaurantName);
+        } catch (err) {
+            console.error("Error fetching item:", err);
+            setError("Failed to load item data");
+        }
+    };
+
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
     if (!item) return <div>No item data available</div>;
@@ -125,22 +111,43 @@ function Meal() {
             <div className="restaurant-list">
                 <header className="menuHeader">
                     <Link to={`/menu/${restaurantId}`} className="back-arrow">
-                        &#8592;
+                        <span className="material-symbols-outlined icon filled">
+                            arrow_back_ios_new
+                        </span>
                     </Link>
                     {restaurantName}
                 </header>
-                <h1>{item.name}</h1>
+                <h3>{item.name}</h3>
                 <div className="separator-line"></div>
-                <section id="mainThing">
-                    <article>
+                <section id="meal-details-section">
+                    <article id={"meal-details-article"}>
                         <div className="MealDivBox" id="longerThings">
+                            <h4 id={"description_heading"}><b>Description</b></h4>
                             <p>{item.description}</p>
-                            <p>Rating: {averageRating}</p>
+                            <h4><b>Rating</b></h4>
+                            <section id="view_reviews_section">
+                                <p>{item.rating ? `${item.rating}/5` : "No Rating"}</p>
+                                <button className="menuButton" id="menuInfoButton" onClick={togglePopup}>
+                                    Click For Reviews
+                                </button>
+                            </section>
+                            <h4><b>Dietary Tags</b></h4>
+                            <section id={"dietary_tags"}>
+                                {item.dietary_tags && item.dietary_tags.length > 0 ? (
+                                    item.dietary_tags.map((tag, index) => (
+                                        <span key={index} className="dietary-tag">
+                                            {tag}
+                                        </span>
+                                    ))
+                                ) : (
+                                    <span>No dietary tags available</span>
+                                )}
+                            </section>
                         </div>
                     </article>
-                    <article>
-                        <div className="MealDivBox">
-                            <h3 className="text-lg font-semibold mb-2">Customise order</h3>
+                    <article id={"customise_and_pay_article"}>
+                        <div className="MealDivBox" id={"customise_order"}>
+                            <h4 id={"description_heading"} className="text-lg font-semibold mb-2">Customise order</h4>
                             <div className="flex flex-col">
                                 <label className="flex flex-col mb-2">
                                     <input
@@ -165,25 +172,27 @@ function Meal() {
                                 </label>
                             </div>
                         </div>
-                        Total: R{item.price.toFixed(2)}{" "}
-                        <button
-                            className="menuButton"
-                            id="mealButton"
-                            onClick={handleAddToCart}
-                        >
-                            Add to cart
-                        </button>
+                        <section id={"payment_section"}>
+                            <p id={"total_text"}>
+                                <b>Total</b>: R{item.price.toFixed(2)}{" "}
+                            </p>
+                            <button
+                                className="menuButton"
+                                id="mealButton"
+                                onClick={handleAddToCart}
+                            >
+                                Add to cart
+                            </button>
+                        </section>
                     </article>
-                    <img src={item.image_url} alt={item.name} className="item-image"/>
+                    <article id={"meal-image-article"}>
+                        <img src={item.image_url} alt={item.name} className="item-image"/>
+                    </article>
                 </section>
                 <div className="separator-line"></div>
 
-                <button className="menuButton" id="menuInfoButton" onClick={togglePopup}>
-                    Click For Review
-                </button>
-
                 <Popup isOpen={isPopupOpen} onClose={togglePopup}>
-                    <Reviews restaurantID={restaurantId} mealID={item.productID}/>
+                    <Reviews restaurantID={restaurantId} mealID={item.productID} onRatingChanged={handleRatingChanged}/>
                 </Popup>
             </div>
             <Footer/>
