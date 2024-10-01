@@ -13,9 +13,10 @@
     color: white;
     font-size: 22px;
     font-weight: bold;
-    text-align: center;
-    align-content: center;
+    display: flex;
     height: 70px;
+    align-items: center;
+    justify-content: center;
 }
 
 #restaurant-summary p {

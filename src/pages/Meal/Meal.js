@@ -111,22 +111,43 @@ function Meal() {
             <div className="restaurant-list">
                 <header className="menuHeader">
                     <Link to={`/menu/${restaurantId}`} className="back-arrow">
-                        &#8592;
+                        <span className="material-symbols-outlined icon filled">
+                            arrow_back_ios_new
+                        </span>
                     </Link>
                     {restaurantName}
                 </header>
-                <h1>{item.name}</h1>
+                <h3>{item.name}</h3>
                 <div className="separator-line"></div>
-                <section id="mainThing">
-                    <article>
+                <section id="meal-details-section">
+                    <article id={"meal-details-article"}>
                         <div className="MealDivBox" id="longerThings">
+                            <h4 id={"description_heading"}><b>Description</b></h4>
                             <p>{item.description}</p>
-                            <p>Rating: {item.rating || "No Rating."}</p>
+                            <h4><b>Rating</b></h4>
+                            <section id="view_reviews_section">
+                                <p>{item.rating ? `${item.rating}/5` : "No Rating"}</p>
+                                <button className="menuButton" id="menuInfoButton" onClick={togglePopup}>
+                                    Click For Reviews
+                                </button>
+                            </section>
+                            <h4><b>Dietary Tags</b></h4>
+                            <section id={"dietary_tags"}>
+                                {item.dietary_tags && item.dietary_tags.length > 0 ? (
+                                    item.dietary_tags.map((tag, index) => (
+                                        <span key={index} className="dietary-tag">
+                                            {tag}
+                                        </span>
+                                    ))
+                                ) : (
+                                    <span>No dietary tags available</span>
+                                )}
+                            </section>
                         </div>
                     </article>
-                    <article>
-                        <div className="MealDivBox">
-                            <h3 className="text-lg font-semibold mb-2">Customise order</h3>
+                    <article id={"customise_and_pay_article"}>
+                        <div className="MealDivBox" id={"customise_order"}>
+                            <h4 id={"description_heading"} className="text-lg font-semibold mb-2">Customise order</h4>
                             <div className="flex flex-col">
                                 <label className="flex flex-col mb-2">
                                     <input
@@ -151,22 +172,24 @@ function Meal() {
                                 </label>
                             </div>
                         </div>
-                        Total: R{item.price.toFixed(2)}{" "}
-                        <button
-                            className="menuButton"
-                            id="mealButton"
-                            onClick={handleAddToCart}
-                        >
-                            Add to cart
-                        </button>
+                        <section id={"payment_section"}>
+                            <p id={"total_text"}>
+                                <b>Total</b>: R{item.price.toFixed(2)}{" "}
+                            </p>
+                            <button
+                                className="menuButton"
+                                id="mealButton"
+                                onClick={handleAddToCart}
+                            >
+                                Add to cart
+                            </button>
+                        </section>
                     </article>
-                    <img src={item.image_url} alt={item.name} className="item-image"/>
+                    <article id={"meal-image-article"}>
+                        <img src={item.image_url} alt={item.name} className="item-image"/>
+                    </article>
                 </section>
                 <div className="separator-line"></div>
-
-                <button className="menuButton" id="menuInfoButton" onClick={togglePopup}>
-                    Click For Review
-                </button>
 
                 <Popup isOpen={isPopupOpen} onClose={togglePopup}>
                     <Reviews restaurantID={restaurantId} mealID={item.productID} onRatingChanged={handleRatingChanged}/>

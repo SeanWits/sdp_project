@@ -4,6 +4,7 @@ import "./RestaurantInfo.css";
 import LoadModal from '../../components/LoadModal/LoadModal';
 import Popup from "../Reviews/Popup/Popup";
 import {Reviews} from "../Reviews/Reviews";
+import Header from "../../components/Header/Header";
 
 function RestaurantInfo() {
     const {id} = useParams();
@@ -58,9 +59,14 @@ function RestaurantInfo() {
 
     return (
         <div className="restaurant-info">
+            <Header/>
             <LoadModal loading={loading}/>
             <header className="menuHeader">
-                <Link to="/" className="back-arrow">&#8592;</Link>
+                <Link to="/" className="back-arrow">
+                        <span className="material-symbols-outlined icon filled">
+                            arrow_back_ios_new
+                        </span>
+                </Link>
                 {restaurant?.name}
             </header>
 
@@ -84,9 +90,9 @@ function RestaurantInfo() {
                                         <li>Rating: {restaurant.rating || 'No Rating'}</li>
                                     </ul>
                                 </article>
-                                <article>
+                                <article id={"restaurant_img"}>
                                     {restaurant.restImg && (
-                                        <img src={restaurant.restImg} alt={restaurant.name}/>
+                                        <img id="imgRes" src={restaurant.restImg} alt={restaurant.name}/>
                                     )}
                                 </article>
                             </section>

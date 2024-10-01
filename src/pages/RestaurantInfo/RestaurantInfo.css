@@ -2,8 +2,7 @@
     background-color: #FCB040;
     height: 290px;
     width: 760px;
-    margin-top: 25px;
-    margin-bottom: 25px;
+    width: 50%;
 }
 
 .resDeets {
@@ -16,12 +15,19 @@
 }
 
 .back-arrow {
+    left: 0;
     position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: white;
-    text-decoration: none;
-    font-size: 24px;
+    padding-left: 2%;
+}
+
+#restaurant_img {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+}
+
+#imgRes {
+    max-height: 287px;
+    object-fit: cover;
 }
 
