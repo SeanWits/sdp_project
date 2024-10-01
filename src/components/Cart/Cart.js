@@ -110,7 +110,7 @@ const Cart = ({ isOpen, onClose, restaurantID }) => {
                   <h3 className="item-name">{item.name}</h3>
                   <p className="item-price">R{item.priceAtPurchase.toFixed(2)}</p>
                 </article>
-                <div className="item-quantity">
+                <div className="item-quantity-cart">
                   <button onClick={() => updateItemQuantity(item.productId, item.quantity - 1)} aria-label={`Decrease quantity of ${item.name}`}>-</button>
                   <span>{item.quantity}</span>
                   <button onClick={() => updateItemQuantity(item.productId, item.quantity + 1)} aria-label={`Increase quantity of ${item.name}`}>+</button>
@@ -134,7 +134,7 @@ const Cart = ({ isOpen, onClose, restaurantID }) => {
         <footer>
           <p>Total: R{total.toFixed(2)}</p>
           <button className="checkout-btn" onClick={handleCheckout}>Checkout</button>
-          <button className="close-btn" onClick={onClose}>Close</button>
+          <button className="close-cart-btn" onClick={onClose}>Close</button>
         </footer>
       </section>
     </aside>
