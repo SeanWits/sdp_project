@@ -46,7 +46,7 @@ function Restaurant() {
                 {restaurants.map((restaurant) => (
                     <article key={restaurant.id} className="restaurant-details">
                         <section id="main-section">
-                            <div>
+                            <div id="restaurant-summary">
                                 <h2>{restaurant.name}</h2>
                                 <p>Location: {restaurant.location}</p>
                                 <p>
@@ -54,24 +54,16 @@ function Restaurant() {
                                 </p>
                                 <p>Rating: {restaurant.rating || 'No Rating'}</p>
                             </div>
-                            <div>
-                                <ul>
-                                    <li>
-                                        <Link to={`/menu/${restaurant.id}`} state={{restaurant}}>
-                                            <button className="menuButton">Menu</button>
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link to={`/reservation/${restaurant.id}`} state={{restaurant}}>
-                                            <button className="menuButton">Reservation</button>
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link to={`/restaurant-info/${restaurant.id}`} state={{restaurant}}>
-                                            <button className="menuButton">More Info</button>
-                                        </Link>
-                                    </li>
-                                </ul>
+                            <div className="composite-buttons">
+                                <Link to={`/menu/${restaurant.id}`} state={{restaurant}}>
+                                    <button className="menuButton">Menu</button>
+                                </Link>
+                                <Link to={`/reservation/${restaurant.id}`} state={{restaurant}}>
+                                    <button className="menuButton">Reservation</button>
+                                </Link>
+                                <Link to={`/restaurant-info/${restaurant.id}`} state={{restaurant}}>
+                                    <button className="menuButton">More Info</button>
+                                </Link>
                             </div>
                         </section>
                         <section className="restaurant-image">
