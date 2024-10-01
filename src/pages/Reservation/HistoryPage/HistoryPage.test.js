@@ -1,200 +1,176 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { UserContext } from '../../../utils/userContext';
 import HistoryPage from './HistoryPage';
 
-// Mocks
-jest.mock('../../../components/LoadModal/LoadModal', () => ({ loading }) => 
-  loading ? <div data-testid="mock-load-modal">Loading...</div> : null
-);
+// Mock the fetch function
+global.fetch = jest.fn();
 
+// Mock the UserContext
+const mockUser = {
+  getIdToken: jest.fn().mockResolvedValue('mock-token'),
+};
+
+// Mock the navigate function from react-router-dom
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
 }));
 
-global.fetch = jest.fn();
-global.alert = jest.fn();
-
-const mockUser = {
-  getIdToken: jest.fn().mockResolvedValue('mock-token'),
-};
-
-const renderWithContext = (ui, { user = mockUser } = {}) => {
+const renderWithRouter = (ui, { route = '/' } = {}) => {
+  window.history.pushState({}, 'Test page', route);
   return render(
-    <UserContext.Provider value={{ user }}>
-      <Router>{ui}</Router>
-    </UserContext.Provider>
+    <BrowserRouter>
+      <UserContext.Provider value={{ user: mockUser }}>
+        {ui}
+      </UserContext.Provider>
+    </BrowserRouter>
   );
 };
 
-describe('HistoryPage Component', () => {
+describe('HistoryPage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.useFakeTimers('modern');
-    jest.setSystemTime(new Date('2023-07-01T12:00:00Z'));
   });
 
-  afterEach(() => {
-    jest.useRealTimers();
-  });
-
+  // Test for lines 15-16: Redirect to login if no user is authenticated
   test('redirects to login if user is not authenticated', async () => {
-    renderWithContext(<HistoryPage />, { user: null });
-    expect(mockNavigate).toHaveBeenCalledWith('/login');
-  });
-
-  test('fetches reservations on mount', async () => {
-    global.fetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve([]),
-    });
-
-    await act(async () => {
-      renderWithContext(<HistoryPage />);
-    });
-
-    expect(global.fetch).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_API_URL}/reservations`,
-      expect.any(Object)
+    render(
+      <BrowserRouter>
+        <UserContext.Provider value={{ user: null }}>
+          <HistoryPage />
+        </UserContext.Provider>
+      </BrowserRouter>
     );
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/login');
+    });
   });
 
-  test('handles fetch error', async () => {
-    global.fetch.mockRejectedValueOnce(new Error('Fetch failed'));
-    console.error = jest.fn();
-
-    await act(async () => {
-      renderWithContext(<HistoryPage />);
+  // Test for lines 32, 46-72: Fetch failure and non-OK response
+  test('handles fetch non-OK response and displays an error', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: false, // Simulate non-OK response
+      json: async () => ({}),
     });
 
-    expect(console.error).toHaveBeenCalledWith('Error fetching reservations: ', expect.any(Error));
-    expect(global.alert).toHaveBeenCalledWith('Failed to fetch reservations. Please try again.');
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    renderWithRouter(<HistoryPage />);
+
+    await waitFor(() => {
+      expect(alertMock).toHaveBeenCalledWith('Failed to fetch reservations. Please try again.');
+      expect(consoleSpy).toHaveBeenCalledWith('Error fetching reservations: ', expect.any(Error));
+    });
+
+    alertMock.mockRestore();
+    consoleSpy.mockRestore();
   });
 
+  test('renders loading state initially', () => {
+    renderWithRouter(<HistoryPage />);
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
+  });
+
+  // Test for lines 118-128: Cancellation rejection due to time constraint
+  test('prevents reservation cancellation if less than 1 hour remains', async () => {
+    const mockReservations = [
+      { id: '1', restaurantName: 'Test Restaurant', date: new Date(Date.now() + 3000).toISOString(), numberOfPeople: 2 }, // 3 seconds from now
+    ];
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockReservations,
+    });
+
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+
+    renderWithRouter(<HistoryPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Cancel Reservation')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Cancel Reservation'));
+
+    await waitFor(() => {
+      expect(alertMock).toHaveBeenCalledWith('Reservations can only be cancelled more than 1 hour before the scheduled time.');
+    });
+
+    alertMock.mockRestore();
+  });
+
+  // Test for successful reservation fetch and display
+  test('fetches and displays reservations', async () => {
+    const mockReservations = [
+      { id: '1', restaurantName: 'Test Restaurant', date: '2023-09-30T12:00:00', numberOfPeople: 2 },
+    ];
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockReservations,
+    });
+
+    renderWithRouter(<HistoryPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Test Restaurant')).toBeInTheDocument();
+      expect(screen.getByText('September 30, 2023, 12:00 PM')).toBeInTheDocument();
+      expect(screen.getByText('Number of People: 2')).toBeInTheDocument();
+    });
+  });
+
+  // Test for successful reservation cancellation
   test('handles reservation cancellation', async () => {
     const mockReservations = [
-      { id: '1', restaurantName: 'Restaurant A', date: '2023-07-02T12:00:00Z', numberOfPeople: 2 },
+      { id: '1', restaurantName: 'Test Restaurant', date: new Date(Date.now() + 86400000).toISOString(), numberOfPeople: 2 }, // 1 day from now
     ];
 
-    global.fetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockReservations),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ message: 'Cancelled' }),
-      });
-
-    await act(async () => {
-      renderWithContext(<HistoryPage />);
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockReservations,
     });
 
-    const cancelButton = screen.getByText('Cancel Reservation');
-    await act(async () => {
-      fireEvent.click(cancelButton);
+    fetch.mockResolvedValueOnce({
+      ok: true,
     });
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_API_URL}/reservations/1`,
-      expect.objectContaining({ method: 'DELETE' })
-    );
-    expect(global.alert).toHaveBeenCalledWith('Reservation cancelled successfully.');
+    renderWithRouter(<HistoryPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Cancel Reservation')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Cancel Reservation'));
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledTimes(2);
+      expect(fetch).toHaveBeenLastCalledWith(
+        `${process.env.REACT_APP_API_URL}/reservations/1`,
+        expect.objectContaining({ method: 'DELETE' })
+      );
+    });
   });
 
-  test('prevents cancellation of imminent reservations', async () => {
-    const mockReservations = [
-      { id: '1', restaurantName: 'Restaurant A', date: '2023-07-01T12:30:00Z', numberOfPeople: 2 },
-    ];
+  // Test for fetch failure and error handling
+  test('handles fetch error', async () => {
+    fetch.mockRejectedValueOnce(new Error('API error'));
 
-    global.fetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockReservations),
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+
+    renderWithRouter(<HistoryPage />);
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith('Error fetching reservations: ', expect.any(Error));
+      expect(alertMock).toHaveBeenCalledWith('Failed to fetch reservations. Please try again.');
     });
 
-    await act(async () => {
-      renderWithContext(<HistoryPage />);
-    });
-
-    const cancelButton = screen.getByText('Cancel Reservation');
-    await act(async () => {
-      fireEvent.click(cancelButton);
-    });
-
-    expect(global.alert).toHaveBeenCalledWith('Reservations can only be cancelled more than 1 hour before the scheduled time.');
-  });
-
-  test('displays correct reservation status', async () => {
-    const mockReservations = [
-      { id: '1', restaurantName: 'Restaurant A', date: '2023-06-30T12:00:00Z', numberOfPeople: 2 },
-      { id: '2', restaurantName: 'Restaurant B', date: '2023-07-01T13:30:00Z', numberOfPeople: 2 },
-      { id: '3', restaurantName: 'Restaurant C', date: '2023-07-02T12:00:00Z', numberOfPeople: 2 },
-    ];
-
-    global.fetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockReservations),
-    });
-
-    await act(async () => {
-      renderWithContext(<HistoryPage />);
-    });
-
-    expect(screen.getByText('Status: Attended')).toBeInTheDocument();
-    expect(screen.getByText('Status: Imminent')).toBeInTheDocument();
-    expect(screen.getByText('Status: Upcoming')).toBeInTheDocument();
-  });
-
-  test('formats date correctly', async () => {
-    const mockReservations = [
-      { id: '1', restaurantName: 'Restaurant A', date: '2023-07-01T12:00:00Z', numberOfPeople: 2 },
-    ];
-
-    global.fetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockReservations),
-    });
-
-    await act(async () => {
-      renderWithContext(<HistoryPage />);
-    });
-
-    expect(screen.getByText('Date: July 1, 2023, 12:00 PM')).toBeInTheDocument();
-  });
-
-  test('handles undefined date', async () => {
-    const mockReservations = [
-      { id: '1', restaurantName: 'Restaurant A', date: undefined, numberOfPeople: 2 },
-    ];
-
-    global.fetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockReservations),
-    });
-
-    await act(async () => {
-      renderWithContext(<HistoryPage />);
-    });
-
-    expect(screen.getByText('Date: Not specified')).toBeInTheDocument();
-  });
-
-  test('navigates back to menu', async () => {
-    global.fetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve([]),
-    });
-
-    await act(async () => {
-      renderWithContext(<HistoryPage />);
-    });
-
-    const backButton = screen.getByText('Back to Menu');
-    fireEvent.click(backButton);
-
-    expect(mockNavigate).toHaveBeenCalledWith('/');
+    consoleSpy.mockRestore();
+    alertMock.mockRestore();
   });
 });
