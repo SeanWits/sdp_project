@@ -1,14 +1,19 @@
 import React from 'react';
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor, act, fireEvent } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import RestaurantInfo from './RestaurantInfo';
 
-// Mock the LoadModal component
+// Mock the components and modules
 jest.mock('../../components/LoadModal/LoadModal', () => ({ loading }) => 
   loading ? <div data-testid="mock-load-modal">Loading...</div> : null
 );
+jest.mock('../../components/Header/Header', () => () => <div data-testid="mock-header">Header</div>);
+jest.mock('../Reviews/Popup/Popup', () => ({ children, isOpen, onClose }) => 
+  isOpen ? <div data-testid="mock-popup">{children}<button onClick={onClose}>Close</button></div> : null
+);
+jest.mock('../Reviews/Reviews', () => ({ Reviews: () => <div>Mock Reviews</div> }));
 
-// Mock the react-router-dom hooks
+// Mock react-router-dom hooks
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: () => ({ id: 'test-id' }),
@@ -51,6 +56,7 @@ describe('RestaurantInfo Component', () => {
     });
 
     expect(screen.getByTestId('mock-load-modal')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-header')).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.getByText('Test Restaurant')).toBeInTheDocument();
@@ -65,7 +71,7 @@ describe('RestaurantInfo Component', () => {
     expect(screen.queryByTestId('mock-load-modal')).not.toBeInTheDocument();
   });
 
-  test('displays N/A for missing information', async () => {
+  test('displays fallback text for missing information', async () => {
     const incompleteRestaurant = { ...mockRestaurant, contact_details: null, telephone: null, email: null, rating: null };
     global.fetch.mockResolvedValueOnce({
       ok: true,
@@ -81,10 +87,10 @@ describe('RestaurantInfo Component', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText('Contact details: N/A')).toBeInTheDocument();
-      expect(screen.getByText('Telephone: N/A')).toBeInTheDocument();
-      expect(screen.getByText('Email: N/A')).toBeInTheDocument();
-      expect(screen.getByText('Rating: N/A')).toBeInTheDocument();
+      expect(screen.getByText('Contact details: No Contact Details')).toBeInTheDocument();
+      expect(screen.getByText('Telephone: No Telephone')).toBeInTheDocument();
+      expect(screen.getByText('Email: No Email')).toBeInTheDocument();
+      expect(screen.getByText('Rating: No Rating')).toBeInTheDocument();
     });
   });
 
@@ -151,13 +157,13 @@ describe('RestaurantInfo Component', () => {
     });
 
     await waitFor(() => {
-      const backLink = screen.getByText('←');
-      expect(backLink).toBeInTheDocument();
-      expect(backLink.closest('a')).toHaveAttribute('href', '/');
+      const backArrow = screen.getByText('arrow_back_ios_new');
+      expect(backArrow).toBeInTheDocument();
+      expect(backArrow.closest('a')).toHaveAttribute('href', '/');
     });
   });
 
-  test('renders "Click For Review" button', async () => {
+  test('renders "Click For Review" button and opens popup', async () => {
     await act(async () => {
       render(
         <Router>
@@ -167,7 +173,33 @@ describe('RestaurantInfo Component', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText('Click For Review')).toBeInTheDocument();
+      const reviewButton = screen.getByText('Click For Review');
+      expect(reviewButton).toBeInTheDocument();
+      fireEvent.click(reviewButton);
     });
+
+    expect(screen.getByTestId('mock-popup')).toBeInTheDocument();
+    expect(screen.getByText('Mock Reviews')).toBeInTheDocument();
+  });
+
+  test('closes popup when close button is clicked', async () => {
+    await act(async () => {
+      render(
+        <Router>
+          <RestaurantInfo />
+        </Router>
+      );
+    });
+
+    await waitFor(() => {
+      const reviewButton = screen.getByText('Click For Review');
+      fireEvent.click(reviewButton);
+    });
+
+    expect(screen.getByTestId('mock-popup')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Close'));
+
+    expect(screen.queryByTestId('mock-popup')).not.toBeInTheDocument();
   });
 });
