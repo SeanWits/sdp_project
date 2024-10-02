@@ -47,7 +47,7 @@ const OrderCard = ({ order, onStatusUpdate }) => {
         {order.restaurantDetails.restImg ? (
           <img src={order.restaurantDetails.restImg} alt={order.restaurantDetails.name} className="restaurant-image" />
         ) : (
-          <div className="image-placeholder"></div>
+          <div className="image-placeholder" data-testid="image-placeholder">?</div>
         )}
       </div>
       <div className="order-details">

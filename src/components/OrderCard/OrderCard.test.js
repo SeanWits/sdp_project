@@ -26,7 +26,7 @@ describe('OrderCard Component', () => {
     renderOrderCard();
 
     expect(screen.getByText('Test Restaurant')).toBeInTheDocument();
-    expect(screen.getByText('3 items, Purchased on: January 1, 2023, 12:00 PM')).toBeInTheDocument();
+    expect(screen.getByText('2 items, Purchased on: January 1, 2023 at 12:00 PM')).toBeInTheDocument();
     expect(screen.getByText('R25.50')).toBeInTheDocument();
     expect(screen.getByText('ongoing')).toBeInTheDocument();
   });
@@ -56,7 +56,7 @@ describe('OrderCard Component', () => {
     render(<OrderCard order={orderWithoutImage} onStatusUpdate={() => {}} />);
 
     expect(screen.queryByAltText('Test Restaurant')).not.toBeInTheDocument();
-    expect(screen.getByClassName('image-placeholder')).toBeInTheDocument();
+    expect(screen.getByTestId('image-placeholder')).toBeInTheDocument();
   });
 
   test('handles view receipt click', () => {
