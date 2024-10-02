@@ -4,6 +4,8 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { UserContext } from '../../utils/userContext';
 import Meal from './Meal';
 
+window.dispatchEvent = jest.fn();
+
 // Mock the dependencies
 jest.mock('../../components/Header/Header', () => () => <div data-testid="mock-header">Header</div>);
 jest.mock('../../components/Footer/Footer', () => () => <div data-testid="mock-footer">Footer</div>);
@@ -55,19 +57,32 @@ describe('Meal Component', () => {
   test('renders Meal component and fetches data', async () => {
     renderWithRouter(<Meal />);
 
-    expect(screen.getByTestId('mock-header')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
+    // First, check for the loading state
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
 
+    // Wait for the component to finish loading and render
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-header')).toBeInTheDocument();
+      expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
+    });
+
+    // Check for the meal details
     await waitFor(() => {
       expect(screen.getByText('Burger')).toBeInTheDocument();
       expect(screen.getByText('Delicious burger')).toBeInTheDocument();
-      expect(screen.getByText('Total: R10.99')).toBeInTheDocument();
+      
+      // Check for the total price
+      const totalElement = screen.getByText((content, element) => {
+        return element.id === 'total_text' && element.textContent.includes('Total') && element.textContent.includes('R10.99');
+      });
+      expect(totalElement).toBeInTheDocument();
     });
 
     expect(global.fetch).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_API_URL}/123/menu-item/burger`
+      expect.stringContaining('/restaurant/123/menu-item/burger')
     );
   });
+
 
   test('handles size selection', async () => {
     renderWithRouter(<Meal />);
@@ -83,22 +98,58 @@ describe('Meal Component', () => {
   });
 
   test('adds item to cart for logged-in user', async () => {
+    const mockUser = {
+      getIdToken: jest.fn().mockResolvedValue('mock-token'),
+    };
+
+    global.fetch.mockImplementation((url) => {
+      if (url.includes('/restaurant/123/menu-item/burger')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ 
+            item: { 
+              name: 'Burger', 
+              description: 'Delicious burger', 
+              price: 10.99,
+              image_url: 'burger.jpg'
+            },
+            restaurantName: 'Test Restaurant'
+          }),
+        });
+      }
+      if (url.includes('/cart/add')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ success: true }),
+        });
+      }
+      return Promise.reject(new Error('Not found'));
+    });
+
     renderWithRouter(<Meal />, { user: mockUser });
 
     await waitFor(() => {
-      const addToCartButton = screen.getByText('Add to cart');
-      fireEvent.click(addToCartButton);
+      expect(screen.getByText('Burger')).toBeInTheDocument();
     });
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_API_URL}/cart/add`,
-      expect.objectContaining({
-        method: 'POST',
-        headers: expect.objectContaining({
-          'Authorization': 'Bearer mock-token',
-        }),
-      })
-    );
+    fireEvent.click(screen.getByText('Add to cart'));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        `${process.env.REACT_APP_API_URL}/cart/add`,
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            'Authorization': 'Bearer mock-token',
+            'Content-Type': 'application/json'
+          }),
+          body: expect.any(String)
+        })
+      );
+    });
+
+    // Check if the custom event was dispatched
+    expect(window.dispatchEvent).toHaveBeenCalledWith(expect.any(CustomEvent));
   });
 
   test('redirects to login for guest user', async () => {
@@ -133,7 +184,7 @@ describe('Meal Component', () => {
     renderWithRouter(<Meal />);
 
     await waitFor(() => {
-      expect(screen.getByText('Click For Review')).toBeInTheDocument();
+      expect(screen.getByText('Click For Reviews')).toBeInTheDocument();
     });
   });
 
@@ -141,9 +192,9 @@ describe('Meal Component', () => {
     renderWithRouter(<Meal />);
 
     await waitFor(() => {
-      const backLink = screen.getByText('←');
-      expect(backLink).toBeInTheDocument();
-      expect(backLink.closest('a')).toHaveAttribute('href', '/menu/123');
+      const backButton = screen.getByRole('link', { name: /arrow_back_ios_new/i });
+      expect(backButton).toBeInTheDocument();
+      expect(backButton).toHaveAttribute('href', '/menu/123');
     });
   });
 });
