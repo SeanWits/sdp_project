@@ -70,11 +70,21 @@ describe('Restaurant Component', () => {
         </Router>
       );
     });
-
+  
     await waitFor(() => {
-      expect(screen.getByText('Location: Test Location 1')).toBeInTheDocument();
-      expect(screen.getByText('Hours: 9:00 AM - 10:00 PM')).toBeInTheDocument();
-      expect(screen.getByText('Rating: 4.5')).toBeInTheDocument();
+      expect(screen.getByText('Test Restaurant 1')).toBeInTheDocument();
+      expect(screen.getByText((content, element) => {
+        return element.tagName.toLowerCase() === 'p' && 
+               element.textContent.includes('Location: Test Location 1');
+      })).toBeInTheDocument();
+      expect(screen.getByText((content, element) => {
+        return element.tagName.toLowerCase() === 'p' && 
+               element.textContent.includes('Hours: 9:00 AM - 10:00 PM');
+      })).toBeInTheDocument();
+      expect(screen.getByText((content, element) => {
+        return element.tagName.toLowerCase() === 'p' && 
+               element.textContent.includes('Rating: 4.5');
+      })).toBeInTheDocument();
     });
   });
 
@@ -86,15 +96,18 @@ describe('Restaurant Component', () => {
         </Router>
       );
     });
-
+  
     await waitFor(() => {
-      expect(screen.getByText('Rating: N/A')).toBeInTheDocument();
+      expect(screen.getByText((content, element) => {
+        return element.tagName.toLowerCase() === 'p' && 
+               element.textContent.includes('Rating: No Rating');
+      })).toBeInTheDocument();
     });
-
+  
     const images = screen.getAllByRole('img');
     expect(images).toHaveLength(1); // Only one restaurant has an image
   });
-
+  
   test('renders navigation buttons for each restaurant', async () => {
     await act(async () => {
       render(
