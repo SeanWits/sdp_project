@@ -9,10 +9,8 @@ import { Link, useNavigate } from "react-router-dom";
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
   const [total, setTotal] = useState(0);
-  const [selectedPayment, setSelectedPayment] = useState('wallet');
-  const [walletBalance, setWalletBalance] = useState(0);
-  const [voucherCode, setVoucherCode] = useState('');
   const [loading, setLoading] = useState(true);
+  const [walletBalance, setWalletBalance] = useState(0);
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const restaurantID = "rest001";
@@ -71,19 +69,6 @@ const Checkout = () => {
     setTotal(newTotal);
   };
 
-  const selectPayment = (method) => {
-    setSelectedPayment(method);
-  };
-
-  const handleVoucherChange = (e) => {
-    setVoucherCode(e.target.value);
-  };
-
-  const applyVoucher = () => {
-    // Implement voucher logic here
-    console.log('Applying voucher:', voucherCode);
-  };
-
   const deleteItem = async (productId) => {
     try {
       const idToken = await user.getIdToken();
@@ -105,7 +90,7 @@ const Checkout = () => {
   };
 
   const confirmPurchase = async () => {
-    if (selectedPayment === 'wallet' && total > walletBalance) {
+    if (total > walletBalance) {
       alert('Insufficient funds in wallet');
       return;
     }
@@ -122,9 +107,7 @@ const Checkout = () => {
         body: JSON.stringify({
           restaurantId: restaurantID,
           items: cartItems,
-          totalAmount: total,
-          paymentMethod: selectedPayment,
-          voucherCode: selectedPayment === 'voucher' ? voucherCode : null
+          totalAmount: total
         })
       });
       if (!response.ok) {
@@ -135,14 +118,9 @@ const Checkout = () => {
       setTimeout(() => {
         setLoading(false);
         alert('Purchase confirmed! Order ID: ' + result.orderId);
-        // Clear local cart state
         setCartItems([]);
         setTotal(0);
-        // Update wallet balance if paid from wallet
-        if (selectedPayment === 'wallet') {
-          setWalletBalance(prevBalance => prevBalance - total);
-        }
-        // Redirect to a confirmation page or back to the menu
+        setWalletBalance(prevBalance => prevBalance - total);
         navigate('/orders');
       }, 2000);
     } catch (error) {
@@ -157,7 +135,7 @@ const Checkout = () => {
   return (
     <>
       <Header disableCart={true} disableOrders={false}/>
-      <LoadModal loading={loading} /> {/* Add this line */}
+      <LoadModal loading={loading} />
       <header className="checkoutHeader">
         <Link to="/" className="back-arrow-checkout">&#8592;</Link>
         <h1 className="checkoutHeading">Checkout</h1>
@@ -193,46 +171,13 @@ const Checkout = () => {
         <p className="total">Total: R{total.toFixed(2)}</p>
       </section>
 
-      <section className="payment-method">
-        <h2>Payment Method</h2>
-        <div className="payment-options">
-          <button 
-            className={`payment-option ${selectedPayment === 'wallet' ? 'selected' : ''}`}
-            onClick={() => selectPayment('wallet')}
-          >
-            Pay from Wallet
-          </button>
-          <button 
-            className={`payment-option ${selectedPayment === 'voucher' ? 'selected' : ''}`}
-            onClick={() => selectPayment('voucher')}
-          >
-            Pay with Voucher
-          </button>
-        </div>
+      <section className="wallet-info">
+        <p>Wallet Balance: R{walletBalance.toFixed(2)}</p>
       </section>
 
-      {selectedPayment === 'wallet' && (
-        <section id="walletDetails" className="payment-details">
-          <p>Current Wallet Balance: R{walletBalance.toFixed(2)}</p>
-        </section>
-      )}
-
-      {selectedPayment === 'voucher' && (
-        <section id="voucherDetails" className="payment-details">
-          <div>
-            <label htmlFor="voucherCode">Voucher Code:</label>
-            <input 
-              type="text" 
-              id="voucherCode" 
-              value={voucherCode} 
-              onChange={handleVoucherChange}
-            />
-          </div>
-          <button className="apply-voucher" onClick={applyVoucher}>Apply Voucher</button>
-        </section>
-      )}
-
-      <button className="confirm-purchase" onClick={confirmPurchase}>Confirm Purchase</button>
+      <button className="confirm-purchase" onClick={confirmPurchase} disabled={total > walletBalance}>
+        {total > walletBalance ? 'Insufficient Funds' : 'Confirm Purchase'}
+      </button>
     </main>
     <Footer/>
     </>

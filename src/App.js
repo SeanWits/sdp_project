@@ -16,7 +16,6 @@ import HistoryPage from './pages/Reservation/HistoryPage/HistoryPage';
 import Dashboard from './pages/Dashboard/Dashboard';
 import { UserProvider } from './utils/userContext';
 import RestaurantInfo from './pages/RestaurantInfo/RestaurantInfo';
-import Sean from './pages/Sean';
 
 function App({ RouterComponent = Router }) {
   return (
@@ -37,7 +36,6 @@ function App({ RouterComponent = Router }) {
             <Route path="/reservation/:id" element={<ReservationPage />} />
             <Route path="/order-summary" element={<OrderSummaryPage />} />
             <Route path="/history" element={<HistoryPage />} />
-            <Route path="/sean" element={<Sean />} />
           </Routes>
         </div>
       </RouterComponent>

@@ -29,6 +29,9 @@
   display: flex;
   justify-content: flex-start;
 }
+.orderHeader h1{
+  color: white;
+}
 
 .back-arrow-orders {
   margin-right: 45%;

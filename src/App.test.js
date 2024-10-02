@@ -16,7 +16,6 @@ jest.mock('./pages/RestaurantInfo/RestaurantInfo', () => () => <div data-testid=
 jest.mock('./pages/Reservation/ReservationPage/ReservationPage', () => () => <div data-testid="reservation-page">Reservation Page</div>);
 jest.mock('./pages/Reservation/OrderSummaryPage/OrderSummaryPage', () => () => <div data-testid="order-summary-page">Order Summary Page</div>);
 jest.mock('./pages/Reservation/HistoryPage/HistoryPage', () => () => <div data-testid="history-page">History Page</div>);
-jest.mock('./pages/Sean', () => () => <div data-testid="sean-page">Sean Page</div>);
 
 // Mock UserProvider
 jest.mock('./utils/userContext', () => ({
@@ -100,11 +99,6 @@ describe('App Component', () => {
   test('renders HistoryPage on /history route', () => {
     renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />, { route: '/history' });
     expect(screen.getByTestId('history-page')).toBeInTheDocument();
-  });
-
-  test('renders Sean page on /sean route', () => {
-    renderWithRouter(<App RouterComponent={({ children }) => <>{children}</>} />, { route: '/sean' });
-    expect(screen.getByTestId('sean-page')).toBeInTheDocument();
   });
 
 });
