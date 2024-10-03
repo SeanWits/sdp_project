@@ -14,7 +14,7 @@ const Checkout = () => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation();
-  const restaurantID = location.state?.restaurantID;
+  const restaurantID = location.state?.restaurantId;
 
   useEffect(() => {
     if (!user) {

@@ -70,7 +70,7 @@ const Cart = ({ isOpen, onClose, restaurantId }) => {
   const updateItemQuantity = async (productId, newQuantity) => {
     try {
       const idToken = await user.getIdToken();
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/${restaurantID}/update`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/${restaurantId}/update`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${idToken}`,
@@ -90,7 +90,7 @@ const Cart = ({ isOpen, onClose, restaurantId }) => {
   const deleteItem = async (productId) => {
     try {
       const idToken = await user.getIdToken();
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/${restaurantID}/${productId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/${restaurantId}/${productId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${idToken}`
