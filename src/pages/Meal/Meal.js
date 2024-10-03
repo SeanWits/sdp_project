@@ -108,7 +108,7 @@ function Meal() {
     return (
         <>
             <Header/>
-            <div className="restaurant-list">
+            <div className="restaurants-div">
                 <header className="menuHeader">
                     <Link to={`/menu/${restaurantId}`} className="back-arrow">
                         <span className="material-symbols-outlined icon filled">
