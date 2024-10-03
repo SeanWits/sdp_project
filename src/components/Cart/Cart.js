@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../utils/userContext';
 import LoadModal from '../../components/LoadModal/LoadModal';
 
-const Cart = ({ isOpen, onClose, restaurantID }) => {
+const Cart = ({ isOpen, onClose, restaurantId }) => {
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -13,10 +13,10 @@ const Cart = ({ isOpen, onClose, restaurantID }) => {
   const cartRef = useRef(null);
 
   useEffect(() => {
-    if (isOpen && user) {
+    if (isOpen && user && restaurantId) {
       fetchCart();
     }
-  }, [isOpen, user]);
+  }, [isOpen, user, restaurantId]);
 
   useEffect(() => {
     calculateTotal(items);
@@ -40,12 +40,12 @@ const Cart = ({ isOpen, onClose, restaurantID }) => {
 
 
   const fetchCart = async () => {
-    if (!user) return;
+    if (!user || !restaurantId) return;
 
     try {
       setLoading(true);
       const idToken = await user.getIdToken();
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/${restaurantID}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/${restaurantId}`, {
         headers: {
           'Authorization': `Bearer ${idToken}`
         }
@@ -107,10 +107,10 @@ const Cart = ({ isOpen, onClose, restaurantID }) => {
 
   const handleCheckout = () => {
     onClose(); // Close the cart modal
-    navigate('/checkout', { state: { restaurantID } }); // Pass restaurantID to checkout page
+    navigate('/checkout', { state: { restaurantId } }); // Pass restaurantId to checkout page
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !restaurantId) return null;
 
   return (
     <aside className="cart-modal-overlay" aria-label="Shopping Cart">
