@@ -1,7 +1,19 @@
+// Mock react-modal before importing the Restaurant component
+jest.mock('react-modal', () => {
+  const Modal = ({ children, isOpen, onRequestClose }) => (
+    isOpen ? <div data-testid="mock-modal">{children}</div> : null
+  );
+  Modal.setAppElement = jest.fn();
+  return Modal;
+});
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Restaurant from './Restaurant';
+
+// Mock the CSS import
+jest.mock('./Restaurant.css', () => ({}));
 
 // Mock the components
 jest.mock('../../components/Header/Header', () => () => <div data-testid="mock-header">Header</div>);
@@ -9,6 +21,12 @@ jest.mock('../../components/Footer/Footer', () => () => <div data-testid="mock-f
 jest.mock('../../components/LoadModal/LoadModal', () => ({ loading }) => 
   loading ? <div data-testid="mock-load-modal">Loading...</div> : null
 );
+jest.mock('../Reservation/ReservationPage/ReservationPage', () => ({ restaurant, onClose }) => (
+  <div data-testid="mock-reservation-page">
+    Reservation for {restaurant.name}
+    <button onClick={onClose}>Close</button>
+  </div>
+));
 
 // Mock fetch
 global.fetch = jest.fn();
@@ -73,18 +91,9 @@ describe('Restaurant Component', () => {
   
     await waitFor(() => {
       expect(screen.getByText('Test Restaurant 1')).toBeInTheDocument();
-      expect(screen.getByText((content, element) => {
-        return element.tagName.toLowerCase() === 'p' && 
-               element.textContent.includes('Location: Test Location 1');
-      })).toBeInTheDocument();
-      expect(screen.getByText((content, element) => {
-        return element.tagName.toLowerCase() === 'p' && 
-               element.textContent.includes('Hours: 9:00 AM - 10:00 PM');
-      })).toBeInTheDocument();
-      expect(screen.getByText((content, element) => {
-        return element.tagName.toLowerCase() === 'p' && 
-               element.textContent.includes('Rating: 4.5');
-      })).toBeInTheDocument();
+      expect(screen.getByText('Location: Test Location 1')).toBeInTheDocument();
+      expect(screen.getByText('Hours: 9:00 AM - 10:00 PM')).toBeInTheDocument();
+      expect(screen.getByText('Rating: 4.5')).toBeInTheDocument();
     });
   });
 
@@ -98,10 +107,7 @@ describe('Restaurant Component', () => {
     });
   
     await waitFor(() => {
-      expect(screen.getByText((content, element) => {
-        return element.tagName.toLowerCase() === 'p' && 
-               element.textContent.includes('Rating: No Rating');
-      })).toBeInTheDocument();
+      expect(screen.getByText('Rating: No Rating')).toBeInTheDocument();
     });
   
     const images = screen.getAllByRole('img');
@@ -177,5 +183,47 @@ describe('Restaurant Component', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('mock-load-modal')).not.toBeInTheDocument();
     }, { timeout: 1000 });
+  });
+
+  test('opens reservation modal when Reservation button is clicked', async () => {
+    await act(async () => {
+      render(
+        <Router>
+          <Restaurant />
+        </Router>
+      );
+    });
+
+    await waitFor(() => {
+      const reservationButtons = screen.getAllByText('Reservation');
+      fireEvent.click(reservationButtons[0]);
+    });
+
+    expect(screen.getByTestId('mock-modal')).toBeInTheDocument();
+    expect(screen.getByText('Reservation for Test Restaurant 1')).toBeInTheDocument();
+  });
+
+  test('closes reservation modal when Close button is clicked', async () => {
+    await act(async () => {
+      render(
+        <Router>
+          <Restaurant />
+        </Router>
+      );
+    });
+
+    await waitFor(() => {
+      const reservationButtons = screen.getAllByText('Reservation');
+      fireEvent.click(reservationButtons[0]);
+    });
+
+    expect(screen.getByTestId('mock-modal')).toBeInTheDocument();
+
+    const closeButton = screen.getByText('Close');
+    fireEvent.click(closeButton);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('mock-modal')).not.toBeInTheDocument();
+    });
   });
 });

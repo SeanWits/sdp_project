@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import "./Restaurant.css";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import LoadModal from "../../components/LoadModal/LoadModal"; // Adjust the import path as needed
-import ReservationPage from "../Reservation/ReservationPage/ReservationPage"; // Import the ReservationPage
-import Modal from "react-modal"; // Install this library: npm install react-modal
+import LoadModal from "../../components/LoadModal/LoadModal"; 
+import ReservationPage from "../Reservation/ReservationPage/ReservationPage"; 
+import Modal from "react-modal"; 
 
-Modal.setAppElement('#root'); // This is required by react-modal for accessibility
+Modal.setAppElement('#root'); 
 
 function Restaurant() {
   const [restaurants, setRestaurants] = useState([]);
