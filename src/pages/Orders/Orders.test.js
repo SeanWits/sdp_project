@@ -83,17 +83,19 @@ describe('Orders Component', () => {
       fireEvent.click(updateButton);
     });
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_API_URL}/orders/1/update-status`,
-      expect.objectContaining({
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer mock-token',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ newStatus: 'completed' })
-      })
-    );
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        `${process.env.REACT_APP_API_URL}/orders/1/update-status`,
+        expect.objectContaining({
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer mock-token',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ newStatus: 'completed' })
+        })
+      );
+    });
   });
 
   test('handles fetch error', async () => {

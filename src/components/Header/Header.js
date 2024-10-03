@@ -1,18 +1,18 @@
-import React, {useState, useEffect, useContext} from 'react';
-import {useNavigate, useLocation, Link} from "react-router-dom";
+import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import "./Header.css";
-import {UserContext} from '../../utils/userContext';
+import { UserContext } from '../../utils/userContext';
 import Cart from '../Cart/Cart';
-import {Hint} from "../Hint/hint";
+import { Hint } from "../Hint/hint";
 
-function Header({disableCart = false, disableOrders = false}) {
+function Header({ disableCart = false, disableOrders = false }) {
     const navigate = useNavigate();
     const location = useLocation();
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [cartItems, setCartItems] = useState([]);
     const [cartItemCount, setCartItemCount] = useState(0);
-    const {user} = useContext(UserContext);
-    const restaurantID = "rest001";
+    const [currentCartRestaurantId, setCurrentCartRestaurantId] = useState(null);
+    const { user } = useContext(UserContext);
 
     useEffect(() => {
         if (user && !disableCart) {
@@ -24,7 +24,6 @@ function Header({disableCart = false, disableOrders = false}) {
         return () => {
             window.removeEventListener('cartUpdated', fetchCart);
         };
-
     }, [user, disableCart]);
 
     const fetchCart = async () => {
@@ -32,7 +31,7 @@ function Header({disableCart = false, disableOrders = false}) {
 
         try {
             const idToken = await user.getIdToken();
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/cart/${restaurantID}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/cart`, {
                 headers: {
                     'Authorization': `Bearer ${idToken}`
                 }
@@ -41,8 +40,17 @@ function Header({disableCart = false, disableOrders = false}) {
                 throw new Error('Failed to fetch cart');
             }
             const cartData = await response.json();
-            setCartItems(cartData.items || []);
-            updateCartItemCount(cartData.items || []);
+            if (cartData && cartData.items) {
+                setCartItems(cartData.items);
+                updateCartItemCount(cartData.items);
+                setCurrentCartRestaurantId(cartData.restaurantId);
+                console.log("Cart mounted:", cartData.restaurantId);
+            } else {
+                setCartItems([]);
+                setCartItemCount(0);
+                setCurrentCartRestaurantId(null);
+                console.log("Cart is empty");
+            }
         } catch (error) {
             console.error("Error fetching cart:", error);
         }
@@ -135,7 +143,7 @@ function Header({disableCart = false, disableOrders = false}) {
                     isOpen={isCartOpen}
                     onClose={toggleCart}
                     items={cartItems}
-                    restaurantID={restaurantID}
+                    restaurantId={currentCartRestaurantId}
                     userID={user.uid}
                     fetchCart={fetchCart}
                 />

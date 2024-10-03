@@ -29,7 +29,7 @@ describe('Admin Component', () => {
 
   test('renders Admin component', () => {
     renderWithRouter(<Admin />);
-    expect(screen.getByText('Generate API Key')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Generate API Key' })).toBeInTheDocument();
     expect(screen.getByLabelText('Team Name:')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Generate API Key' })).toBeInTheDocument();
   });

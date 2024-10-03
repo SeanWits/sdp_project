@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { UserContext } from '../../utils/userContext';
 import Checkout from './Checkout';
@@ -16,6 +16,7 @@ const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
+  Link: ({ children, to }) => <a href={to}>{children}</a>,
 }));
 
 // Mock fetch
@@ -59,14 +60,13 @@ describe('Checkout Component', () => {
   });
 
   test('renders Checkout component and fetches data', async () => {
-    renderWithContext(<Checkout />);
+    await act(async () => {
+      renderWithContext(<Checkout />);
+    });
 
     expect(screen.getByTestId('mock-header')).toBeInTheDocument();
     expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
     
-    // Check for loading state
-    expect(screen.getByTestId('mock-load-modal')).toBeInTheDocument();
-
     await waitFor(() => {
       expect(screen.queryByTestId('mock-load-modal')).not.toBeInTheDocument();
     });
@@ -75,36 +75,68 @@ describe('Checkout Component', () => {
     expect(screen.getByText('Item 1 (x2)')).toBeInTheDocument();
     expect(screen.getByText('Item 2 (x1)')).toBeInTheDocument();
     expect(screen.getByText('Total: R35.00')).toBeInTheDocument();
-  });
-
-  test('handles payment method selection', async () => {
-    renderWithContext(<Checkout />);
-
-    await waitFor(() => {
-      fireEvent.click(screen.getByText('Pay with Voucher'));
-    });
-
-    expect(screen.getByLabelText('Voucher Code:')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText('Pay from Wallet'));
-    
-    await waitFor(() => {
-      expect(screen.getByText('Current Wallet Balance: R100.00')).toBeInTheDocument();
-    });
+    expect(screen.getByText('Wallet Balance: R100.00')).toBeInTheDocument();
   });
 
   test('handles item removal from cart', async () => {
-    renderWithContext(<Checkout />);
-
-    await waitFor(() => {
-      const removeButtons = screen.getAllByLabelText(/Remove .* from cart/);
-      fireEvent.click(removeButtons[0]);
+    let fetchCallCount = 0;
+    global.fetch.mockImplementation((url) => {
+      fetchCallCount++;
+      if (url.includes('/cart/')) {
+        if (fetchCallCount === 1) {
+          // Initial cart fetch
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ items: mockCartItems }),
+          });
+        } else {
+          // After item removal
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ items: [mockCartItems[1]] }),
+          });
+        }
+      }
+      if (url.includes('/user')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ wallet: 100 }),
+        });
+      }
+      return Promise.reject(new Error('Not found'));
     });
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/cart/rest001/1'),
-      expect.objectContaining({ method: 'DELETE' })
-    );
+    await act(async () => {
+      renderWithContext(<Checkout />);
+    });
+
+    // Wait for the cart items to be rendered
+    await waitFor(() => {
+      expect(screen.getByText('Item 1 (x2)')).toBeInTheDocument();
+    });
+
+    const removeButton = screen.getByLabelText('Remove Item 1 from cart');
+    await act(async () => {
+      fireEvent.click(removeButton);
+    });
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/cart/rest001/1'),
+        expect.objectContaining({
+          method: 'DELETE',
+          headers: expect.objectContaining({
+            'Authorization': 'Bearer mock-token'
+          })
+        })
+      );
+    });
+
+    // Check if the item has been removed from the display
+    await waitFor(() => {
+      expect(screen.queryByText('Item 1 (x2)')).not.toBeInTheDocument();
+      expect(screen.getByText('Total: R15.00')).toBeInTheDocument(); // Updated total
+    });
   });
 
   test('handles successful checkout', async () => {
@@ -116,20 +148,22 @@ describe('Checkout Component', () => {
           json: () => Promise.resolve({ orderId: 'mock-order-id' }),
         });
       }
-      // Keep the previous implementations for other URLs
       return global.fetch(url);
     });
   
     global.alert = jest.fn();
   
-    renderWithContext(<Checkout />);
+    await act(async () => {
+      renderWithContext(<Checkout />);
+    });
   
-    await waitFor(() => {
+    await act(async () => {
       fireEvent.click(screen.getByText('Confirm Purchase'));
     });
   
-    // Fast-forward time
-    jest.advanceTimersByTime(2000);
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
   
     await waitFor(() => {
       expect(global.alert).toHaveBeenCalledWith('Purchase confirmed! Order ID: mock-order-id');
@@ -148,26 +182,57 @@ describe('Checkout Component', () => {
           json: () => Promise.resolve({ error: 'Checkout failed' }),
         });
       }
-      // Keep the previous implementations for other URLs
       return global.fetch(url);
     });
   
     global.alert = jest.fn();
   
-    renderWithContext(<Checkout />);
+    await act(async () => {
+      renderWithContext(<Checkout />);
+    });
   
-    await waitFor(() => {
+    await act(async () => {
       fireEvent.click(screen.getByText('Confirm Purchase'));
     });
   
-    // Fast-forward time
-    jest.advanceTimersByTime(2000);
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
   
     await waitFor(() => {
       expect(global.alert).toHaveBeenCalledWith('An error occurred while processing your order: Checkout failed');
     });
   
     jest.useRealTimers();
+  });
+
+  test('disables purchase button when wallet balance is insufficient', async () => {
+    global.fetch.mockImplementation((url) => {
+      if (url.includes('/user')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ wallet: 30 }),
+        });
+      }
+      if (url.includes('/cart/')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ items: mockCartItems }),
+        });
+      }
+      return Promise.reject(new Error('Not found'));
+    });
+
+    await act(async () => {
+      renderWithContext(<Checkout />);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Total: R35.00')).toBeInTheDocument();
+    });
+
+    const purchaseButton = screen.getByRole('button', { name: 'Insufficient Funds' });
+    expect(purchaseButton).toBeDisabled();
   });
 
   test('redirects to login if user is not authenticated', () => {

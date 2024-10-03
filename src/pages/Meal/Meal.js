@@ -52,7 +52,7 @@ function Meal() {
     const handleAddToCart = async () => {
         if (!user) {
             console.log("User not logged in");
-            navigate("/login", {state: {from: location}});
+            navigate("/login", { state: { from: location } });
             return;
         }
 
@@ -72,6 +72,11 @@ function Meal() {
 
             if (!response.ok) {
                 throw new Error('Failed to add item to cart');
+            }
+
+            const result = await response.json();
+            if (result.cartCleared) {
+                alert("Your previous cart has been cleared as you've added an item from a different restaurant.");
             }
 
             console.log("Item added to cart");
