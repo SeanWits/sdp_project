@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import './Cart.css';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../utils/userContext';
-import LoadModal from '../../components/LoadModal/LoadModal'; // Add this import
+import LoadModal from '../../components/LoadModal/LoadModal';
 
 const Cart = ({ isOpen, onClose, restaurantID }) => {
   const [items, setItems] = useState([]);
@@ -10,6 +10,7 @@ const Cart = ({ isOpen, onClose, restaurantID }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { user } = useContext(UserContext);
+  const cartRef = useRef(null);
 
   useEffect(() => {
     if (isOpen && user) {
@@ -20,6 +21,23 @@ const Cart = ({ isOpen, onClose, restaurantID }) => {
   useEffect(() => {
     calculateTotal(items);
   }, [items]);
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (cartRef.current && !cartRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+  
+    if (isOpen) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    }
+  
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [isOpen, onClose]);
+
 
   const fetchCart = async () => {
     if (!user) return;
@@ -89,7 +107,7 @@ const Cart = ({ isOpen, onClose, restaurantID }) => {
 
   const handleCheckout = () => {
     onClose(); // Close the cart modal
-    navigate('/checkout'); // Navigate to the checkout page
+    navigate('/checkout', { state: { restaurantID } }); // Pass restaurantID to checkout page
   };
 
   if (!isOpen) return null;
@@ -97,7 +115,7 @@ const Cart = ({ isOpen, onClose, restaurantID }) => {
   return (
     <aside className="cart-modal-overlay" aria-label="Shopping Cart">
       <LoadModal loading={loading} />
-      <section className="cart-modal">
+      <section className="cart-modal" ref={cartRef}>
         <header>
           <h2>Cart</h2>
         </header>

@@ -4,7 +4,7 @@ import { UserContext } from '../../utils/userContext';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import LoadModal from '../../components/LoadModal/LoadModal';
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -13,16 +13,21 @@ const Checkout = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
-  const restaurantID = "rest001";
+  const location = useLocation();
+  const restaurantID = location.state?.restaurantID;
 
   useEffect(() => {
     if (!user) {
       navigate('/login');
       return;
     }
+    if (!restaurantID) {
+      navigate('/');
+      return;
+    }
     fetchCart();
     fetchWalletBalance();
-  }, [user, navigate]);
+  }, [user, navigate, restaurantID]);
 
   const fetchCart = async () => {
     setLoading(true);
@@ -117,7 +122,7 @@ const Checkout = () => {
       const result = await response.json();
       setTimeout(() => {
         setLoading(false);
-        alert('Purchase confirmed! Order ID: ' + result.orderId);
+        alert('Purchase confirmed!');
         setCartItems([]);
         setTotal(0);
         setWalletBalance(prevBalance => prevBalance - total);
