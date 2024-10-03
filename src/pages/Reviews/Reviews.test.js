@@ -24,86 +24,221 @@ jest.mock('../../components/LoadModal/LoadModal', () => ({ loading }) =>
 );
 
 describe('Reviews Component', () => {
-  const mockUser = { uid: 'mock-user-id' };
-  const mockReviews = [
-    { rating: 4, dateCreated: { _seconds: 1625097600 }, review: 'Great food!' },
-    { rating: 5, dateCreated: { _seconds: 1625184000 }, review: 'Excellent service!' },
-  ];
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-    jest.useFakeTimers();
-    global.fetch.mockImplementation(() => 
-      Promise.resolve({
+    const mockUser = { uid: 'mock-user-id' };
+    const mockReviews = [
+      { rating: 4, dateCreated: { _seconds: 1625097600 }, review: 'Great food!' },
+      { rating: 5, dateCreated: { _seconds: 1625184000 }, review: 'Excellent service!' },
+    ];
+  
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.useFakeTimers();
+    });
+  
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+  
+    const renderReviews = (props = {}) => {
+      return render(
+        <UserContext.Provider value={{ user: mockUser }}>
+          <Reviews restaurantID="123" onRatingChanged={() => {}} {...props} />
+        </UserContext.Provider>
+      );
+    };
+  
+    test('renders Reviews component and fetches restaurant reviews', async () => {
+      global.fetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve(mockReviews),
-      })
-    );
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
-
-  test('renders Reviews component and fetches reviews', async () => {
-    await act(async () => {
-      render(
-        <UserContext.Provider value={{ user: mockUser }}>
-          <Reviews restaurantID="123" onRatingChanged={() => {}} />
-        </UserContext.Provider>
-      );
-    });
-
-    // Initially, the loading modal should be present
-    expect(screen.getByTestId('load-modal')).toBeInTheDocument();
-
-    // Wait for the loading to complete
-    await act(async () => {
-      jest.runAllTimers();
-    });
-
-    // Now the loading modal should not be in the document
-    await waitFor(() => {
-      expect(screen.queryByTestId('load-modal')).not.toBeInTheDocument();
-    });
-
-    expect(screen.getByText('Reviews')).toBeInTheDocument();
-    
-    // Wait for the reviews to be rendered
-    await waitFor(() => {
+      });
+  
+      await act(async () => {
+        renderReviews();
+      });
+  
+      expect(screen.getByTestId('load-modal')).toBeInTheDocument();
+  
+      await act(async () => {
+        jest.runAllTimers();
+      });
+  
+      await waitFor(() => {
+        expect(screen.queryByTestId('load-modal')).not.toBeInTheDocument();
+      });
+  
+      expect(screen.getByText('Reviews')).toBeInTheDocument();
       expect(screen.getByText('Great food!')).toBeInTheDocument();
       expect(screen.getByText('Excellent service!')).toBeInTheDocument();
-    });
-  });
-
-  test('opens AddReview popup when add button is clicked', async () => {
-    await act(async () => {
-      render(
-        <UserContext.Provider value={{ user: mockUser }}>
-          <Reviews restaurantID="123" onRatingChanged={() => {}} />
-        </UserContext.Provider>
+  
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/restaurant/123/restaurantReviews')
       );
     });
-
-    fireEvent.click(screen.getByText('add_box'));
-    expect(screen.getByText('Review Restaurant')).toBeInTheDocument();
-  });
-
-  test('shows alert when trying to review without being logged in', async () => {
-    global.alert = jest.fn();
-
-    await act(async () => {
-      render(
-        <UserContext.Provider value={{ user: null }}>
-          <Reviews restaurantID="123" onRatingChanged={() => {}} />
-        </UserContext.Provider>
+  
+    test('renders Reviews component and fetches meal reviews', async () => {
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockReviews),
+      });
+  
+      await act(async () => {
+        renderReviews({ mealID: '456' });
+      });
+  
+      await act(async () => {
+        jest.runAllTimers();
+      });
+  
+      await waitFor(() => {
+        expect(screen.queryByTestId('load-modal')).not.toBeInTheDocument();
+      });
+  
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/restaurant/123/mealReviews/456')
       );
     });
-
-    fireEvent.click(screen.getByText('add_box'));
-    expect(global.alert).toHaveBeenCalledWith('Please log in to leave a review');
+  
+    test('handles fetch error', async () => {
+      global.fetch.mockRejectedValueOnce(new Error('API Error'));
+      global.alert = jest.fn();
+  
+      await act(async () => {
+        renderReviews();
+      });
+  
+      await act(async () => {
+        jest.runAllTimers();
+      });
+  
+      await waitFor(() => {
+        expect(global.alert).toHaveBeenCalledWith('Failed to fetch reviews');
+      });
+    });
+  
+    test('opens AddReview popup when add button is clicked', async () => {
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockReviews),
+      });
+  
+      await act(async () => {
+        renderReviews();
+      });
+  
+      await act(async () => {
+        jest.runAllTimers();
+      });
+  
+      fireEvent.click(screen.getByText('add_box'));
+  
+      expect(screen.getByText('Review Restaurant')).toBeInTheDocument();
+    });
+  
+    test('shows alert when trying to review without being logged in', async () => {
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockReviews),
+      });
+      global.alert = jest.fn();
+  
+      await act(async () => {
+        render(
+          <UserContext.Provider value={{ user: null }}>
+            <Reviews restaurantID="123" onRatingChanged={() => {}} />
+          </UserContext.Provider>
+        );
+      });
+  
+      await act(async () => {
+        jest.runAllTimers();
+      });
+  
+      fireEvent.click(screen.getByText('add_box'));
+      expect(global.alert).toHaveBeenCalledWith('Please log in to leave a review');
+    });
+  
+    test('handles review added successfully', async () => {
+        const mockOnRatingChanged = jest.fn();
+        global.fetch = jest.fn().mockImplementation((url) => {
+          if (url.includes('/restaurantReviews')) {
+            return Promise.resolve({
+              ok: true,
+              json: () => Promise.resolve(mockReviews),
+            });
+          }
+          // Mock the response for adding a review
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ message: 'Review added successfully' }),
+          });
+        });
+    
+        await act(async () => {
+          render(
+            <UserContext.Provider value={{ user: mockUser }}>
+              <Reviews restaurantID="123" onRatingChanged={mockOnRatingChanged} />
+            </UserContext.Provider>
+          );
+        });
+    
+        await act(async () => {
+          jest.runAllTimers();
+        });
+    
+        // Open the AddReview popup
+        fireEvent.click(screen.getByText('add_box'));
+    
+        // Fill in the review form
+        fireEvent.click(screen.getAllByText('star')[2]); // Select 3 stars
+        fireEvent.change(screen.getByPlaceholderText('Enter a review'), {
+          target: { value: 'Great experience!' },
+        });
+    
+        // Submit the review
+        await act(async () => {
+          fireEvent.click(screen.getByText('Confirm'));
+        });
+    
+        // Wait for the review to be added and the component to update
+        await waitFor(() => {
+          expect(mockOnRatingChanged).toHaveBeenCalled();
+        });
+    
+        // Check that the AddReview popup is closed
+        expect(screen.queryByText('Review Restaurant')).not.toBeInTheDocument();
+    
+        // Verify that the fetch function was called to add the review
+        expect(global.fetch).toHaveBeenCalledWith(
+          expect.stringContaining('/restaurant/123/restaurantReview/'),
+          expect.objectContaining({
+            method: 'PUT',
+            headers: expect.objectContaining({
+              'Content-Type': 'application/json',
+              'Authorization': expect.any(String),
+            }),
+            body: JSON.stringify({ rating: 3, review: 'Great experience!' }),
+          })
+        );
+      });
+  
+    test('renders no reviews message when there are no reviews', async () => {
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve([]),
+      });
+  
+      await act(async () => {
+        renderReviews();
+      });
+  
+      await act(async () => {
+        jest.runAllTimers();
+      });
+  
+      expect(screen.getByText('No Reviews.')).toBeInTheDocument();
+    });
   });
-});
 
 describe('AddReview Component', () => {
     const mockOnReviewAdded = jest.fn();
