@@ -56,16 +56,16 @@ describe('Menu Component', () => {
 
   test('renders Menu component and fetches data', async () => {
     renderWithRouter(<Menu />);
-
+  
     expect(screen.getByTestId('mock-header')).toBeInTheDocument();
     expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
-
+  
     await waitFor(() => {
       expect(screen.getByText('Test Restaurant')).toBeInTheDocument();
-      expect(screen.getByText('Appetizers')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Appetizers' })).toBeInTheDocument();
       expect(screen.getByText('Main Course')).toBeInTheDocument();
     });
-
+  
     expect(global.fetch).toHaveBeenCalledWith(
       `${process.env.REACT_APP_API_URL}/restaurant/123`
     );
@@ -95,13 +95,18 @@ describe('Menu Component', () => {
 
   test('displays item availability', async () => {
     renderWithRouter(<Menu />);
-
+  
     await waitFor(() => {
       fireEvent.click(screen.getByText('Main Course'));
     });
-
-    expect(screen.getByText('Available')).toBeInTheDocument();
-    expect(screen.getByText('Out of stock')).toBeInTheDocument();
+  
+    expect(screen.getByText((content, element) => {
+      return element.tagName.toLowerCase() === 'p' && content.includes('In stock');
+    })).toBeInTheDocument();
+    
+    expect(screen.getByText((content, element) => {
+      return element.tagName.toLowerCase() === 'p' && content.includes('Out of stock');
+    })).toBeInTheDocument();
   });
 
   test('renders item images', async () => {
@@ -124,9 +129,16 @@ describe('Menu Component', () => {
     });
   });
 
+  jest.mock('../../components/LoadModal/LoadModal', () => ({ loading }) => 
+    loading ? <div data-testid="loading-modal">Loading...</div> : null
+  );
+  
   test('displays loading state', () => {
     renderWithRouter(<Menu />);
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    
+    const loadModal = screen.getByTestId('loader');
+    expect(loadModal).toBeInTheDocument();
+    expect(loadModal.closest('.load-modal')).toBeInTheDocument();
   });
 
   test('handles fetch error', async () => {
@@ -156,11 +168,11 @@ describe('Menu Component', () => {
 
   test('renders back arrow', async () => {
     renderWithRouter(<Menu />);
-
+  
     await waitFor(() => {
-      const backLink = screen.getByText('←');
-      expect(backLink).toBeInTheDocument();
-      expect(backLink.closest('a')).toHaveAttribute('href', '/');
+      const backIcon = screen.getByText('arrow_back_ios_new');
+      expect(backIcon).toBeInTheDocument();
+      expect(backIcon.closest('a')).toHaveAttribute('href', '/');
     });
   });
 });
