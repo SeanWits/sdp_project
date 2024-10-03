@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import Modal from 'react-modal';
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 import "./Restaurant.css";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
@@ -51,7 +51,7 @@ function Restaurant() {
     };
 
     const handlePreferenceChange = (pref) => {
-        setSelectedPreferences(prevPrefs => 
+        setSelectedPreferences(prevPrefs =>
             prevPrefs.includes(pref)
                 ? prevPrefs.filter(p => p !== pref)
                 : [...prevPrefs, pref]
@@ -62,7 +62,7 @@ function Restaurant() {
         if (selectedPreferences.length === 0) {
             setFilteredRestaurants(restaurants);
         } else {
-            const filtered = restaurants.filter(restaurant => 
+            const filtered = restaurants.filter(restaurant =>
                 selectedPreferences.every(pref => restaurant.prefs.includes(pref))
             );
             setFilteredRestaurants(filtered);
@@ -74,13 +74,14 @@ function Restaurant() {
 
     return (
         <>
-            <Header />
-            <LoadModal loading={loading} />
-            <div className="restaurant-list">
-                <header className="menuHeader">Restaurant/Dining Hall Name</header>
-                <div>
-                <button className="prefbutton" onClick={openModal}>Dietary Preferences</button>
-                </div>
+            <Header/>
+            <LoadModal loading={loading}/>
+            <div className="restaurants-div">
+                <header className="menuHeader"><h2 className="restaurants-heading">Restaurants/Dining Halls</h2>
+                    <span id={"dietary-filter"} className="material-symbols-outlined icon filled" onClick={openModal}>
+                        filter_alt
+                    </span>
+                </header>
 
                 <Modal isOpen={modalIsOpen} onRequestClose={closeModal} contentLabel="Dietary Preferences">
                     <header className="menuHeader">Dietary Preferences</header>
@@ -103,38 +104,61 @@ function Restaurant() {
                     <button onClick={closeModal}>Close</button>
                 </Modal>
 
-                {filteredRestaurants.map((restaurant) => (
-                    <article key={restaurant.id} className="restaurant-details">
-                        <section id="main-section">
-                            <div id="restaurant-summary">
-                                <h2>{restaurant.name}</h2>
-                                <p><b>Location:</b> {restaurant.location}</p>
-                                <p>
-                                    <b>Hours:</b> {restaurant.opening_time} - {restaurant.closing_time}
-                                </p>
-                                <p><b>Rating:</b> {restaurant.rating || 'No Rating'}</p>
-                            </div>
-                            <div className="composite-buttons">
-                                <Link to={`/menu/${restaurant.id}`} state={{restaurant}}>
-                                    <button className="menuButton">Menu</button>
-                                </Link>
-                                <Link to={`/reservation/${restaurant.id}`} state={{restaurant}}>
-                                    <button className="menuButton">Reservation</button>
-                                </Link>
-                                <Link to={`/restaurant-info/${restaurant.id}`} state={{restaurant}}>
-                                    <button className="menuButton">More Info</button>
-                                </Link>
-                            </div>
-                        </section>
-                        <section className="restaurant-image">
-                            {restaurant.restImg && (
-                                <img src={restaurant.restImg} alt={restaurant.name}/>
-                            )}
-                        </section>
-                    </article>
-                ))}
+                <section id="restaurant-list">
+                    {filteredRestaurants.map((restaurant) => (
+                        <article key={restaurant.id} className="restaurant-details">
+                            <section id="main-section">
+                                <div id="restaurant-summary">
+                                    <h2 id="restaurant-name-heading">{restaurant.name}</h2>
+                                    <h5 id="restaurant-location-heading"><b>Location:</b>
+                                    </h5>
+                                    <p id="restaurant-location-paragraph"> {restaurant.location}</p>
+                                    <h5 id={"restaurant-hours-heading"}><b>Hours:</b></h5>
+                                    <p id={"restaurant-hours-paragraph"}>
+                                        {restaurant.opening_time} - {restaurant.closing_time}
+                                    </p>
+                                    <h5 id="restaurant-rating-heading"><b>Rating:</b></h5>
+                                    <p id="restaurant-rating-paragraph">
+                                        {restaurant.rating || 'No Rating'}</p>
+                                </div>
+                                <div className="composite-buttons">
+                                    <Link to={`/menu/${restaurant.id}`} state={{restaurant}}>
+                                        <button className="menuButton">
+
+                                            <span
+                                                className="material-symbols-outlined icon filled menu-icon">
+                                                restaurant
+                                            </span><p>Menu</p>
+                                        </button>
+                                    </Link>
+                                    <Link to={`/reservation/${restaurant.id}`} state={{restaurant}}>
+                                        <button className="menuButton">
+                                            <span className="material-symbols-outlined icon filled menu-icon">
+                                                table_restaurant
+                                            </span>
+                                            <p>Reservation</p>
+                                        </button>
+                                    </Link>
+                                    <Link to={`/restaurant-info/${restaurant.id}`} state={{restaurant}}>
+                                        <button className="menuButton">
+                                            <span className="material-symbols-outlined icon filled menu-icon">
+                                                info
+                                            </span>
+                                            <p>More Info</p>
+                                        </button>
+                                    </Link>
+                                </div>
+                            </section>
+                            <section className="restaurant-image">
+                                {restaurant.restImg && (
+                                    <img src={restaurant.restImg} alt={restaurant.name}/>
+                                )}
+                            </section>
+                        </article>
+                    ))}
+                </section>
             </div>
-            <Footer />
+            <Footer/>
         </>
     );
 }
