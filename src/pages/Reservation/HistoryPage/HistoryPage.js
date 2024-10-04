@@ -117,6 +117,7 @@ const HistoryPage = () => {
                 <p><strong>Date:</strong> {formatDate(reservation.date)}</p>
                 <p><strong>Number of People:</strong> {reservation.numberOfPeople}</p>
                 <p><strong>Status:</strong> {getReservationStatus(reservation.date)}</p>
+                <p><strong>Duration:</strong> {reservation.duration} hours</p>
                 {getReservationStatus(reservation.date) === "Upcoming" && (
                   <button 
                     onClick={() => handleCancel(reservation.id, reservation.date)}
