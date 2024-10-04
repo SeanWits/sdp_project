@@ -1,15 +1,16 @@
-import React, {useState, useEffect, useContext, useRef} from 'react';
-import {UserContext} from '../../../utils/userContext';
-import {styles} from './reservationPageStyles';
-import {useNavigate} from "react-router-dom";
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import { UserContext } from '../../../utils/userContext';
+import { styles } from '../styles';
+import { useNavigate } from "react-router-dom";
 
-const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
-    const [date, setDate] = useState('');
-    const [timeSlot, setTimeSlot] = useState('');
-    const [people, setPeople] = useState(1);
-    const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
-    const {user} = useContext(UserContext);
-    const navigate = useNavigate();
+const ReservationPage = ({ restaurant, onClose }) => {
+  const [date, setDate] = useState('');
+  const [timeSlot, setTimeSlot] = useState('');
+  const [people, setPeople] = useState(1);
+  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+  const { user } = useContext(UserContext);
+  const checkPerformed = useRef(false);
+  const navigate = useNavigate();
 
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
@@ -40,6 +41,7 @@ const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
       const { hasActiveReservation } = await response.json();
       if (hasActiveReservation) {
         alert("You have an active reservation");
+        navigate('/history');
         navigate('/history');
         onClose();
       }
@@ -176,18 +178,17 @@ const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
                     ))}
                 </select>
 
-                <label htmlFor="people" style={styles.label}>Number of People:</label>
-                <input
-                    type="number"
-                    id="people"
-                    name="people"
-                    min="1"
-                    max="8"
-                    style={styles.input}
-                    value={people}
-                    onChange={handlePeopleChange}
-                    onBlur={handlePeopleBlur}
-                />
+        <label htmlFor="people" style={styles.label}>Number of People:</label>
+        <input
+          type="number"
+          id="people"
+          name="people"
+          min="1"
+          max="8"
+          style={styles.input}
+          value={people}
+          onChange={(e) => setPeople(Math.min(8, Math.max(1, Number(e.target.value))))}
+        />
 
                 <button onClick={handleConfirm} style={styles.button} disabled={!date || !timeSlot}>
                     Confirm Reservation
