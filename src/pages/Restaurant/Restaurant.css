@@ -149,3 +149,37 @@ a {
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
 }
+
+.modalCloseButton {
+    width: 100px;
+    height: 40px;
+    background-color: #003b5c;
+    color: white;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 1.05em;
+    margin-top: 20px;
+}
+
+.modalCloseButton:hover {
+    background-color: #0056b3;
+}
+
+.eventModalContent {
+    margin-top: 20px;
+}
+
+.eventModalContent p {
+    margin-bottom: 10px;
+}
+
+.eventModalContent a {
+    color: #003b5c;
+    text-decoration: underline;
+}
+
+.eventModalContent a:hover {
+    color: #0056b3;
+}
+
