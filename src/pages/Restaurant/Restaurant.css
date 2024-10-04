@@ -183,3 +183,12 @@ a {
     color: #0056b3;
 }
 
+.upcoming-event {
+    color: black;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.upcoming-event:hover {
+    color: #0056b3;
+}

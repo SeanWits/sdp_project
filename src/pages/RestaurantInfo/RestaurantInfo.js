@@ -1,23 +1,24 @@
-import React, {useState, useEffect} from "react";
-import {Link, useParams, useLocation} from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useParams, useLocation } from "react-router-dom";
+import Modal from 'react-modal';
 import "./RestaurantInfo.css";
 import LoadModal from '../../components/LoadModal/LoadModal';
 import Popup from "../Reviews/Popup/Popup";
-import {Reviews} from "../Reviews/Reviews";
+import { Reviews } from "../Reviews/Reviews";
 import Header from "../../components/Header/Header";
 
+Modal.setAppElement('#root');
+
 function RestaurantInfo() {
-    const {id} = useParams();
+    const { id } = useParams();
     const location = useLocation();
     const [restaurant, setRestaurant] = useState(location.state?.restaurant || null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    //pop up
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const togglePopup = () => {
-        setIsPopupOpen((prev) => !prev);
-    };
+    const [upcomingEvents, setUpcomingEvents] = useState([]);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [eventModalIsOpen, setEventModalIsOpen] = useState(false);
 
     useEffect(() => {
         const fetchRestaurant = async () => {
@@ -37,7 +38,27 @@ function RestaurantInfo() {
             setTimeout(() => setLoading(false), 200);
         };
 
+        const fetchEvents = async () => {
+            try {
+                const response = await fetch('https://us-central1-witslivelycampus.cloudfunctions.net/app/events');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch events');
+                }
+                const events = await response.json();
+                const fiveDaysFromNow = new Date();
+                fiveDaysFromNow.setDate(fiveDaysFromNow.getDate() + 5);
+                const filteredEvents = events.filter(event => {
+                    const eventDate = new Date(event.date);
+                    return eventDate <= fiveDaysFromNow && eventDate >= new Date();
+                });
+                setUpcomingEvents(filteredEvents);
+            } catch (err) {
+                console.error("Error fetching events:", err);
+            }
+        };
+
         fetchRestaurant();
+        fetchEvents();
     }, [id, restaurant]);
 
     const handleRatingChanged = async () => {
@@ -54,23 +75,66 @@ function RestaurantInfo() {
         }
     };
 
+    const togglePopup = () => {
+        setIsPopupOpen((prev) => !prev);
+    };
+
+    const openEventModal = (event) => {
+        setSelectedEvent(event);
+        setEventModalIsOpen(true);
+    };
+
+    const closeEventModal = () => {
+        setEventModalIsOpen(false);
+        setSelectedEvent(null);
+    };
+
+    const getUpcomingEvent = (restaurantLocation) => {
+        return upcomingEvents.find(event => 
+            event.venue.includes("West Campus") && restaurantLocation.includes("West Campus")
+        );
+    };
+
+    const modalStyle = {
+        content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            width: '80%',
+            maxWidth: '500px',
+            maxHeight: '80vh',
+            overflow: 'auto',
+            borderRadius: '15px',
+            padding: '20px',
+            backgroundColor: 'white',
+        },
+        overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.75)'
+        }
+    };
+
     if (error) return <div>Error: {error}</div>;
     if (!restaurant && !loading) return <div>No restaurant data available</div>;
 
+    const upcomingEvent = restaurant ? getUpcomingEvent(restaurant.location) : null;
+
     return (
         <div className="restaurant-info">
-            <Header/>
-            <LoadModal loading={loading}/>
+            <Header />
+            <LoadModal loading={loading} />
             <header className="menuHeader">
                 <Link to="/" className="back-arrow">
-                        <span className="material-symbols-outlined icon filled">
-                            arrow_back_ios_new
-                        </span>
+                    <span className="material-symbols-outlined icon filled">
+                        arrow_back_ios_new
+                    </span>
                 </Link>
                 {restaurant?.name}
             </header>
 
-            {!loading && restaurant && ( // Only render the content when not loading and restaurant data is available
+            {!loading && restaurant && (
                 <>
                     <section className="resDeets">
                         <section id="reviews">
@@ -88,11 +152,19 @@ function RestaurantInfo() {
                                         <li>Telephone: {restaurant.telephone || 'No Telephone'}</li>
                                         <li>Email: {restaurant.email || 'No Email'}</li>
                                         <li>Rating: {restaurant.rating || 'No Rating'}</li>
+                                        {upcomingEvent && (
+                                            <li 
+                                                className="upcoming-event"
+                                                onClick={() => openEventModal(upcomingEvent)}
+                                            >
+                                                <b>Upcoming Event:</b> {upcomingEvent.title}
+                                            </li>
+                                        )}
                                     </ul>
                                 </article>
-                                <article id={"restaurant_img"}>
+                                <article id="restaurant_img">
                                     {restaurant.restImg && (
-                                        <img id="imgRes" src={restaurant.restImg} alt={restaurant.name}/>
+                                        <img id="imgRes" src={restaurant.restImg} alt={restaurant.name} />
                                     )}
                                 </article>
                             </section>
@@ -103,8 +175,30 @@ function RestaurantInfo() {
                         Click For Review
                     </button>
                     <Popup isOpen={isPopupOpen} onClose={togglePopup}>
-                        <Reviews restaurantID={restaurant.id} mealID={null} onRatingChanged={handleRatingChanged}/>
+                        <Reviews restaurantID={restaurant.id} mealID={null} onRatingChanged={handleRatingChanged} />
                     </Popup>
+
+                    <Modal
+                        isOpen={eventModalIsOpen}
+                        onRequestClose={closeEventModal}
+                        contentLabel="Event Details"
+                        style={modalStyle}
+                    >
+                        {selectedEvent && (
+                            <div>
+                                <header className="menuHeader">{selectedEvent.title}</header>
+                                <div className="eventModalContent">
+                                    <img src={selectedEvent.imageUrl} alt={selectedEvent.title} style={{maxWidth: '100%', height: 'auto', marginBottom: '15px'}} />
+                                    <p><strong>Venue:</strong> {selectedEvent.venue}</p>
+                                    <p><strong>Date:</strong> {selectedEvent.date}</p>
+                                    <p><strong>Description:</strong> {selectedEvent.description}</p>
+                                    <p><strong>Available Tickets:</strong> {selectedEvent.availableTickets}</p>
+                                    <p>Get some food for the event and checkout <a href="https://example.com" target="_blank" rel="noopener noreferrer">our website</a> for bookings and more info.</p>
+                                </div>
+                                <button onClick={closeEventModal} className="modalCloseButton">Close</button>
+                            </div>
+                        )}
+                    </Modal>
                 </>
             )}
         </div>

@@ -205,10 +205,13 @@ function Restaurant() {
                                     </p>
                                     <p><b>Rating:</b> {restaurant.rating || 'No Rating'}</p>
                                     {upcomingEvent && (
-                                        <p style={{ color: 'green', cursor: 'pointer' }} onClick={() => openEventModal(upcomingEvent)}>
-                                            <b>Upcoming Event:</b> {upcomingEvent.title}
-                                        </p>
-                                    )}
+                                            <li 
+                                                className="upcoming-event"
+                                                onClick={() => openEventModal(upcomingEvent)}
+                                            >
+                                                <b>Upcoming Event:</b> {upcomingEvent.title}
+                                            </li>
+                                        )}
                                 </div>
                                 <div className="composite-buttons">
                                     <Link to={`/menu/${restaurant.id}`} state={{restaurant}}>
