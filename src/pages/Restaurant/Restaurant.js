@@ -240,12 +240,11 @@ function Restaurant() {
                                         <p id="restaurant-rating-paragraph">
                                             {restaurant.rating || 'No Rating'}</p>
                                         {upcomingEvent && (
-                                            <li
-                                                className="upcoming-event"
-                                                onClick={() => openEventModal(upcomingEvent)}
-                                            >
-                                                <b>Upcoming Event:</b> {upcomingEvent.title}
-                                            </li>
+                                            <section id="upcoming-event-section">
+                                                <h5 id={"upcoming-heading"}><b>Upcoming Event:</b></h5>
+                                                <p className="upcoming-event" id={"upcoming-event-paragraph"}
+                                                   onClick={() => openEventModal(upcomingEvent)}>{upcomingEvent.title}</p>
+                                            </section>
                                         )}
                                     </div>
                                     <div className="composite-buttons">

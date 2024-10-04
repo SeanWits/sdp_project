@@ -3,6 +3,17 @@
 =======
 [![codecov](https://codecov.io/gh/SeanWits/sdp_project/graph/badge.svg?token=APVS915DYE)](https://codecov.io/gh/SeanWits/sdp_project)
 
+# Getting Started
+
+To get started with this project, follow these steps:
+
+```
+git clone https://github.com/SeanWits/sdp_project.git
+cd sdp_project
+npm install
+```
+This will clone the repository, navigate into the project directory, and install all necessary dependencies.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
