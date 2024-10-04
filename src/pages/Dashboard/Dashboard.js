@@ -19,7 +19,7 @@ const Dashboard = () => {
   useEffect(() => {
     console.log('Dashboard useEffect triggered');
     if (!user) {
-      console.log('No user, navigating to login');
+      // console.log('No user, navigating to login');
       navigate('/login');
       return;
     }
@@ -41,7 +41,7 @@ const Dashboard = () => {
         throw new Error('Failed to fetch user data');
       }
       const userData = await response.json();
-      console.log('User data fetched:', userData);
+      // console.log('User data fetched:', userData);
       setUserData(userData);
       await fetchRecentTransactions(idToken);
     } catch (err) {
@@ -76,7 +76,24 @@ const Dashboard = () => {
   const handleAddToWallet = async () => {
     if (!userData || !walletAmount) return;
 
+    const amount = parseFloat(walletAmount);
+    if (isNaN(amount) || amount <= 0) {
+      alert('Please enter a valid positive amount.');
+      return;
+    }
+    else if (amount < 10) {
+      alert('amount must be at least R10.');
+      return;
+    }
+
+    const newBalance = (userData.wallet || 0) + amount;
+    if (newBalance > 5000) {
+      alert('The maximum wallet balance allowed is R5000.');
+      return;
+    }
+
     try {
+      setLoading(true);
       const idToken = await user.getIdToken();
       const response = await fetch(`${process.env.REACT_APP_API_URL}/user/update-wallet`, {
         method: 'POST',
@@ -84,16 +101,15 @@ const Dashboard = () => {
           'Authorization': `Bearer ${idToken}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ amount: parseFloat(walletAmount) })
+        body: JSON.stringify({ amount: amount })
       });
       if (!response.ok) {
         throw new Error('Failed to update wallet balance');
       }
       
-      // Update the local state immediately
       setUserData(prevData => ({
         ...prevData,
-        wallet: (prevData.wallet || 0) + parseFloat(walletAmount)
+        wallet: newBalance
       }));
       
       setWalletAmount('');
@@ -101,6 +117,8 @@ const Dashboard = () => {
     } catch (err) {
       console.error("Error updating wallet:", err);
       alert('Failed to update wallet. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -115,7 +133,7 @@ const Dashboard = () => {
     }
   };
   
-  console.log('Rendering Dashboard, userData:', userData);
+  // console.log('Rendering Dashboard, userData:', userData);
 
   return (
     <>
@@ -161,8 +179,11 @@ const Dashboard = () => {
             value={walletAmount}
             onChange={(e) => setWalletAmount(e.target.value)}
             placeholder="Enter amount"
+            min="10"
+            max="5000"
+            step="0.01"
           />
-          <button onClick={handleAddToWallet} className="action-button">
+          <button onClick={handleAddToWallet} className="action-button" disabled={loading}>
             Add to Wallet
           </button>
         </div>

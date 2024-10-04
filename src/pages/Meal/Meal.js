@@ -52,7 +52,7 @@ function Meal() {
     const handleAddToCart = async () => {
         if (!user) {
             console.log("User not logged in");
-            navigate("/login", {state: {from: location}});
+            navigate("/login", { state: { from: location } });
             return;
         }
 
@@ -74,7 +74,12 @@ function Meal() {
                 throw new Error('Failed to add item to cart');
             }
 
-            console.log("Item added to cart");
+            const result = await response.json();
+            if (result.cartCleared) {
+                alert("Your previous cart has been cleared as you've added an item from a different restaurant.");
+            }
+
+            // console.log("Item added to cart");
 
             // Dispatch custom event to notify of cart update
             window.dispatchEvent(new CustomEvent("cartUpdated"));
@@ -146,32 +151,7 @@ function Meal() {
                         </div>
                     </article>
                     <article id={"customise_and_pay_article"}>
-                        <div className="MealDivBox" id={"customise_order"}>
-                            <h4 id={"description_heading"} className="text-lg font-semibold mb-2">Customise order</h4>
-                            <div className="flex flex-col">
-                                <label className="flex flex-col mb-2">
-                                    <input
-                                        type="radio"
-                                        className="form-radio"
-                                        checked={size === "small"}
-                                        onChange={() => setSize("small")}
-                                    />
-                                    <span className="mt-1">Small</span>{" "}
-                                    {/* Added margin-top for spacing */}
-                                </label>
-
-                                <label className="flex flex-col">
-                                    <input
-                                        type="radio"
-                                        className="form-radio"
-                                        checked={size === "large"}
-                                        onChange={() => setSize("large")}
-                                    />
-                                    <span className="mt-1">Large</span>{" "}
-                                    {/* Added margin-top for spacing */}
-                                </label>
-                            </div>
-                        </div>
+                        
                         <section id={"payment_section"}>
                             <p id={"total_text"}>
                                 <b>Total</b>: R{item.price.toFixed(2)}{" "}

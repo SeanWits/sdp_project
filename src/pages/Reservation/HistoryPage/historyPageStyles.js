@@ -12,16 +12,16 @@ export const styles = {
     flex: '1 0 auto', // Allows the container to grow and push the footer down
   },
 
-
   container: {
-    backgroundColor: 'white',
+    backgroundColor: '#003b5c',
     padding: '30px',
     borderRadius: '10px',
     boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-    width: '100%',
-    maxWidth: '800px', // Increased width to better fit the reservations
+    width: '95vw', // Make the width responsive to the screen size (95% of the viewport width)
+    maxWidth: '100%', // Remove fixed maxWidth and allow it to fill the screen
     textAlign: 'center',
   },
+
   yellowBox: {
     backgroundColor: '#fcb040',
     padding: '10px',
@@ -29,14 +29,16 @@ export const styles = {
     borderRadius: '15px',
     marginBottom: '20px',
   },
+
   reservationItem: {
-    backgroundColor: '#003b5c', // Orange background for each reservation
+    backgroundColor: 'white',
     padding: '20px',
-    color:  '#fcb040',
+    color:  '#003b5c',
     borderRadius: '8px',
     marginBottom: '15px',
     position: 'relative',
   },
+
   cancelButton: {
     position: 'absolute',
     right: '15px',
@@ -44,17 +46,19 @@ export const styles = {
     transform: 'translateY(-50%)',
     padding: '10px 20px',
     backgroundColor:  '#fcb040', 
-    color: 'white',
+    color: '#003b5c',
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
   },
+
   label: {
     display: 'block',
     marginTop: '20px',
     fontSize: '16px',
-    color: '#003b5c',
+    color: '#fcb040',
   },
+
   input: {
     marginTop: '10px',
     padding: '10px',
@@ -63,31 +67,30 @@ export const styles = {
     border: '1px solid #003b5c',
     borderRadius: '5px',
   },
+
   button: {
     marginTop: '30px',
     padding: '15px',
     width: '100%',
     fontSize: '16px',
-    backgroundColor: '#003b5c',
-    color: 'white',
+    backgroundColor: '#fcb040',
+    color: '#003b5c',
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
     transition: 'background-color 0.3s',
   },
 
-  // Add these to your styles object
-errorMessage: {
-  color: 'red',
-  marginBottom: '15px',
-},
-retryButton: {
-  marginTop: '15px',
-  padding: '10px',
-  backgroundColor: '#fcb040',
-  color: '#003b5c',
-  border: 'none',
-  borderRadius: '5px',
-  cursor: 'pointer',
-},
+  // New style for text colors, can be applied to the Order Summary Page
+  textColorPrimary: {
+    color: '#fcb040', // Primary text color
+  },
+
+  textColorSecondary: {
+    color: '#003b5c', // Secondary text color
+  },
+
+  textColorHighlight: {
+    color: '#ff5733', // Custom highlight color for important text
+  }
 };

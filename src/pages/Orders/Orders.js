@@ -73,7 +73,7 @@ const Orders = () => {
 
   return (
     <>
-      <Header disableCart={true} disableOrders={true}/>
+      <Header disableCart={false} disableOrders={true}/>
       <LoadModal loading={loading} />
       <header className="orderHeader">
         <Link to="/" className="back-arrow-orders">&#8592;</Link>

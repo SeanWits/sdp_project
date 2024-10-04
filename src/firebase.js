@@ -23,10 +23,10 @@ const analytics = getAnalytics(app);
 // Set persistence
 setPersistence(auth, browserLocalPersistence)
   .then(() => {
-    console.log("Persistence set successfully");
+    // console.log("Persistence set successfully");
   })
   .catch((error) => {
-    console.error("Error setting persistence:", error);
+    // console.error("Error setting persistence:", error);
   });
 
 const db = getFirestore(app);

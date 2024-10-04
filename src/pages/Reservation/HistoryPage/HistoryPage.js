@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../../utils/userContext';
 import Header from "../../../components/Header/Header";
 import Footer from "../../../components/Footer/Footer";
-import { styles } from '../styles';
+import { styles } from './historyPageStyles';
 import LoadModal from '../../../components/LoadModal/LoadModal'; // Add this import
 
 const HistoryPage = () => {

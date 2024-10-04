@@ -1,30 +1,21 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import Header from "../../../components/Header/Header";
-import Footer from "../../../components/Footer/Footer";
 import { UserContext } from '../../../utils/userContext';
 import { styles } from '../styles';
+import { useNavigate } from "react-router-dom";
 
-const ReservationPage = () => {
+const ReservationPage = ({ restaurant, onClose }) => {
   const [date, setDate] = useState('');
   const [timeSlot, setTimeSlot] = useState('');
   const [people, setPeople] = useState(1);
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
-  const navigate = useNavigate();
-  const { id } = useParams();
-  const location = useLocation();
-  const restaurant = location.state?.restaurant;
   const { user } = useContext(UserContext);
   const checkPerformed = useRef(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('date').setAttribute('min', today);
-    
+
     if (!checkPerformed.current) {
       checkActiveReservation();
       checkPerformed.current = true;
@@ -56,6 +47,7 @@ const ReservationPage = () => {
       if (hasActiveReservation) {
         alert("You have an active reservation");
         navigate('/history');
+        onClose();
       }
     } catch (error) {
       console.error("Error checking active reservations: ", error);
@@ -89,21 +81,14 @@ const ReservationPage = () => {
     return timeSlots;
   };
 
-  const timeSlots = restaurant ? generateTimeSlots(restaurant.opening_time, restaurant.closing_time) : [];
-
   const handleConfirm = async () => {
     if (!date || !timeSlot) {
       alert('Please select a date and time slot.');
       return;
     }
 
-    if (!restaurant) {
-      alert('Restaurant information is missing.');
-      return;
-    }
-
     const reservationData = {
-      restaurantId: id,
+      restaurantId: restaurant.id,
       restaurantName: restaurant.name,
       date: `${date}T${timeSlot}`,
       numberOfPeople: people,
@@ -124,72 +109,65 @@ const ReservationPage = () => {
         throw new Error('Failed to create reservation');
       }
 
-      const data = await response.json();
-      localStorage.setItem('reservationId', data.reservationId);
-      navigate('/order-summary');
+      alert('Reservation confirmed');
+      onClose(); // Close the modal after successful reservation
     } catch (error) {
       console.error("Error adding reservation: ", error);
       alert("Failed to create reservation. Please try again.");
     }
   };
 
-  if (!restaurant) {
-    return <div style={styles.pageWrapper}>Loading restaurant information...</div>;
-  }
-
   return (
-    <>
-      <Header />
-      <div style={styles.pageWrapper}>
-        <div style={styles.container}>
-          <div style={styles.yellowBox}>
-            <h1>Reservation for {restaurant.name}</h1>
-          </div>
-
-          <label htmlFor="date" style={styles.label}>Select Date:</label>
-          <input
-            type="date"
-            id="date"
-            name="date"
-            style={styles.input}
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-
-          <label htmlFor="time-slot" style={styles.label}>Select Time Slot:</label>
-          <select
-            id="time-slot"
-            name="time-slot"
-            style={styles.input}
-            value={timeSlot}
-            onChange={(e) => setTimeSlot(e.target.value)}
-            disabled={!date}
-          >
-            <option value="">Select a time slot</option>
-            {availableTimeSlots.map((time) => (
-              <option key={time} value={time}>{time}</option>
-            ))}
-          </select>
-
-          <label htmlFor="people" style={styles.label}>Number of People:</label>
-          <input
-            type="number"
-            id="people"
-            name="people"
-            min="1"
-            max="10"
-            style={styles.input}
-            value={people}
-            onChange={(e) => setPeople(Number(e.target.value))}
-          />
-
-          <button onClick={handleConfirm} style={styles.button} disabled={!date || !timeSlot}>
-            Confirm Reservation
-          </button>
+    <div style={styles.pageWrapper}>
+      <div style={styles.container}>
+        <div style={styles.yellowBox}>
+          <h1>Reservation for {restaurant.name}</h1>
         </div>
+
+        <label htmlFor="date" style={styles.label}>Select Date:</label>
+        <input
+          type="date"
+          id="date"
+          name="date"
+          style={styles.input}
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
+
+        <label htmlFor="time-slot" style={styles.label}>Select Time Slot:</label>
+        <select
+          id="time-slot"
+          name="time-slot"
+          style={styles.input}
+          value={timeSlot}
+          onChange={(e) => setTimeSlot(e.target.value)}
+          disabled={!date}
+        >
+          <option value="">Select a time slot</option>
+          {availableTimeSlots.map((time) => (
+            <option key={time} value={time}>{time}</option>
+          ))}
+        </select>
+
+        <label htmlFor="people" style={styles.label}>Number of People:</label>
+        <input
+          type="number"
+          id="people"
+          name="people"
+          min="1"
+          max="8"
+          style={styles.input}
+          value={people}
+          onChange={(e) => setPeople(Math.min(8, Math.max(1, Number(e.target.value))))}
+        />
+
+        <button onClick={handleConfirm} style={styles.button} disabled={!date || !timeSlot}>
+          Confirm Reservation
+        </button>
+
+        <button onClick={onClose} style={styles.button}>Close</button>
       </div>
-      <Footer />
-    </>
+    </div>
   );
 };
 

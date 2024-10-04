@@ -4,6 +4,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { UserContext } from '../../utils/userContext';
 import Checkout from './Checkout';
 
+
 // Mock the components
 jest.mock('../../components/Header/Header', () => () => <div data-testid="mock-header">Header</div>);
 jest.mock('../../components/Footer/Footer', () => () => <div data-testid="mock-footer">Footer</div>);
@@ -17,8 +18,8 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
   Link: ({ children, to }) => <a href={to}>{children}</a>,
+  useLocation: () => ({ state: { restaurantId: 'rest001' } }),
 }));
-
 // Mock fetch
 global.fetch = jest.fn();
 
@@ -31,6 +32,7 @@ const mockCartItems = [
   { productId: '2', name: 'Item 2', priceAtPurchase: 15, quantity: 1, imageSrc: 'item2.jpg' },
 ];
 
+
 const renderWithContext = (ui, { user = mockUser } = {}) => {
   return render(
     <UserContext.Provider value={{ user }}>
@@ -42,6 +44,7 @@ const renderWithContext = (ui, { user = mockUser } = {}) => {
 describe('Checkout Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
     global.fetch.mockImplementation((url) => {
       if (url.includes('/cart/')) {
         return Promise.resolve({
@@ -59,6 +62,10 @@ describe('Checkout Component', () => {
     });
   });
 
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   test('renders Checkout component and fetches data', async () => {
     await act(async () => {
       renderWithContext(<Checkout />);
@@ -67,6 +74,15 @@ describe('Checkout Component', () => {
     expect(screen.getByTestId('mock-header')).toBeInTheDocument();
     expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
     
+    // Initially, the loading modal should be present
+    expect(screen.getByTestId('mock-load-modal')).toBeInTheDocument();
+
+    // Wait for the loading to complete
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
+    // Now the loading modal should not be in the document
     await waitFor(() => {
       expect(screen.queryByTestId('mock-load-modal')).not.toBeInTheDocument();
     });
@@ -172,7 +188,6 @@ describe('Checkout Component', () => {
   
     jest.useRealTimers();
   });
-
   test('handles checkout failure', async () => {
     jest.useFakeTimers();
     global.fetch.mockImplementation((url) => {
