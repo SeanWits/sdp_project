@@ -1,15 +1,22 @@
-import React, {useState, useEffect, useContext, useRef} from 'react';
-import {UserContext} from '../../../utils/userContext';
-import {styles} from '../styles';
-import {useNavigate} from "react-router-dom";
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import { UserContext } from '../../../utils/userContext';
+import { styles } from '../styles';
+import { useNavigate } from "react-router-dom";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
 
-const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
-    const [date, setDate] = useState('');
-    const [timeSlot, setTimeSlot] = useState('');
-    const [people, setPeople] = useState(1);
-    const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
-    const {user} = useContext(UserContext);
-    const navigate = useNavigate();
+const ReservationPage = ({ restaurant, onClose }) => {
+  const [date, setDate] = useState('');
+  const [timeSlot, setTimeSlot] = useState('');
+  const [people, setPeople] = useState(1);
+  const [duration, setDuration] = useState(1);
+  const [bookWholeRestaurant, setBookWholeRestaurant] = useState(false);
+  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+  const { user } = useContext(UserContext);
+  const checkPerformed = useRef(false);
+  const navigate = useNavigate();
+  const functions = getFunctions();
+  const db = getFirestore();
 
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
@@ -18,13 +25,38 @@ const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
 
     }, []);
 
-    useEffect(() => {
-        if (date && restaurant) {
-            const slots = generateTimeSlots(restaurant.opening_time, restaurant.closing_time, date);
-            setAvailableTimeSlots(slots);
-            setTimeSlot(''); // Reset time slot when date changes
+  useEffect(() => {
+    if (date && restaurant) {
+      const slots = generateTimeSlots(restaurant.opening_time, restaurant.closing_time, date);
+      setAvailableTimeSlots(slots);
+      setTimeSlot(''); 
+    }
+  }, [date, restaurant]);
+
+  const checkActiveReservation = async () => {
+    try {
+      const idToken = await user.getIdToken();
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/reservations/active`, {
+        headers: {
+          'Authorization': `Bearer ${idToken}`
         }
-    }, [date, restaurant]);
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to check active reservations');
+      }
+
+      const { hasActiveReservation } = await response.json();
+      if (hasActiveReservation) {
+        alert("You have an active reservation");
+        navigate('/history');
+        onClose();
+      }
+    } catch (error) {
+      console.error("Error checking active reservations: ", error);
+      alert("Failed to check active reservations. Please try again.");
+    }
+  };
 
     const generateTimeSlots = (open, close, selectedDate) => {
         const timeSlots = [];
@@ -58,12 +90,16 @@ const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
             return;
         }
 
-        const reservationData = {
-            restaurantId: restaurant.id,
-            restaurantName: restaurant.name,
-            date: `${date}T${timeSlot}`,
-            numberOfPeople: people,
-        };
+    const reservationData = {
+      restaurantId: restaurant.id,
+      restaurantName: restaurant.name,
+      date: `${date}T${timeSlot}`,
+      numberOfPeople: bookWholeRestaurant ? "Whole Restaurant" : people,
+      duration: duration,
+      wholeRestaurant: bookWholeRestaurant,
+      userId: user.uid,
+      createdAt: new Date()
+    };
 
         try {
             const idToken = await user.getIdToken();
@@ -121,17 +157,44 @@ const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
                     ))}
                 </select>
 
-                <label htmlFor="people" style={styles.label}>Number of People:</label>
-                <input
-                    type="number"
-                    id="people"
-                    name="people"
-                    min="1"
-                    max="8"
-                    style={styles.input}
-                    value={people}
-                    onChange={(e) => setPeople(Math.min(8, Math.max(1, Number(e.target.value))))}
-                />
+        <label htmlFor="duration" style={styles.label}>Duration (hours):</label>
+        <input
+          type="number"
+          id="duration"
+          name="duration"
+          min="1"
+          max="4"
+          style={styles.input}
+          value={duration}
+          onChange={(e) => setDuration(Math.min(4, Math.max(1, Number(e.target.value))))}
+        />
+
+        <label htmlFor="whole-restaurant" style={styles.label}>
+          <input
+            type="checkbox"
+            id="whole-restaurant"
+            name="whole-restaurant"
+            checked={bookWholeRestaurant}
+            onChange={(e) => setBookWholeRestaurant(e.target.checked)}
+          />
+          Book Whole Restaurant
+        </label>
+
+        {!bookWholeRestaurant && (
+          <>
+            <label htmlFor="people" style={styles.label}>Number of People:</label>
+            <input
+              type="number"
+              id="people"
+              name="people"
+              min="1"
+              max="8"
+              style={styles.input}
+              value={people}
+              onChange={(e) => setPeople(Math.min(8, Math.max(1, Number(e.target.value))))}
+            />
+          </>
+        )}
 
                 <button onClick={handleConfirm} style={styles.button} disabled={!date || !timeSlot}>
                     Confirm Reservation

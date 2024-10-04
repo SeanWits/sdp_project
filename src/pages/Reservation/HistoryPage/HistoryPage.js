@@ -91,58 +91,55 @@ const HistoryPage = ({onClose, onReservationCancelled}) => {
         }
     };
 
-    const formatDate = (dateString) => {
-        if (!dateString) return 'Not specified';
-        const date = new Date(dateString);
-        return date.toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-        });
-    };
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Not specified';
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
 
-
-    return (
-        <>
-            <div style={styles.pageWrapper}>
-                <LoadModal loading={loading}/>
-                <div style={styles.container}>
-                    <div style={styles.yellowBox}>
-                        <h1>Reservation History</h1>
-                    </div>
-                    {!loading && (
-                        <div>
-                            {reservations.map((reservation) => (
-                                <div key={reservation.id} style={styles.reservationItem}>
-                                    <p>
-                                        <strong>Restaurant:</strong> {reservation.restaurantName}
-                                    </p>
-                                    <p>
-                                        <strong>Date:</strong> {formatDate(reservation.date)}</p>
-                                    <p><strong>Number of
-                                        People:</strong> {reservation.numberOfPeople}</p>
-                                    <p>
-                                        <strong>Status:</strong> {getReservationStatus(reservation.date)}</p>
-                                    {getReservationStatus(reservation.date) === "Upcoming" && (
-                                        <button
-                                            onClick={() => handleCancel(reservation.id, reservation.date)}
-                                            style={styles.cancelButton}
-                                        >
-                                            Cancel Reservation
-                                        </button>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    <button onClick={handleClose} style={styles.button}>Back to Menu</button>
-                </div>
-            </div>
-        </>
-    );
+  return (
+    <>
+      <Header />
+    <div style={styles.pageWrapper}>
+      <LoadModal loading={loading} />
+      <div style={styles.container}>
+        <div style={styles.yellowBox}>
+          <h1>Reservation History</h1>
+        </div>
+        {!loading && (
+          <div>
+            {reservations.map((reservation) => (
+              <div key={reservation.id} style={styles.reservationItem}>
+                <p><strong>Restaurant:</strong> {reservation.restaurantName}</p>
+                <p><strong>Date:</strong> {formatDate(reservation.date)}</p>
+                <p><strong>Number of People:</strong> {reservation.numberOfPeople}</p>
+                <p><strong>Status:</strong> {getReservationStatus(reservation.date)}</p>
+                <p><strong>Duration:</strong> {reservation.duration} hours</p>
+                {getReservationStatus(reservation.date) === "Upcoming" && (
+                  <button 
+                    onClick={() => handleCancel(reservation.id, reservation.date)}
+                    style={styles.cancelButton}
+                  >
+                    Cancel Reservation
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+        <button onClick={() => navigate('/')} style={styles.button}>Back to Menu</button>
+      </div>
+    </div>
+    <Footer />
+    </>
+  );
 };
 
 export default HistoryPage;
