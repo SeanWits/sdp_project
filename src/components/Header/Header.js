@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import Modal from 'react-modal';
 import "./Header.css";
 import { UserContext } from '../../utils/userContext';
 import Cart from '../Cart/Cart';
 import { Hint } from "../Hint/hint";
+
+Modal.setAppElement('#root');
 
 function Header({ disableCart = false, disableOrders = false }) {
     const navigate = useNavigate();
@@ -13,6 +16,8 @@ function Header({ disableCart = false, disableOrders = false }) {
     const [cartItemCount, setCartItemCount] = useState(0);
     const [currentCartRestaurantId, setCurrentCartRestaurantId] = useState(null);
     const { user } = useContext(UserContext);
+    const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+    const [alerts, setAlerts] = useState([]);
 
     useEffect(() => {
         if (user && !disableCart) {
@@ -20,6 +25,13 @@ function Header({ disableCart = false, disableOrders = false }) {
         }
 
         window.addEventListener('cartUpdated', fetchCart);
+
+        // Mock alerts
+        setAlerts([
+            { date: '2024-10-05', time: '14:30', incident: 'Suspicious activity', area: 'East Campus Matrix', affectedVenues: 'Matrix Cafeteria' },
+            { date: '2024-10-05', time: '15:45', incident: 'Power outage', area: 'East Campus Matrix', affectedVenues: 'All restaurants in East Campus Matrix' },
+            { date: '2024-10-05', time: '16:20', incident: 'Water supply issue', area: 'East Campus Matrix', affectedVenues: 'Matrix Food Court' }
+        ]);
 
         return () => {
             window.removeEventListener('cartUpdated', fetchCart);
@@ -85,6 +97,31 @@ function Header({ disableCart = false, disableOrders = false }) {
         }
     };
 
+    const toggleAlertModal = () => {
+        setIsAlertModalOpen(prev => !prev);
+    };
+
+    const modalStyle = {
+        content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            width: '80%',
+            maxWidth: '500px',
+            maxHeight: '80vh',
+            overflow: 'auto',
+            borderRadius: '15px',
+            padding: '20px',
+            backgroundColor: 'white',
+        },
+        overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.75)'
+        }
+    };
+
     return (
         <>
             <link
@@ -102,6 +139,17 @@ function Header({ disableCart = false, disableOrders = false }) {
                     <p id="logo_label">Campus Bites</p>
                 </section>
                 <section id="icons_on_header">
+                <Hint hintText={"View safety alerts"}>
+                        <div
+                            className="alert-icon-container-header"
+                            onClick={toggleAlertModal}
+                        >
+                        <span className="material-symbols-outlined icon">
+                            notifications
+                        </span>
+                            {alerts.length > 0 && <span className="alert-counter">{alerts.length}</span>}
+                        </div>
+                    </Hint>
                     <Hint hintText={"View your reservations"}>
                         <Link to={"/history"}>
                         <span className="material-symbols-outlined icon">
@@ -148,6 +196,28 @@ function Header({ disableCart = false, disableOrders = false }) {
                     fetchCart={fetchCart}
                 />
             )}
+            <Modal
+                isOpen={isAlertModalOpen}
+                onRequestClose={toggleAlertModal}
+                contentLabel="Safety Alerts"
+                style={modalStyle}
+            >
+                <div>
+                    <header className="menuHeader">Safety Alerts</header>
+                    <div className="alertModalContent">
+                        {alerts.map((alert, index) => (
+                            <div key={index} className="alert-item">
+                                <p><strong>Date:</strong> {alert.date}</p>
+                                <p><strong>Time:</strong> {alert.time}</p>
+                                <p><strong>Incident:</strong> {alert.incident}</p>
+                                <p><strong>Area:</strong> {alert.area}</p>
+                                <p><strong>Affected Venues:</strong> {alert.affectedVenues}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <button onClick={toggleAlertModal} className="modalCloseButton">Close</button>
+                </div>
+            </Modal>
         </>
     );
 }
