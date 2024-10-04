@@ -152,7 +152,7 @@ function Restaurant() {
             <Header/>
             <LoadModal loading={loading}/>
             <div className="restaurants-div">
-                <header className="menuHeader"><h2 className="restaurants-heading">Restaurants/Dining Halls</h2>
+                <header className="menuHeader"><h2 className="restaurants-heading">Restaurants</h2>
                     <span id={"dietary-filter"} className="material-symbols-outlined icon filled" onClick={openModal}>
                         filter_alt
                     </span>
