@@ -132,3 +132,60 @@
     object-fit: cover;
 }
 
+@media screen and (max-width: 600px) {
+
+    .menu-container {
+        display: grid;
+        grid-template-areas: "nav" "meal-type-list" "line" "meal-type" "meal-list";
+        grid-template-rows: 70px auto auto auto auto;
+
+        .menuHeader {
+            grid-area: nav;
+        }
+
+        .categories-row {
+            grid-area: meal-type-list;
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: 100px;
+            overflow-x: auto;
+            overscroll-behavior-x: contain;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none; /* For Firefox */
+            -ms-overflow-style: none; /* For Internet Explorer and Edge */
+
+            ::-webkit-scrollbar {
+                display: none; /* For Chrome, Safari, and Opera */
+            }
+
+            * {
+                scroll-snap-align: start;
+            }
+
+            .category-item {
+                cursor: pointer;
+                padding: 10px 0px;
+                border-radius: 10px;
+                margin: 0;
+            }
+        }
+
+        .separator-line {
+            grid-area: line;
+        }
+
+        #menuFoodBanner {
+            grid-area: meal-type;
+            margin-block-end: 20px;
+        }
+
+        .food-grid {
+            grid-area: meal-list;
+            display: grid;
+            row-gap: 30px;
+        }
+    }
+
+}
+
+
