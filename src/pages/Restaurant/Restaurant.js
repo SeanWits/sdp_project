@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import Modal from 'react-modal';
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 import "./Restaurant.css";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
@@ -99,7 +99,7 @@ function Restaurant() {
     };
 
     const handlePreferenceChange = (pref) => {
-        setSelectedPreferences(prevPrefs => 
+        setSelectedPreferences(prevPrefs =>
             prevPrefs.includes(pref)
                 ? prevPrefs.filter(p => p !== pref)
                 : [...prevPrefs, pref]
@@ -110,7 +110,7 @@ function Restaurant() {
         if (selectedPreferences.length === 0) {
             setFilteredRestaurants(restaurants);
         } else {
-            const filtered = restaurants.filter(restaurant => 
+            const filtered = restaurants.filter(restaurant =>
                 selectedPreferences.every(pref => restaurant.prefs.includes(pref))
             );
             setFilteredRestaurants(filtered);
@@ -194,12 +194,16 @@ function Restaurant() {
                         <div>
                             <header className="menuHeader">{selectedEvent.title}</header>
                             <div className="eventModalContent">
-                                <img src={selectedEvent.imageUrl} alt={selectedEvent.title} style={{maxWidth: '100%', height: 'auto', marginBottom: '15px'}} />
+                                <img src={selectedEvent.imageUrl} alt={selectedEvent.title}
+                                     style={{maxWidth: '100%', height: 'auto', marginBottom: '15px'}}/>
                                 <p><strong>Venue:</strong> {selectedEvent.venue}</p>
                                 <p><strong>Date:</strong> {selectedEvent.date}</p>
                                 <p><strong>Description:</strong> {selectedEvent.description}</p>
                                 <p><strong>Available Tickets:</strong> {selectedEvent.availableTickets}</p>
-                                <p>Get some food for the event and checkout <a href="https://example.com" target="_blank" rel="noopener noreferrer">our website</a> for bookings and more info.</p>
+                                <p>Get some food for the event and checkout <a href="https://example.com"
+                                                                               target="_blank"
+                                                                               rel="noopener noreferrer">our
+                                    website</a> for bookings and more info.</p>
                             </div>
                             <button onClick={closeEventModal} className="modalCloseButton">Close</button>
                         </div>
@@ -213,72 +217,73 @@ function Restaurant() {
                     style={modalStyle}
                 >
                     {selectedRestaurant && (
-                        <ReservationPage restaurant={selectedRestaurant} onClose={closeReservationModal} />
+                        <ReservationPage restaurant={selectedRestaurant} onClose={closeReservationModal}/>
                     )}
                 </Modal>
 
                 <section id="restaurant-list">
-                    const upcomingEvent = getUpcomingEvent(restaurant.location);
-                    {filteredRestaurants.map((restaurant) => (
-                        <article key={restaurant.id} className="restaurant-details">
-                            <section id="main-section">
-                                <div id="restaurant-summary">
-                                    <h2 id="restaurant-name-heading">{restaurant.name}</h2>
-                                    <h5 id="restaurant-location-heading"><b>Location:</b>
-                                    </h5>
-                                    <p id="restaurant-location-paragraph"> {restaurant.location}</p>
-                                    <h5 id={"restaurant-hours-heading"}><b>Hours:</b></h5>
-                                    <p id={"restaurant-hours-paragraph"}>
-                                        {restaurant.opening_time} - {restaurant.closing_time}
-                                    </p>
-                                    <h5 id="restaurant-rating-heading"><b>Rating:</b></h5>
-                                    <p id="restaurant-rating-paragraph">
-                                        {restaurant.rating || 'No Rating'}</p>
-                                    {upcomingEvent && (
-                                        <li
-                                            className="upcoming-event"
-                                            onClick={() => openEventModal(upcomingEvent)}
-                                        >
-                                            <b>Upcoming Event:</b> {upcomingEvent.title}
-                                        </li>
-                                    )}
-                                </div>
-                                <div className="composite-buttons">
-                                    <Link to={`/menu/${restaurant.id}`} state={{restaurant}}>
-                                        <button className="menuButton">
-
-                                            <span
-                                                className="material-symbols-outlined icon filled menu-icon">
-                                                restaurant
-                                            </span><p>Menu</p>
-                                        </button>
-                                    </Link>
+                    {filteredRestaurants.map((restaurant) => {
+                        const upcomingEvent = getUpcomingEvent(restaurant.location);
+                        return (
+                            <article key={restaurant.id} className="restaurant-details">
+                                <section id="main-section">
+                                    <div id="restaurant-summary">
+                                        <h2 id="restaurant-name-heading">{restaurant.name}</h2>
+                                        <h5 id="restaurant-location-heading"><b>Location:</b>
+                                        </h5>
+                                        <p id="restaurant-location-paragraph"> {restaurant.location}</p>
+                                        <h5 id={"restaurant-hours-heading"}><b>Hours:</b></h5>
+                                        <p id={"restaurant-hours-paragraph"}>
+                                            {restaurant.opening_time} - {restaurant.closing_time}
+                                        </p>
+                                        <h5 id="restaurant-rating-heading"><b>Rating:</b></h5>
+                                        <p id="restaurant-rating-paragraph">
+                                            {restaurant.rating || 'No Rating'}</p>
+                                        {upcomingEvent && (
+                                            <li
+                                                className="upcoming-event"
+                                                onClick={() => openEventModal(upcomingEvent)}
+                                            >
+                                                <b>Upcoming Event:</b> {upcomingEvent.title}
+                                            </li>
+                                        )}
+                                    </div>
+                                    <div className="composite-buttons">
+                                        <Link to={`/menu/${restaurant.id}`} state={{restaurant}}>
+                                            <button className="menuButton">
+                                                <span
+                                                    className="material-symbols-outlined icon filled menu-icon">
+                                                    restaurant
+                                                </span><p>Menu</p>
+                                            </button>
+                                        </Link>
                                         <button className="menuButton" onClick={() => openReservationModal(restaurant)}>
                                             <span className="material-symbols-outlined icon filled menu-icon">
                                                 table_restaurant
                                             </span>
                                             <p>Reservation</p>
                                         </button>
-                                    <Link to={`/restaurant-info/${restaurant.id}`} state={{restaurant}}>
-                                        <button className="menuButton">
-                                            <span className="material-symbols-outlined icon filled menu-icon">
-                                                info
-                                            </span>
-                                            <p>More Info</p>
-                                        </button>
-                                    </Link>
-                                </div>
-                            </section>
-                            <section className="restaurant-image">
-                                {restaurant.restImg && (
-                                    <img src={restaurant.restImg} alt={restaurant.name}/>
-                                )}
-                            </section>
-                        </article>
-                    ))}
+                                        <Link to={`/restaurant-info/${restaurant.id}`} state={{restaurant}}>
+                                            <button className="menuButton">
+                                                <span className="material-symbols-outlined icon filled menu-icon">
+                                                    info
+                                                </span>
+                                                <p>More Info</p>
+                                            </button>
+                                        </Link>
+                                    </div>
+                                </section>
+                                <section className="restaurant-image">
+                                    {restaurant.restImg && (
+                                        <img src={restaurant.restImg} alt={restaurant.name}/>
+                                    )}
+                                </section>
+                            </article>
+                        );
+                    })}
                 </section>
             </div>
-            <Footer />
+            <Footer/>
         </>
     );
 }
