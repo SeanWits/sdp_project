@@ -79,7 +79,7 @@ function Meal() {
                 alert("Your previous cart has been cleared as you've added an item from a different restaurant.");
             }
 
-            console.log("Item added to cart");
+            // console.log("Item added to cart");
 
             // Dispatch custom event to notify of cart update
             window.dispatchEvent(new CustomEvent("cartUpdated"));

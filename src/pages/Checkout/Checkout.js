@@ -122,7 +122,7 @@ const Checkout = () => {
       const result = await response.json();
       setTimeout(() => {
         setLoading(false);
-        alert(`Purchase confirmed! Order ID: ${result.orderId}`);
+        alert(`Purchase confirmed!`);
         setCartItems([]);
         setTotal(0);
         setWalletBalance(prevBalance => prevBalance - total);

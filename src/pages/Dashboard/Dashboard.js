@@ -19,7 +19,7 @@ const Dashboard = () => {
   useEffect(() => {
     console.log('Dashboard useEffect triggered');
     if (!user) {
-      console.log('No user, navigating to login');
+      // console.log('No user, navigating to login');
       navigate('/login');
       return;
     }
@@ -41,7 +41,7 @@ const Dashboard = () => {
         throw new Error('Failed to fetch user data');
       }
       const userData = await response.json();
-      console.log('User data fetched:', userData);
+      // console.log('User data fetched:', userData);
       setUserData(userData);
       await fetchRecentTransactions(idToken);
     } catch (err) {
@@ -133,7 +133,7 @@ const Dashboard = () => {
     }
   };
   
-  console.log('Rendering Dashboard, userData:', userData);
+  // console.log('Rendering Dashboard, userData:', userData);
 
   return (
     <>

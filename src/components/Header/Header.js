@@ -56,7 +56,7 @@ function Header({ disableCart = false, disableOrders = false }) {
                 setCartItems(cartData.items);
                 updateCartItemCount(cartData.items);
                 setCurrentCartRestaurantId(cartData.restaurantId);
-                console.log("Cart mounted:", cartData.restaurantId);
+                // console.log("Cart mounted:", cartData.restaurantId);
             } else {
                 setCartItems([]);
                 setCartItemCount(0);
