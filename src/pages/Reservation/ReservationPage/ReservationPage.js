@@ -83,14 +83,14 @@ const ReservationPage = ({ restaurant, onClose }) => {
       alert('Please select a date and time slot.');
       return;
     }
-  
+
     const reservationData = {
       restaurantId: restaurant.id,
       restaurantName: restaurant.name,
       date: `${date}T${timeSlot}`,
       numberOfPeople: people,
     };
-  
+
     try {
       const idToken = await user.getIdToken();
       const response = await fetch(`${process.env.REACT_APP_API_URL}/reservations`, {
@@ -101,19 +101,18 @@ const ReservationPage = ({ restaurant, onClose }) => {
         },
         body: JSON.stringify(reservationData)
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to create reservation');
       }
-  
-      // No alert here, just close the modal after the reservation is confirmed
+
+      alert('Reservation confirmed');
       onClose(); // Close the modal after successful reservation
     } catch (error) {
       console.error("Error adding reservation: ", error);
       alert("Failed to create reservation. Please try again.");
     }
   };
-  
 
   return (
     <div style={styles.pageWrapper}>
