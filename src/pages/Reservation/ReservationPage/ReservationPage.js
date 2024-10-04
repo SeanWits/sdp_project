@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { UserContext } from '../../../utils/userContext';
 import { styles } from '../styles';
+import { useNavigate } from "react-router-dom";
 
 const ReservationPage = ({ restaurant, onClose }) => {
   const [date, setDate] = useState('');
@@ -9,6 +10,7 @@ const ReservationPage = ({ restaurant, onClose }) => {
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
   const { user } = useContext(UserContext);
   const checkPerformed = useRef(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -44,6 +46,7 @@ const ReservationPage = ({ restaurant, onClose }) => {
       const { hasActiveReservation } = await response.json();
       if (hasActiveReservation) {
         alert("You have an active reservation");
+        navigate('/history');
         onClose();
       }
     } catch (error) {
@@ -152,10 +155,10 @@ const ReservationPage = ({ restaurant, onClose }) => {
           id="people"
           name="people"
           min="1"
-          max="10"
+          max="8"
           style={styles.input}
           value={people}
-          onChange={(e) => setPeople(Number(e.target.value))}
+          onChange={(e) => setPeople(Math.min(8, Math.max(1, Number(e.target.value))))}
         />
 
         <button onClick={handleConfirm} style={styles.button} disabled={!date || !timeSlot}>
