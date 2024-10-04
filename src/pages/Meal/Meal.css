@@ -36,7 +36,7 @@
     width: 34%;
 }
 
-.restaurant-list h3 {
+.meal-div h3 {
     margin: 0;
     padding-block: 25px;
     font-size: 1.3em;
@@ -151,4 +151,150 @@
     align-items: center;
     flex-direction: column;
     margin-block-start: 5%;
+}
+
+@media screen and (max-width: 600px) {
+    .meal-div {
+        grid-area: main;
+        display: grid;
+        grid-template-rows: 70px 77px auto auto auto;
+        grid-template-areas: "nav" "meal-name" "line" "meal-details";
+
+        justify-items: center;
+
+        .menuHeader {
+            grid-area: nav;
+        }
+
+        h3 {
+            grid-area: meal-name;
+        }
+
+        .separator-line {
+            left: 0;
+            grid-area: line;
+        }
+
+        #meal-details-section {
+            height: fit-content;
+            left: 0;
+            grid-area: meal-details;
+            display: grid;
+            grid-template-areas: "meal-image-article" "meal-details-article" "customise-and-pay-article";
+            grid-template-rows: 1fr auto auto;
+
+            #meal-image-article {
+                width: 100%;
+                grid-area: meal-image-article;
+
+                img {
+                    object-fit: contain;
+                    height: auto;
+                }
+            }
+
+            #meal-details-article {
+
+                #longerThings.MealDivBox {
+                    padding: 0;
+                    width: 100%;
+                    display: grid;
+                    grid-template-areas: "meal-description-heading" "meal-description-paragragh" "rating-heading" "rating-reviews-button" "dietary-tags-heading" "dietary-tags";
+                    grid-template-rows: 50px auto 50px auto 50px auto;
+                    height: auto;
+                    justify-items: center;
+                    align-items: center;
+
+                    #description_heading {
+                        padding: 0;
+                        grid-area: meal-description-heading;
+                    }
+
+                    #description_paragraph {
+                        padding: 0;
+                        grid-area: meal-description-paragragh;
+                    }
+
+                    #rating_heading {
+                        padding: 0;
+                        grid-area: rating-heading;
+                    }
+
+                    #view_reviews_section {
+                        padding: 0;
+                        grid-area: rating-reviews-button;
+                        display: grid;
+                        grid-template-areas: "rating reviews-button";
+                        grid-template-columns: 1fr 1fr;
+                        width: 100%;
+                        justify-items: center;
+
+                        p {
+                            grid-area: rating;
+                        }
+
+                        #menuInfoButton {
+                            grid-area: reviews-button;
+                            margin: 0;
+                            width: 100px;
+                        }
+                    }
+
+                    #dietary_heading {
+                        padding: 0;
+                        grid-area: dietary-tags-heading;
+                    }
+
+                    #dietary_tags {
+                        padding: 0;
+                        grid-area: dietary-tags;
+                    }
+
+                }
+
+                width: 100%;
+                grid-area: meal-details-article;
+            }
+
+            #customise_and_pay_article {
+                width: 100%;
+                grid-area: customise-and-pay-article;
+                display: grid;
+                grid-template-areas: "customise-order-section" "total" "add-to-cart";
+                grid-template-rows: auto 50px auto;
+
+                #customise_order {
+                    padding: 0;
+                    grid-area: customise-order-section;
+                    display: grid;
+                    grid-template-areas: "customise-order-heading"  "customise-order-radio";
+                    grid-template-rows: 50px auto;
+                    height: auto;
+                    justify-content: center;
+                    justify-items: center;
+                    width: 100%;
+
+                    #customise_order_heading {
+                        padding: 0;
+                        grid-area: customise-order-heading;
+                    }
+
+                    #customise_order_radio {
+                        padding: 0;
+                        grid-area: customise-order-radio;
+                    }
+                }
+
+                #payment_section {
+                    padding: 0;
+                    grid-area: total;
+                    height: auto;
+                }
+
+                #last-seperator-line {
+                    display: none;
+                }
+            }
+        }
+    }
 }

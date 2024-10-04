@@ -118,7 +118,7 @@ function Restaurant() {
     };
 
     const getUpcomingEvent = (restaurantLocation) => {
-        return upcomingEvents.find(event => 
+        return upcomingEvents.find(event =>
             event.venue.includes("West Campus") && restaurantLocation.includes("West Campus")
         );
     };
@@ -149,17 +149,18 @@ function Restaurant() {
 
     return (
         <>
-            <Header />
-            <LoadModal loading={loading} />
-            <div className="restaurant-list">
-                <header className="menuHeader">Restaurant/Dining Hall Name</header>
-                <div>
-                    <button className="prefbutton" onClick={openModal}>Dietary Preferences</button>
-                </div>
+            <Header/>
+            <LoadModal loading={loading}/>
+            <div className="restaurants-div">
+                <header className="menuHeader"><h2 className="restaurants-heading">Restaurants/Dining Halls</h2>
+                    <span id={"dietary-filter"} className="material-symbols-outlined icon filled" onClick={openModal}>
+                        filter_alt
+                    </span>
+                </header>
 
-                <Modal 
-                    isOpen={modalIsOpen} 
-                    onRequestClose={closeModal} 
+                <Modal
+                    isOpen={modalIsOpen}
+                    onRequestClose={closeModal}
                     contentLabel="Dietary Preferences"
                     style={modalStyle}
                 >
@@ -216,20 +217,25 @@ function Restaurant() {
                     )}
                 </Modal>
 
-                {filteredRestaurants.map((restaurant) => {
+                <section id="restaurant-list">
                     const upcomingEvent = getUpcomingEvent(restaurant.location);
-                    return (
+                    {filteredRestaurants.map((restaurant) => (
                         <article key={restaurant.id} className="restaurant-details">
                             <section id="main-section">
                                 <div id="restaurant-summary">
-                                    <h2>{restaurant.name}</h2>
-                                    <p><b>Location:</b> {restaurant.location}</p>
-                                    <p>
-                                        <b>Hours:</b> {restaurant.opening_time} - {restaurant.closing_time}
+                                    <h2 id="restaurant-name-heading">{restaurant.name}</h2>
+                                    <h5 id="restaurant-location-heading"><b>Location:</b>
+                                    </h5>
+                                    <p id="restaurant-location-paragraph"> {restaurant.location}</p>
+                                    <h5 id={"restaurant-hours-heading"}><b>Hours:</b></h5>
+                                    <p id={"restaurant-hours-paragraph"}>
+                                        {restaurant.opening_time} - {restaurant.closing_time}
                                     </p>
-                                    <p><b>Rating:</b> {restaurant.rating || 'No Rating'}</p>
+                                    <h5 id="restaurant-rating-heading"><b>Rating:</b></h5>
+                                    <p id="restaurant-rating-paragraph">
+                                        {restaurant.rating || 'No Rating'}</p>
                                     {upcomingEvent && (
-                                        <li 
+                                        <li
                                             className="upcoming-event"
                                             onClick={() => openEventModal(upcomingEvent)}
                                         >
@@ -239,11 +245,27 @@ function Restaurant() {
                                 </div>
                                 <div className="composite-buttons">
                                     <Link to={`/menu/${restaurant.id}`} state={{restaurant}}>
-                                        <button className="menuButton">Menu</button>
+                                        <button className="menuButton">
+
+                                            <span
+                                                className="material-symbols-outlined icon filled menu-icon">
+                                                restaurant
+                                            </span><p>Menu</p>
+                                        </button>
                                     </Link>
-                                    <button className="menuButton" onClick={() => openReservationModal(restaurant)}>Reservation</button>
+                                        <button className="menuButton" onClick={() => openReservationModal(restaurant)}>
+                                            <span className="material-symbols-outlined icon filled menu-icon">
+                                                table_restaurant
+                                            </span>
+                                            <p>Reservation</p>
+                                        </button>
                                     <Link to={`/restaurant-info/${restaurant.id}`} state={{restaurant}}>
-                                        <button className="menuButton">More Info</button>
+                                        <button className="menuButton">
+                                            <span className="material-symbols-outlined icon filled menu-icon">
+                                                info
+                                            </span>
+                                            <p>More Info</p>
+                                        </button>
                                     </Link>
                                 </div>
                             </section>
@@ -253,8 +275,8 @@ function Restaurant() {
                                 )}
                             </section>
                         </article>
-                    );
-                })}
+                    ))}
+                </section>
             </div>
             <Footer />
         </>

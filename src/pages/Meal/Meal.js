@@ -113,7 +113,7 @@ function Meal() {
     return (
         <>
             <Header/>
-            <div className="restaurant-list">
+            <div className="meal-div">
                 <header className="menuHeader">
                     <Link to={`/menu/${restaurantId}`} className="back-arrow">
                         <span className="material-symbols-outlined icon filled">
@@ -128,15 +128,15 @@ function Meal() {
                     <article id={"meal-details-article"}>
                         <div className="MealDivBox" id="longerThings">
                             <h4 id={"description_heading"}><b>Description</b></h4>
-                            <p>{item.description}</p>
-                            <h4><b>Rating</b></h4>
+                            <p id={"description_paragraph"}>{item.description}</p>
+                            <h4 id={"rating_heading"}><b>Rating</b></h4>
                             <section id="view_reviews_section">
                                 <p>{item.rating ? `${item.rating}/5` : "No Rating"}</p>
                                 <button className="menuButton" id="menuInfoButton" onClick={togglePopup}>
                                     Click For Reviews
                                 </button>
                             </section>
-                            <h4><b>Dietary Tags</b></h4>
+                            <h4 id={"dietary_heading"}><b>Dietary Tags</b></h4>
                             <section id={"dietary_tags"}>
                                 {item.dietary_tags && item.dietary_tags.length > 0 ? (
                                     item.dietary_tags.map((tag, index) => (
@@ -169,7 +169,7 @@ function Meal() {
                         <img src={item.image_url} alt={item.name} className="item-image"/>
                     </article>
                 </section>
-                <div className="separator-line"></div>
+                <div id={"last-seperator-line"} className="separator-line"></div>
 
                 <Popup isOpen={isPopupOpen} onClose={togglePopup}>
                     <Reviews restaurantID={restaurantId} mealID={item.productID} onRatingChanged={handleRatingChanged}/>

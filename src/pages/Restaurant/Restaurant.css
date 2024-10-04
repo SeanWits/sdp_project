@@ -1,4 +1,4 @@
-.restaurant-list {
+.restaurants-div {
     background-color: #f0f0f0;
     padding-bottom: 20px;
 }
@@ -24,10 +24,6 @@
     justify-content: center;
 }
 
-#restaurant-summary p {
-    margin-block: 3%;
-    margin-left: 10%;
-}
 
 .restaurant-details h2 {
     margin-block-start: 10%;
@@ -44,7 +40,7 @@
 
 #main-section {
     background-color: #fcb040;
-    border-radius: 15px;
+    border-radius: 15px 0 0 15px;
     width: 75%;
     height: 100%;
     display: flex;
@@ -73,7 +69,7 @@ li {
     font-size: 1.05em
 }
 
-.prefbutton{
+.prefbutton {
     width: 170px;
     height: 40px;
     background-color: rgba(252, 176, 64, 1);
@@ -94,10 +90,16 @@ a {
     color: inherit;
 }
 
+span.material-symbols-outlined.icon.filled.menu-icon {
+    display: none;
+}
+
 .restaurant-image {
     display: flex;
     justify-content: center;
     width: 25%;
+    background-color: #003b5c;
+    border-radius: 0 15px 15px 0;
 }
 
 .restaurant-details .composite-buttons {
@@ -119,9 +121,220 @@ a {
     height: 100%;
     width: 30%;
     padding-inline: 4%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    display: grid;
+    grid-template-rows: 2fr repeat(6, 1fr);
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "restaurant-summary-heading restaurant-summary-heading"
+    "restaurant-details-heading restaurant-details"
+    "restaurant-details-heading restaurant-details"
+    "restaurant-details-heading restaurant-details";
+    justify-items: start;
+
+
+    h2 {
+        grid-area: restaurant-summary-heading;
+
+    }
+
+    h5 {
+        font-size: 1em;
+        margin: 0;
+    }
+
+    p {
+        margin-block: 3%;
+        margin-left: 10%;
+    }
+
+}
+
+@media screen and (max-width: 600px) {
+    .App {
+        width: 100%;
+        overflow: hidden;
+        display: grid;
+        grid-template-rows: 80px auto 70px;
+        grid-template-areas: "header"
+        "main"
+        "footer";
+    }
+
+    #Header {
+        width: 100%;
+        grid-area: header;
+        display: grid;
+        background-image: linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1), rgba(252, 176, 64, 1), rgba(252, 176, 64, 1), rgba(252, 176, 64, 1), rgba(252, 176, 64, 1));
+        grid-template-columns: 1fr 2fr;
+        grid-template-areas: "logo_label icons";
+
+        #logo_on_header {
+            width: auto;
+            padding-left: 20px;
+        }
+
+        #logo_label {
+            display: none;
+            grid-area: logo_label;
+        }
+
+        #icons_on_header {
+            grid-area: icons;
+            width: auto;
+            padding-right: 20px;
+        }
+    }
+
+    .menuHeader {
+        width: 100%;
+        grid-area: nav;
+        display: grid;
+        grid-template-columns: 30px auto 30px;
+        grid-template-areas: "back-button title filter-button";
+        justify-content: space-evenly;
+
+        .restaurants-heading {
+            grid-area: title;
+            font-size: 0.9em;
+        }
+
+        #dietary-filter {
+            grid-area: filter-button;
+        }
+
+    }
+
+    .restaurants-div {
+        grid-area: main;
+        display: grid;
+        grid-template-rows: 70px 10px auto;
+        grid-template-areas: "nav" "." "list";
+
+
+        #restaurant-list {
+            display: grid;
+            grid-area: list;
+            grid-auto-rows: 500px;
+            align-items: center;
+
+            .restaurant-details {
+                height: 440px;
+                display: grid;
+                grid-template-rows: 1fr 1fr;
+                grid-template-areas: "image" "summary-buttons";
+
+                #main-section {
+                    grid-area: summary-buttons;
+                    display: grid;
+                    grid-template-rows: 1fr 1fr;
+                    grid-template-areas: "summary" "buttons";
+                    width: 100%;
+                    height: 220px;
+                    border-radius: 0 0 15px 15px;
+                    justify-content: center;
+
+                    #restaurant-summary {
+                        grid-area: summary;
+                        display: grid;
+                        grid-template-columns: 1fr 1fr 1fr;
+                        grid-template-rows: 1fr 1fr 1fr;
+                        grid-template-areas: "restaurant-name restaurant-name restaurant-name" "restaurant-location-heading restaurant-hours-heading restaurant-rating-heading" "restaurant-location restaurant-hours restaurant-rating";
+                        width: 100%;
+                        height: 50%;
+                        padding: 0;
+                        justify-items: center;
+
+                        p {
+                            margin: 0;
+                        }
+
+                        #restaurant-name-heading {
+                            justify-self: center;
+                            grid-area: restaurant-name;
+                            margin: 0;
+                        }
+
+                        #restaurant-location-heading {
+                            grid-area: restaurant-location-heading;
+                        }
+
+                        #restaurant-location-paragraph {
+
+                            grid-area: restaurant-location;
+                        }
+
+                        #restaurant-hours-heading {
+                            grid-area: restaurant-hours-heading;
+                        }
+
+                        #restaurant-hours-paragraph {
+                            grid-area: restaurant-hours;
+                        }
+
+                        #restaurant-rating-heading {
+                            grid-area: restaurant-rating-heading;
+                        }
+
+                        #restaurant-rating-paragraph {
+
+                            grid-area: restaurant-rating;
+                        }
+                    }
+
+                    .composite-buttons {
+                        grid-area: buttons;
+                        display: grid;
+                        grid-template-columns: 1fr 1fr 1fr;
+                        grid-template-areas: "button button button";
+                        width: 100%;
+
+                        a {
+                            display: grid;
+
+                            .menuButton {
+                                grid-area: button;
+                                border-radius: 30px;
+                                height: 50px;
+                                width: 50px;
+
+                                p {
+                                    display: none;
+                                }
+
+
+                                .menu-icon {
+                                    display: contents;
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                .restaurant-image {
+                    grid-area: image;
+                    display: grid;
+                    height: 220px;
+                    width: 100%;
+                    background-color: #003b5c;
+                    border-radius: 15px 15px 0 0;
+
+                    img {
+                        width: 100%;
+                        height: 220px;
+                        object-fit: contain;
+                    }
+                }
+
+            }
+        }
+
+    }
+
+
+    #Footer {
+        grid-area: footer;
+    }
+
 }
 
 .modal {
