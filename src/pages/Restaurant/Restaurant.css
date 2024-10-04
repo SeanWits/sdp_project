@@ -185,31 +185,31 @@ span.material-symbols-outlined.icon.filled.menu-icon {
         }
     }
 
+    .menuHeader {
+        width: 100%;
+        grid-area: nav;
+        display: grid;
+        grid-template-columns: 30px auto 30px;
+        grid-template-areas: "back-button title filter-button";
+        justify-content: space-evenly;
+
+        .restaurants-heading {
+            grid-area: title;
+            font-size: 0.9em;
+        }
+
+        #dietary-filter {
+            grid-area: filter-button;
+        }
+
+    }
+
     .restaurants-div {
         grid-area: main;
         display: grid;
         grid-template-rows: 70px 10px auto;
         grid-template-areas: "nav" "." "list";
 
-
-        .menuHeader {
-            width: 100%;
-            grid-area: nav;
-            display: grid;
-            grid-template-columns: 30px auto 30px;
-            grid-template-areas: "back-button title filter-button";
-            justify-content: space-evenly;
-
-            .restaurants-heading {
-                grid-area: title;
-                font-size: 0.9em;
-            }
-
-            #dietary-filter {
-                grid-area: filter-button;
-            }
-
-        }
 
         #restaurant-list {
             display: grid;
