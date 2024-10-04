@@ -13,7 +13,7 @@
 
 .popup-content.reviews {
     background-color: white;
-    padding: 0;
+    padding: 20px;
     min-height: 35%;
     border-radius: 15px;
     max-width: 100%;
@@ -21,13 +21,23 @@
     max-height: 80vh;
     overflow-y: auto;
     position: relative;
-    display: grid;
+    display: flex;
+    flex-direction: column;
 }
 
 .close-btn {
-    position: absolute;
-    bottom: 10px;
+    align-self: flex-end;
+    margin-top: 20px;
+    padding: 10px 20px;
     border: none;
-    font-size: 18px;
+    background-color: #003B5C;
+    color: white;
+    font-size: 16px;
     cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.close-btn:hover {
+    background-color: #00243a;
 }
