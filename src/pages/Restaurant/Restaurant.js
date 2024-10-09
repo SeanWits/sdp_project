@@ -239,16 +239,17 @@ function Restaurant() {
                                         <h5 id="restaurant-rating-heading"><b>Rating:</b></h5>
                                         <p id="restaurant-rating-paragraph">
                                             {restaurant.rating || 'No Rating'}</p>
-                                        {upcomingEvent && (
-                                            <section id="upcoming-event-section">
-                                                <h5 id={"upcoming-heading"}><b>Upcoming Event:</b></h5>
-                                                <p className="upcoming-event" id={"upcoming-event-paragraph"}
-                                                   onClick={() => openEventModal(upcomingEvent)}>{upcomingEvent.title}</p>
-                                            </section>
+                                        <h5 id={"upcoming-heading"}><b>Upcoming Event:</b></h5>
+                                        {upcomingEvent ? (
+                                            <p className="upcoming-event" id={"upcoming-event-paragraph"}
+                                               onClick={() => openEventModal(upcomingEvent)}>{upcomingEvent.title}</p>
+                                        ) : (
+                                            <p className="upcoming-event" id={"no-upcoming-event-paragraph"}
+                                            >None</p>
                                         )}
                                     </div>
                                     <div className="composite-buttons">
-                                        <Link to={`/menu/${restaurant.id}`} state={{restaurant}}>
+                                        <Link id={"menu-button"} to={`/menu/${restaurant.id}`} state={{restaurant}}>
                                             <button className="menuButton">
                                                 <span
                                                     className="material-symbols-outlined icon filled menu-icon">
@@ -256,13 +257,15 @@ function Restaurant() {
                                                 </span><p>Menu</p>
                                             </button>
                                         </Link>
-                                        <button className="menuButton" onClick={() => openReservationModal(restaurant)}>
+                                        <button className="menuButton" id={"reservation-button"}
+                                                onClick={() => openReservationModal(restaurant)}>
                                             <span className="material-symbols-outlined icon filled menu-icon">
                                                 table_restaurant
                                             </span>
                                             <p>Reservation</p>
                                         </button>
-                                        <Link to={`/restaurant-info/${restaurant.id}`} state={{restaurant}}>
+                                        <Link id={"more-info-button"} to={`/restaurant-info/${restaurant.id}`}
+                                              state={{restaurant}}>
                                             <button className="menuButton">
                                                 <span className="material-symbols-outlined icon filled menu-icon">
                                                     info

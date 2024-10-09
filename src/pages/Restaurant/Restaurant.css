@@ -204,7 +204,7 @@ span.material-symbols-outlined.icon.filled.menu-icon {
         #icons_on_header {
             grid-area: icons;
             width: auto;
-            padding-right: 20px;
+            padding-right: 15px;
         }
     }
 
@@ -237,22 +237,23 @@ span.material-symbols-outlined.icon.filled.menu-icon {
         #restaurant-list {
             display: grid;
             grid-area: list;
-            grid-auto-rows: 500px;
+            grid-auto-rows: auto;
             align-items: center;
 
             .restaurant-details {
-                height: 440px;
+                height: fit-content;
                 display: grid;
-                grid-template-rows: 1fr 1fr;
+                grid-template-rows: auto auto;
                 grid-template-areas: "image" "summary-buttons";
+                margin-block: 3.5%;
 
                 #main-section {
                     grid-area: summary-buttons;
                     display: grid;
-                    grid-template-rows: 1fr 1fr;
+                    grid-template-rows: auto auto;
                     grid-template-areas: "summary" "buttons";
                     width: 100%;
-                    height: 220px;
+                    height: fit-content;
                     border-radius: 0 0 15px 15px;
                     justify-content: center;
                     align-items: start;
@@ -261,16 +262,19 @@ span.material-symbols-outlined.icon.filled.menu-icon {
                     #restaurant-summary {
                         grid-area: summary;
                         display: grid;
-                        grid-template-columns: 2fr 1.5fr 1fr;
-                        grid-template-rows: 1fr 1fr 1fr 1fr;
-                        grid-template-areas: "restaurant-name restaurant-name restaurant-name" "restaurant-location-heading restaurant-hours-heading restaurant-rating-heading" "restaurant-location restaurant-hours restaurant-rating" "upcoming-event upcoming-event upcoming-event";
-                        width: 95%;
+                        grid-template-columns: auto auto;
+                        grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+                        grid-template-areas: "restaurant-name restaurant-name" "restaurant-location-heading restaurant-location" "restaurant-hours-heading restaurant-hours" "restaurant-rating-heading  restaurant-rating" "upcoming-event-heading upcoming-event-paragraph";
+                        width: 270px;
                         padding: 0;
                         justify-items: center;
                         row-gap: 5px;
 
                         p {
                             margin: 0;
+                            justify-self: end;
+                            overflow-x: auto;
+                            text-wrap: nowrap;
                         }
 
                         #restaurant-name-heading {
@@ -308,38 +312,86 @@ span.material-symbols-outlined.icon.filled.menu-icon {
                             grid-area: restaurant-rating;
                         }
 
-                        #upcoming-event-section {
-                            grid-area: upcoming-event;
-                            display: grid;
-                            justify-items: center;
+                        #upcoming-heading {
+                            grid-area: upcoming-event-heading;
+                            justify-self: start;
                         }
+
+                        .upcoming-paragraph {
+                            grid-area: upcoming-event-paragraph;
+                            justify-self: center;
+                        }
+
+                        #no-upcoming-event-paragraph {
+                            text-decoration: none;
+                            cursor: auto;
+                        }
+
+                        #no-upcoming-event-paragraph:hover {
+                            color: black;
+                        }
+
                     }
 
                     .composite-buttons {
                         grid-area: buttons;
                         display: grid;
                         grid-template-columns: 1fr 1fr 1fr;
-                        grid-template-areas: "button button button";
+                        grid-template-rows: 1fr;
+                        grid-template-areas: "menu-button reservation-button more-info-button";
                         width: 100%;
+                        justify-items: center;
+                        height: 70px;
 
-                        a {
-                            display: grid;
-
-                            .menuButton {
-                                grid-area: button;
-                                border-radius: 30px;
-                                height: 50px;
-                                width: 50px;
-
-                                p {
-                                    display: none;
-                                }
+                        #more-info-button {
+                            grid-area: more-info-button;
+                        }
 
 
-                                .menu-icon {
-                                    display: contents;
-                                }
+                        #reservation-button {
+                            grid-area: reservation-button;
+                            border-radius: 30px;
+                            height: 50px;
+                            width: 50px;
+
+                            p {
+                                display: none;
                             }
+
+
+                            .menu-icon {
+                                display: contents;
+                            }
+                        }
+
+                        #more-info-button {
+                            grid-area: more-info-button;
+                        }
+
+                        #menu-button {
+                            grid-area: menu-button;
+                        }
+
+                        #menu-button, #more-info-button {
+                            p {
+                                display: none;
+                            }
+
+                            border-radius: 30px;
+                            height: 50px;
+                            width: 50px;
+
+                            button {
+                                width: 100%;
+                                height: 100%;
+                                border-radius: inherit;
+                            }
+
+
+                            .menu-icon {
+                                display: contents;
+                            }
+
                         }
                     }
                 }
