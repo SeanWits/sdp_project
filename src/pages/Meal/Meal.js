@@ -52,7 +52,7 @@ function Meal() {
     const handleAddToCart = async () => {
         if (!user) {
             console.log("User not logged in");
-            navigate("/login", { state: { from: location } });
+            navigate("/login", {state: {from: location}});
             return;
         }
 
@@ -120,7 +120,9 @@ function Meal() {
                             arrow_back_ios_new
                         </span>
                     </Link>
-                    {restaurantName}
+                    <h2 id={"restaurant-name"}>
+                        {restaurantName}
+                    </h2>
                 </header>
                 <h3>{item.name}</h3>
                 <div className="separator-line"></div>
@@ -151,7 +153,7 @@ function Meal() {
                         </div>
                     </article>
                     <article id={"customise_and_pay_article"}>
-                        
+
                         <section id={"payment_section"}>
                             <p id={"total_text"}>
                                 <b>Total</b>: R{item.price.toFixed(2)}{" "}
