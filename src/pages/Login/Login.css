@@ -22,8 +22,21 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    height: 230px;
+    height: fit-content;
     width: 300px;
+
+
+    input {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+
+    input:focus {
+        caret-color: #003b5c;
+        outline-color: #003b5c;
+    }
 }
 
 #form {
@@ -33,12 +46,19 @@ body {
     height: 100%;
     justify-content: space-between;
     padding-block: 20px;
+    row-gap: 10px;
 }
 
 #login_heading_section {
     background-color: #003b5c;
     color: white;
     border-radius: 15px 15px 0px 0px;
+
+    h2 {
+        margin: 0;
+        align-self: center;
+        padding: 15px;
+    }
 }
 
 .centre_no_margin {
@@ -58,10 +78,39 @@ body {
     color: white;
     border-radius: 15px;
     width: 180px;
-    height: 30px;
+    height: 36px;
 }
 
 #account_anchor {
     cursor: pointer;
     text-decoration: underline;
+}
+
+@media screen and (max-width: 600px) {
+    #login {
+        position: absolute;
+        width: 100%;
+        overflow: hidden;
+        align-items: normal;
+        display: grid;
+        grid-template-areas: "logo" "login";
+        grid-template-rows: 0.5fr 1fr;
+
+        #login_logo {
+            grid-area: logo;
+            display: grid;
+            align-content: center;
+            justify-items: center;
+
+            img {
+                padding: 0;
+                width: 50%;
+            }
+        }
+
+        #login_article_section {
+            grid-area: login;
+            justify-self: start;
+        }
+    }
 }
