@@ -319,21 +319,19 @@ function Restaurant() {
                                                 </span><p>Menu</p>
                                             </button>
                                         </Link>
-                                        <Hint hintText={"Reservation"}>
-                                            <button className="menuButton" id={"reservation-button"}
-                                                    onClick={() => {
-                                                        if (!checkedReservations) {
-                                                            checkActiveReservation();
-                                                            (!isActiveReservation ? (openReservationModal(restaurant)) : (handleActiveReservation()))
-                                                        } else
-                                                            ((!isActiveReservation ? (openReservationModal(restaurant)) : (handleActiveReservation())));
-                                                    }}>
+                                        <button className="menuButton" id={"reservation-button"}
+                                                onClick={() => {
+                                                    if (!checkedReservations) {
+                                                        checkActiveReservation();
+                                                        (!isActiveReservation ? (openReservationModal(restaurant)) : (handleActiveReservation()))
+                                                    } else
+                                                        ((!isActiveReservation ? (openReservationModal(restaurant)) : (handleActiveReservation())));
+                                                }}>
                                             <span className="material-symbols-outlined icon filled menu-icon">
                                                 table_restaurant
                                             </span>
-                                                <p>Reservation</p>
-                                            </button>
-                                        </Hint>
+                                            <p>Reservation</p>
+                                        </button>
                                         <Link id={"more-info-button"} to={`/restaurant-info/${restaurant.id}`}
                                               state={{restaurant}}>
                                             <button className="menuButton">
@@ -353,12 +351,12 @@ function Restaurant() {
                             </article>
                         );
                     })}
-                    <Popup isOpen={isPopupOpen} onClose={togglePopup}>
-                        <HistoryPage onReservationCancelled={handleReservationCancelled} onClose={togglePopup}/>
-                    </Popup>
                 </section>
             </div>
             <Footer/>
+            <Popup isOpen={isPopupOpen} onClose={togglePopup}>
+                <HistoryPage onReservationCancelled={handleReservationCancelled} onClose={togglePopup}/>
+            </Popup>
         </>
     );
 }
