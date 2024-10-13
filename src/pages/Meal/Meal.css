@@ -166,7 +166,7 @@
             grid-area: nav;
         }
 
-        #restaurant-name {
+        .restaurant-name-heading {
             grid-area: title;
             color: white;
             font-size: 22px;
@@ -189,6 +189,7 @@
             display: grid;
             grid-template-areas: "meal-image-article" "meal-details-article" "customise-and-pay-article";
             grid-template-rows: auto auto auto;
+            justify-content: center;
 
             #meal-image-article {
                 width: 100%;
