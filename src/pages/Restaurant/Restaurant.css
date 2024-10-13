@@ -54,6 +54,11 @@ ul {
     margin: 0;
 }
 
+.list-checkBox {
+    padding-left: 20px;
+    padding-block: 10px;
+}
+
 li {
     margin-bottom: 10px;
 }
@@ -343,6 +348,10 @@ span.material-symbols-outlined.icon.filled.menu-icon {
                         justify-items: center;
                         height: 70px;
 
+                        .material-symbols-outlined.icon.filled {
+                            font-size: 35px;
+                        }
+
                         #more-info-button {
                             grid-area: more-info-button;
                         }
@@ -417,6 +426,11 @@ span.material-symbols-outlined.icon.filled.menu-icon {
 
     }
 
+    .modalHeader {
+        #dietary-heading {
+            font-size: 1.1em;
+        }
+    }
 
     #Footer {
         grid-area: footer;

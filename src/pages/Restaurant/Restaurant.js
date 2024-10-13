@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef, useContext} from "react";
 import Modal from 'react-modal';
 import {Link} from "react-router-dom";
 import "./Restaurant.css";
@@ -6,6 +6,11 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import LoadModal from "../../components/LoadModal/LoadModal";
 import ReservationPage from "../Reservation/ReservationPage/ReservationPage";
+import {NavBar} from "../../components/NavBar/NavBar";
+import {UserContext} from "../../utils/userContext";
+import Popup from "../Reviews/Popup/Popup";
+import HistoryPage from "../Reservation/HistoryPage/HistoryPage";
+import {Hint} from "../../components/Hint/hint";
 
 Modal.setAppElement('#root'); // Set the app element for accessibility
 
@@ -21,6 +26,11 @@ function Restaurant() {
     const [eventModalIsOpen, setEventModalIsOpen] = useState(false);
     const [reservationModalIsOpen, setReservationModalIsOpen] = useState(false);
     const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+    const [isActiveReservation, setIsActiveReservation] = useState(false);
+    const [checkedReservations, setCheckedReservations] = useState(false);
+    const {user} = useContext(UserContext);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+
 
     const prefOptions = ["Halaal", "Vegan", "Vegetarian", "Lactose-free", "Gluten-free", "Nut-free", "Egg-free"];
 
@@ -69,6 +79,10 @@ function Restaurant() {
     useEffect(() => {
         filterRestaurants();
     }, [selectedPreferences, restaurants]);
+
+    useEffect(() => {
+        (!checkedReservations) ? (checkActiveReservation()) : (setCheckedReservations(false));
+    }, []);
 
     const openModal = () => {
         setIsOpen(true);
@@ -123,6 +137,39 @@ function Restaurant() {
         );
     };
 
+    const checkActiveReservation = async () => {
+        try {
+            const idToken = await user.getIdToken();
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/reservations/active`, {
+                headers: {
+                    'Authorization': `Bearer ${idToken}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to check active reservations');
+            }
+
+            const {hasActiveReservation} = await response.json();
+            if (hasActiveReservation) {
+                setIsActiveReservation(true);
+            } else {
+                setIsActiveReservation(false);
+            }
+        } catch (error) {
+            console.error("Error checking active reservations: ", error);
+            alert("Failed to check active reservations. Please try again.");
+        }
+    };
+
+    const handleActiveReservation = () => {
+        alert("You have an active reservation.");
+        togglePopup();
+    }
+    const togglePopup = () => {
+        setIsPopupOpen((prev) => !prev);
+    };
+
     if (error) return <div>Error: {error}</div>;
     if (!restaurants.length && !loading) return <div>No restaurant data available</div>;
 
@@ -139,7 +186,7 @@ function Restaurant() {
             maxHeight: '80vh',
             overflow: 'auto',
             borderRadius: '15px',
-            padding: '20px',
+            padding: '0',
             backgroundColor: 'white',
         },
         overlay: {
@@ -147,24 +194,37 @@ function Restaurant() {
         }
     };
 
+    const handleReservationMade = () => {
+        checkActiveReservation();
+        setCheckedReservations(true);
+    };
+
+    const handleReservationCancelled = () => {
+        checkActiveReservation();
+        setCheckedReservations(true);
+    };
+
+
     return (
         <>
             <Header/>
             <LoadModal loading={loading}/>
             <div className="restaurants-div">
-                <header className="menuHeader"><h2 className="restaurants-heading">Restaurants/Dining Halls</h2>
-                    <span id={"dietary-filter"} className="material-symbols-outlined icon filled" onClick={openModal}>
-                        filter_alt
-                    </span>
-                </header>
-
+                <NavBar Heading="Restaurants/Dining Halls" displayBackButton={false} displayIcon={true}
+                        openModal={openModal}/>
                 <Modal
                     isOpen={modalIsOpen}
                     onRequestClose={closeModal}
                     contentLabel="Dietary Preferences"
                     style={modalStyle}
                 >
-                    <header className="menuHeader">Dietary Preferences</header>
+                    <header className="modalHeader">
+                        <h2 id={"dietary-heading"}>Dietary Preferences</h2>
+
+                        <span className="material-symbols-outlined icon filled" onClick={closeModal}>
+                            cancel
+                        </span>
+                    </header>
                     <ul className="list-checkBox">
                         {prefOptions.map(pref => (
                             <li key={pref}>
@@ -181,7 +241,6 @@ function Restaurant() {
                             </li>
                         ))}
                     </ul>
-                    <button onClick={closeModal} className="modalCloseButton">Close</button>
                 </Modal>
 
                 <Modal
@@ -192,7 +251,9 @@ function Restaurant() {
                 >
                     {selectedEvent && (
                         <div>
-                            <header className="menuHeader">{selectedEvent.title}</header>
+                            <header className="modalHeader">
+                                <h2>{selectedEvent.title}</h2>>
+                            </header>
                             <div className="eventModalContent">
                                 <img src={selectedEvent.imageUrl} alt={selectedEvent.title}
                                      style={{maxWidth: '100%', height: 'auto', marginBottom: '15px'}}/>
@@ -217,7 +278,8 @@ function Restaurant() {
                     style={modalStyle}
                 >
                     {selectedRestaurant && (
-                        <ReservationPage restaurant={selectedRestaurant} onClose={closeReservationModal}/>
+                        <ReservationPage restaurant={selectedRestaurant} onClose={closeReservationModal}
+                                         onReservationMade={handleReservationMade}/>
                     )}
                 </Modal>
 
@@ -257,13 +319,21 @@ function Restaurant() {
                                                 </span><p>Menu</p>
                                             </button>
                                         </Link>
-                                        <button className="menuButton" id={"reservation-button"}
-                                                onClick={() => openReservationModal(restaurant)}>
+                                        <Hint hintText={"Reservation"}>
+                                            <button className="menuButton" id={"reservation-button"}
+                                                    onClick={() => {
+                                                        if (!checkedReservations) {
+                                                            checkActiveReservation();
+                                                            (!isActiveReservation ? (openReservationModal(restaurant)) : (handleActiveReservation()))
+                                                        } else
+                                                            ((!isActiveReservation ? (openReservationModal(restaurant)) : (handleActiveReservation())));
+                                                    }}>
                                             <span className="material-symbols-outlined icon filled menu-icon">
                                                 table_restaurant
                                             </span>
-                                            <p>Reservation</p>
-                                        </button>
+                                                <p>Reservation</p>
+                                            </button>
+                                        </Hint>
                                         <Link id={"more-info-button"} to={`/restaurant-info/${restaurant.id}`}
                                               state={{restaurant}}>
                                             <button className="menuButton">
@@ -283,6 +353,9 @@ function Restaurant() {
                             </article>
                         );
                     })}
+                    <Popup isOpen={isPopupOpen} onClose={togglePopup}>
+                        <HistoryPage onReservationCancelled={handleReservationCancelled} onClose={togglePopup}/>
+                    </Popup>
                 </section>
             </div>
             <Footer/>
