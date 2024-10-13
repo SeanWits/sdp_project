@@ -1,0 +1,26 @@
+.back-arrow {
+    left: 0;
+    position: absolute;
+    padding-left: 2%;
+}
+
+.grid {
+    display: grid;
+
+    grid-template-columns: 30px auto 30px;
+    grid-template-areas: "back-button title filter-button";
+    justify-content: space-evenly;
+
+    .back-arrow {
+        grid-area: back-button;
+    }
+
+    .nav-heading {
+        grid-area: title;
+        font-size: 0.9em;
+    }
+
+    #dietary-filter {
+        grid-area: filter-button;
+    }
+}
