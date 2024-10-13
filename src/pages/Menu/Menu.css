@@ -141,6 +141,13 @@
 
         .menuHeader {
             grid-area: nav;
+
+            .restaurant-name-heading {
+                grid-area: title;
+                color: white;
+                font-size: 22px;
+                font-weight: bold;
+            }
         }
 
         .categories-row {
