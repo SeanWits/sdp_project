@@ -6,6 +6,7 @@ import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import Popup from "../Reviews/Popup/Popup";
 import {Reviews} from "../Reviews/Reviews";
+import {NavBar} from "../../components/NavBar/NavBar";
 
 function Meal() {
     const [size, setSize] = useState("small");
@@ -52,7 +53,7 @@ function Meal() {
     const handleAddToCart = async () => {
         if (!user) {
             console.log("User not logged in");
-            navigate("/login", { state: { from: location } });
+            navigate("/login", {state: {from: location}});
             return;
         }
 
@@ -83,7 +84,7 @@ function Meal() {
 
             // Dispatch custom event to notify of cart update
             window.dispatchEvent(new CustomEvent("cartUpdated"));
-
+            alert("Item added to cart.");
             // Implement user feedback for successful add to cart
         } catch (error) {
             console.error("Error adding item to cart:", error);
@@ -114,14 +115,7 @@ function Meal() {
         <>
             <Header/>
             <div className="meal-div">
-                <header className="menuHeader">
-                    <Link to={`/menu/${restaurantId}`} className="back-arrow">
-                        <span className="material-symbols-outlined icon filled">
-                            arrow_back_ios_new
-                        </span>
-                    </Link>
-                    {restaurantName}
-                </header>
+                <NavBar Heading={restaurantName} displayBackButton={true} returnTo={`/menu/${restaurantId}`}/>
                 <h3>{item.name}</h3>
                 <div className="separator-line"></div>
                 <section id="meal-details-section">
@@ -151,7 +145,7 @@ function Meal() {
                         </div>
                     </article>
                     <article id={"customise_and_pay_article"}>
-                        
+
                         <section id={"payment_section"}>
                             <p id={"total_text"}>
                                 <b>Total</b>: R{item.price.toFixed(2)}{" "}
@@ -172,7 +166,8 @@ function Meal() {
                 <div id={"last-seperator-line"} className="separator-line"></div>
 
                 <Popup isOpen={isPopupOpen} onClose={togglePopup}>
-                    <Reviews restaurantID={restaurantId} mealID={item.productID} onRatingChanged={handleRatingChanged}/>
+                    <Reviews onClose={togglePopup} restaurantID={restaurantId} mealID={item.productID}
+                             onRatingChanged={handleRatingChanged}/>
                 </Popup>
             </div>
             <Footer/>

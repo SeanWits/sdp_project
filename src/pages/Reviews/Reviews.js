@@ -5,7 +5,7 @@ import {UserContext} from "../../utils/userContext";
 import {AddReview} from "./AddReview";
 import LoadModal from "../../components/LoadModal/LoadModal";
 
-export function Reviews({restaurantID, mealID, onRatingChanged}) {
+export function Reviews({restaurantID, mealID, onRatingChanged, onClose}) {
     const [reviews, setReviews] = useState([]);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const {user} = useContext(UserContext);
@@ -99,11 +99,8 @@ export function Reviews({restaurantID, mealID, onRatingChanged}) {
                         >
                             add_box
                         </span>
-                        <span className="material-symbols-outlined icon filled">
-                            filter_alt
-                        </span>
-                        <span className="material-symbols-outlined icon filled">
-                            swap_vertical_circle
+                        <span className="material-symbols-outlined icon filled" onClick={onClose}>
+                            cancel
                         </span>
                     </section>
                 </header>
@@ -139,7 +136,7 @@ export function Reviews({restaurantID, mealID, onRatingChanged}) {
                                                 Review
                                             </h3>
                                         </section>
-                                        <p id="review_paragraph">{review.review}</p>
+                                        <p id="review_paragraph">{review.review ? (review.review) : ("None")}</p>
                                     </section>
                                 </div>
                             ))
@@ -151,7 +148,8 @@ export function Reviews({restaurantID, mealID, onRatingChanged}) {
                     }
                 </section>
                 <Popup isOpen={isPopupOpen} onClose={togglePopup}>
-                    <AddReview restaurantID={restaurantID} mealID={mealID} onReviewAdded={handleReviewAdded}/>
+                    <AddReview onClose={togglePopup} restaurantID={restaurantID} mealID={mealID}
+                               onReviewAdded={handleReviewAdded}/>
                 </Popup>
             </article>
         </>

@@ -23,7 +23,20 @@ body {
     flex-direction: column;
     justify-content: flex-start;
     width: 300px;
-    height: 380px;
+    height: fit-content;
+
+    input {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+
+
+    input:focus {
+        caret-color: #003b5c;
+        outline-color: #003b5c;
+    }
 }
 
 #form {
@@ -39,6 +52,12 @@ body {
     background-color: #003b5c;
     color: white;
     border-radius: 15px 15px 0px 0px;
+
+    h2 {
+        margin: 0;
+        align-self: center;
+        padding: 15px;
+    }
 }
 
 .centre_no_margin {
@@ -64,4 +83,36 @@ body {
 #account_anchor {
     cursor: pointer;
     text-decoration: underline;
+}
+
+@media screen and (max-width: 600px) {
+    #signup {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: grid;
+        align-items: normal;
+
+        grid-template-areas: "logo" "form";
+        grid-template-rows: 1fr 2fr;
+
+        #signup_logo {
+            grid-area: logo;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            #logo_login_img {
+                width: 50%;
+                padding: 0;
+            }
+        }
+
+        #signup_article_section {
+            grid-area: form;
+            display: grid;
+        }
+    }
 }

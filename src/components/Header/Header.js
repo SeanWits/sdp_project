@@ -1,23 +1,27 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import React, {useState, useEffect, useContext} from 'react';
+import {useNavigate, useLocation, Link} from "react-router-dom";
 import Modal from 'react-modal';
 import "./Header.css";
-import { UserContext } from '../../utils/userContext';
+import {UserContext} from '../../utils/userContext';
 import Cart from '../Cart/Cart';
-import { Hint } from "../Hint/hint";
+import {Hint} from "../Hint/hint";
+import Popup from "../../pages/Reviews/Popup/Popup";
+import HistoryPage from "../../pages/Reservation/HistoryPage/HistoryPage";
 
 Modal.setAppElement('#root');
 
-function Header({ disableCart = false, disableOrders = false }) {
+function Header({disableCart = false, disableOrders = false}) {
     const navigate = useNavigate();
     const location = useLocation();
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [cartItems, setCartItems] = useState([]);
     const [cartItemCount, setCartItemCount] = useState(0);
     const [currentCartRestaurantId, setCurrentCartRestaurantId] = useState(null);
-    const { user } = useContext(UserContext);
+    const {user} = useContext(UserContext);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [alerts, setAlerts] = useState([]);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+
 
     useEffect(() => {
         if (user && !disableCart) {
@@ -28,9 +32,27 @@ function Header({ disableCart = false, disableOrders = false }) {
 
         // Mock alerts
         setAlerts([
-            { date: '2024-10-05', time: '14:30', incident: 'Suspicious activity', area: 'East Campus Matrix', affectedVenues: 'Matrix Cafeteria' },
-            { date: '2024-10-05', time: '15:45', incident: 'Power outage', area: 'East Campus Matrix', affectedVenues: 'All restaurants in East Campus Matrix' },
-            { date: '2024-10-05', time: '16:20', incident: 'Water supply issue', area: 'East Campus Matrix', affectedVenues: 'Matrix Food Court' }
+            {
+                date: '2024-10-05',
+                time: '14:30',
+                incident: 'Suspicious activity',
+                area: 'East Campus Matrix',
+                affectedVenues: 'Matrix Cafeteria'
+            },
+            {
+                date: '2024-10-05',
+                time: '15:45',
+                incident: 'Power outage',
+                area: 'East Campus Matrix',
+                affectedVenues: 'All restaurants in East Campus Matrix'
+            },
+            {
+                date: '2024-10-05',
+                time: '16:20',
+                incident: 'Water supply issue',
+                area: 'East Campus Matrix',
+                affectedVenues: 'Matrix Food Court'
+            }
         ]);
 
         return () => {
@@ -114,13 +136,18 @@ function Header({ disableCart = false, disableOrders = false }) {
             maxHeight: '80vh',
             overflow: 'auto',
             borderRadius: '15px',
-            padding: '20px',
+            padding: '0',
             backgroundColor: 'white',
         },
         overlay: {
             backgroundColor: 'rgba(0, 0, 0, 0.75)'
         }
     };
+
+    const togglePopup = () => {
+        setIsPopupOpen((prev) => !prev);
+    };
+
 
     return (
         <>
@@ -139,7 +166,7 @@ function Header({ disableCart = false, disableOrders = false }) {
                     <p id="logo_label">Campus Bites</p>
                 </section>
                 <section id="icons_on_header">
-                <Hint hintText={"View safety alerts"}>
+                    <Hint hintText={"View safety alerts"}>
                         <div
                             className="alert-icon-container-header"
                             onClick={toggleAlertModal}
@@ -151,11 +178,13 @@ function Header({ disableCart = false, disableOrders = false }) {
                         </div>
                     </Hint>
                     <Hint hintText={"View your reservations"}>
-                        <Link to={"/history"}>
-                        <span className="material-symbols-outlined icon">
+                        <span className="material-symbols-outlined icon" onClick={togglePopup}>
                             event
                         </span>
-                        </Link>
+
+                        <Popup isOpen={isPopupOpen} onClose={togglePopup}>
+                            <HistoryPage onClose={togglePopup}/>
+                        </Popup>
                     </Hint>
                     <Hint hintText={"View your account dashboard"}>
                     <span
@@ -203,7 +232,12 @@ function Header({ disableCart = false, disableOrders = false }) {
                 style={modalStyle}
             >
                 <div>
-                    <header className="menuHeader">Safety Alerts</header>
+                    <header className={"modalHeader"}>
+                        <h2>Safety Alerts</h2>
+
+                        <span className="material-symbols-outlined icon filled" onClick={toggleAlertModal}>
+                            cancel
+                        </span></header>
                     <div className="alertModalContent">
                         {alerts.map((alert, index) => (
                             <div key={index} className="alert-item">
@@ -215,7 +249,6 @@ function Header({ disableCart = false, disableOrders = false }) {
                             </div>
                         ))}
                     </div>
-                    <button onClick={toggleAlertModal} className="modalCloseButton">Close</button>
                 </div>
             </Modal>
         </>

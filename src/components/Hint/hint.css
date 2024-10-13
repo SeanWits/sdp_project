@@ -23,3 +23,9 @@
 #hint:hover #hint-text {
     opacity: 1;
 }
+
+@media screen and (max-width: 600px) {
+    #hint #hint-text {
+        display: none;
+    }
+}

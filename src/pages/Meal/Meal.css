@@ -157,13 +157,20 @@
     .meal-div {
         grid-area: main;
         display: grid;
-        grid-template-rows: 70px 77px auto auto auto;
+        grid-template-rows: 70px 77px auto auto;
         grid-template-areas: "nav" "meal-name" "line" "meal-details";
-
+        margin-block-end: 10px;
         justify-items: center;
 
         .menuHeader {
             grid-area: nav;
+        }
+
+        .restaurant-name-heading {
+            grid-area: title;
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
         }
 
         h3 {
@@ -181,11 +188,13 @@
             grid-area: meal-details;
             display: grid;
             grid-template-areas: "meal-image-article" "meal-details-article" "customise-and-pay-article";
-            grid-template-rows: 1fr auto auto;
+            grid-template-rows: auto auto auto;
+            justify-content: center;
 
             #meal-image-article {
                 width: 100%;
                 grid-area: meal-image-article;
+                min-height: 200px;
 
                 img {
                     object-fit: contain;
@@ -248,6 +257,14 @@
                     #dietary_tags {
                         padding: 0;
                         grid-area: dietary-tags;
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, 100px);
+                        justify-content: center;
+                        overflow-x: auto;
+                        overscroll-behavior-x: contain;
+                        scroll-snap-type: x mandatory;
+                        scrollbar-width: none; /* For Firefox */
+                        -ms-overflow-style: none; /* For Internet Explorer and Edge */
                     }
 
                 }
@@ -259,36 +276,27 @@
             #customise_and_pay_article {
                 width: 100%;
                 grid-area: customise-and-pay-article;
+                height: 140px;
                 display: grid;
-                grid-template-areas: "customise-order-section" "total" "add-to-cart";
-                grid-template-rows: auto 50px auto;
-
-                #customise_order {
-                    padding: 0;
-                    grid-area: customise-order-section;
-                    display: grid;
-                    grid-template-areas: "customise-order-heading"  "customise-order-radio";
-                    grid-template-rows: 50px auto;
-                    height: auto;
-                    justify-content: center;
-                    justify-items: center;
-                    width: 100%;
-
-                    #customise_order_heading {
-                        padding: 0;
-                        grid-area: customise-order-heading;
-                    }
-
-                    #customise_order_radio {
-                        padding: 0;
-                        grid-area: customise-order-radio;
-                    }
-                }
+                justify-content: center;
+                align-items: start;
 
                 #payment_section {
+                    display: grid;
+                    grid-template-areas: "total" "add-to-cart";
+                    grid-template-rows: 50px 50px;
+                    width: 100%;
                     padding: 0;
-                    grid-area: total;
                     height: auto;
+
+                    #total_text {
+                        grid-area: total;
+                        margin: 0;
+                    }
+
+                    #mealButton {
+                        grid-area: add-to-cart;
+                    }
                 }
 
                 #last-seperator-line {

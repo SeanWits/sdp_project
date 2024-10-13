@@ -16,7 +16,7 @@ body {
 
 .material-symbols-outlined.icon.filled {
     font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
-    font-size: 30px;
+    font-size: 40px;
     color: #ffffff;
     cursor: pointer;
 }
@@ -51,19 +51,30 @@ body {
 
 .header2 {
     background-color: #003b5c;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: grid;
+    grid-template-areas: "heading icons";
+    grid-template-columns: 2fr 1fr;
     padding-inline: 20px;
     font-size: 20px;
     height: 60px;
     color: white;
+    align-items: center;
+
+    h2 {
+        justify-self: start;
+        grid-area: heading;
+    }
+
+    #cancel-icon {
+        justify-self: end;
+    }
 }
 
 #reviews_icons {
     display: flex;
     justify-content: space-between;
-    width: 110px;
+    width: auto;
+    column-gap: 20px;
 }
 
 #rating_section {
@@ -121,3 +132,110 @@ body {
     width: 100%;
     min-width: 100px;
 }
+
+@media screen and (max-width: 600px) {
+
+    #reviews_page {
+
+
+        .material-symbols-outlined.icon.filled {
+            font-size: 35px;
+        }
+
+        .review-item {
+            #rating_section {
+                display: grid;
+                padding: 0;
+                grid-template-areas: "rating-section date-posted-secton";
+                grid-template-columns: auto auto;
+                justify-content: space-around;
+                padding-block: 5px;
+
+                h3 {
+                    padding: 0;
+                    font-size: 16px;
+                }
+
+                p {
+                    margin: 0;
+                    font-size: 16px;
+                }
+
+                section {
+                    display: grid;
+                    grid-template-areas: "heading" "paragraph";
+                }
+
+                #rating_and_date_section {
+                    grid-area: rating-section;
+                    padding-inline-start: 1px;
+
+                    h3 {
+                        grid-area: heading;
+                    }
+
+                    p {
+                        grid-area: paragraph;
+                    }
+                }
+
+                #date_posted_section {
+                    grid-area: date-posted-secton;
+
+                    h3 {
+                        grid-area: heading;
+                    }
+
+                    p {
+                        grid-area: paragraph;
+                    }
+                }
+            }
+
+            #review_text_section {
+                #review_text_heading_section {
+                    h3 {
+                        padding: 0;
+                    }
+                }
+
+                #review_paragraph {
+                    margin-inline: 10px;
+                }
+            }
+
+        }
+    }
+
+    #add_review_page {
+        min-width: 300px;
+
+        header {
+            display: grid;
+        }
+
+        h2 {
+            padding: 0;
+            font-size: 1em;
+        }
+
+        #reviews_header {
+            display: grid;
+            justify-items: center;
+            align-items: center;
+            font-size: 1.5em;
+
+            .material-symbols-outlined.icon.filled {
+                font-size: 35px;
+            }
+        }
+
+        #add_review_section {
+
+            button {
+                margin-block: 10px;
+            }
+        }
+    }
+}
+
