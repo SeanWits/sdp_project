@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef, useContext} from "react";
 import Modal from 'react-modal';
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import "./Restaurant.css";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
@@ -29,6 +29,7 @@ function Restaurant() {
     const [isActiveReservation, setIsActiveReservation] = useState(false);
     const [checkedReservations, setCheckedReservations] = useState(false);
     const {user} = useContext(UserContext);
+    const navigate = useNavigate();
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
 
@@ -81,7 +82,8 @@ function Restaurant() {
     }, [selectedPreferences, restaurants]);
 
     useEffect(() => {
-        (!checkedReservations) ? (checkActiveReservation()) : (setCheckedReservations(false));
+        if (user)
+            (!checkedReservations) ? (checkActiveReservation()) : (setCheckedReservations(false));
     }, []);
 
     const openModal = () => {
@@ -204,6 +206,19 @@ function Restaurant() {
         setCheckedReservations(true);
     };
 
+    const handleReservationButtonClick = (restaurant) => {
+        if (user) {
+            if (!checkedReservations) {
+                checkActiveReservation();
+                (!isActiveReservation ? (openReservationModal(restaurant)) : (handleActiveReservation()))
+            } else
+                ((!isActiveReservation ? (openReservationModal(restaurant)) : (handleActiveReservation())));
+
+        } else {
+            navigate('/login');
+        }
+    };
+
 
     return (
         <>
@@ -321,11 +336,7 @@ function Restaurant() {
                                         </Link>
                                         <button className="menuButton" id={"reservation-button"}
                                                 onClick={() => {
-                                                    if (!checkedReservations) {
-                                                        checkActiveReservation();
-                                                        (!isActiveReservation ? (openReservationModal(restaurant)) : (handleActiveReservation()))
-                                                    } else
-                                                        ((!isActiveReservation ? (openReservationModal(restaurant)) : (handleActiveReservation())));
+                                                    handleReservationButtonClick(restaurant);
                                                 }}>
                                             <span className="material-symbols-outlined icon filled menu-icon">
                                                 table_restaurant
