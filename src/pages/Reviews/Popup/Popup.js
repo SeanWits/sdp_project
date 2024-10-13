@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, {useEffect, useRef} from "react";
 import "./Popup.css"
 
-const Popup = ({ isOpen, onClose, children }) => {
+const Popup = ({isOpen, onClose, children}) => {
     const popupRef = useRef(null);
+
 
     useEffect(() => {
         const handleOutsideClick = (event) => {
@@ -26,9 +27,6 @@ const Popup = ({ isOpen, onClose, children }) => {
         <div className="popup-overlay reviews">
             <div className="popup-content reviews" ref={popupRef}>
                 {children}
-                <button className="close-btn" onClick={onClose}>
-                    Close
-                </button>
             </div>
         </div>
     );
