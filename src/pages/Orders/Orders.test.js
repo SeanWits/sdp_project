@@ -119,13 +119,14 @@ describe('Orders Component', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/login');
   });
 
-  test('renders back arrow', async () => {
+  test('renders back navigation', async () => {
     renderWithRouter(<Orders />);
 
     await waitFor(() => {
-      const backLink = screen.getByText('←');
-      expect(backLink).toBeInTheDocument();
-      expect(backLink.closest('a')).toHaveAttribute('href', '/');
+      const backNavigation = screen.getByRole('link', { class: 'back-arrow' });
+      expect(backNavigation).toBeInTheDocument();
+      expect(backNavigation).toHaveAttribute('href', '/');
+      expect(backNavigation.querySelector('.material-symbols-outlined')).toHaveTextContent('arrow_back_ios_new');
     });
   });
 
