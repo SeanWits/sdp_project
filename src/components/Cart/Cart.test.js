@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { UserContext } from '../../utils/userContext';
 import Cart from './Cart';
@@ -11,7 +11,7 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('../../components/LoadModal/LoadModal', () => {
   return function DummyLoadModal({ loading }) {
-    return loading ? <div>Loading...</div> : null;
+    return loading ? <div data-testid="loading-modal">Loading...</div> : null;
   };
 });
 
@@ -32,7 +32,7 @@ describe('Cart Component', () => {
   const mockProps = {
     isOpen: true,
     onClose: jest.fn(),
-    restaurantID: 'mock-restaurant-id',
+    restaurantId: 'mock-restaurant-id',
   };
 
   const mockCartItems = [
@@ -49,7 +49,9 @@ describe('Cart Component', () => {
   });
 
   test('renders cart when open', async () => {
-    renderWithRouter(<Cart {...mockProps} />, { user: mockUser });
+    await act(async () => {
+      renderWithRouter(<Cart {...mockProps} />, { user: mockUser });
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Cart')).toBeInTheDocument();
@@ -64,7 +66,9 @@ describe('Cart Component', () => {
   });
 
   test('calculates and displays total correctly', async () => {
-    renderWithRouter(<Cart {...mockProps} />, { user: mockUser });
+    await act(async () => {
+      renderWithRouter(<Cart {...mockProps} />, { user: mockUser });
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Total: R35.00')).toBeInTheDocument();
@@ -72,7 +76,9 @@ describe('Cart Component', () => {
   });
 
   test('updates item quantity', async () => {
-    renderWithRouter(<Cart {...mockProps} />, { user: mockUser });
+    await act(async () => {
+      renderWithRouter(<Cart {...mockProps} />, { user: mockUser });
+    });
 
     await waitFor(() => {
       const increaseButtons = screen.getAllByLabelText(/Increase quantity of/);
@@ -89,7 +95,9 @@ describe('Cart Component', () => {
   });
 
   test('removes item from cart', async () => {
-    renderWithRouter(<Cart {...mockProps} />, { user: mockUser });
+    await act(async () => {
+      renderWithRouter(<Cart {...mockProps} />, { user: mockUser });
+    });
 
     await waitFor(() => {
       const deleteButtons = screen.getAllByLabelText(/Remove .* from cart/);
@@ -108,19 +116,23 @@ describe('Cart Component', () => {
     const navigate = jest.fn();
     jest.spyOn(require('react-router-dom'), 'useNavigate').mockReturnValue(navigate);
 
-    renderWithRouter(<Cart {...mockProps} />, { user: mockUser });
+    await act(async () => {
+      renderWithRouter(<Cart {...mockProps} />, { user: mockUser });
+    });
 
     await waitFor(() => {
       const checkoutButton = screen.getByText('Checkout');
       fireEvent.click(checkoutButton);
     });
 
-    expect(navigate).toHaveBeenCalledWith('/checkout');
+    expect(navigate).toHaveBeenCalledWith('/checkout', expect.anything());
     expect(mockProps.onClose).toHaveBeenCalled();
   });
 
   test('closes cart when close button is clicked', async () => {
-    renderWithRouter(<Cart {...mockProps} />, { user: mockUser });
+    await act(async () => {
+      renderWithRouter(<Cart {...mockProps} />, { user: mockUser });
+    });
 
     await waitFor(() => {
       const closeButton = screen.getByText('Close');
@@ -131,12 +143,14 @@ describe('Cart Component', () => {
   });
 
   test('displays loading state', async () => {
-    renderWithRouter(<Cart {...mockProps} />, { user: mockUser });
+    await act(async () => {
+      renderWithRouter(<Cart {...mockProps} />, { user: mockUser });
+    });
 
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    expect(screen.getByTestId('loading-modal')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('loading-modal')).not.toBeInTheDocument();
     });
   });
 
@@ -144,7 +158,9 @@ describe('Cart Component', () => {
     global.fetch.mockRejectedValueOnce(new Error('Failed to fetch'));
     console.error = jest.fn();
 
-    renderWithRouter(<Cart {...mockProps} />, { user: mockUser });
+    await act(async () => {
+      renderWithRouter(<Cart {...mockProps} />, { user: mockUser });
+    });
 
     await waitFor(() => {
       expect(console.error).toHaveBeenCalledWith(
