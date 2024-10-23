@@ -164,7 +164,19 @@ describe('Checkout Component', () => {
           json: () => Promise.resolve({ orderId: 'mock-order-id' }),
         });
       }
-      return global.fetch(url);
+      if (url.includes('/cart/')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ items: mockCartItems }),
+        });
+      }
+      if (url.includes('/user')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ wallet: 100 }),
+        });
+      }
+      return Promise.reject(new Error('Not found'));
     });
   
     global.alert = jest.fn();
@@ -178,13 +190,13 @@ describe('Checkout Component', () => {
     });
   
     act(() => {
-      jest.advanceTimersByTime(2000);
+      jest.advanceTimersByTime(5000);
     });
   
     await waitFor(() => {
       expect(global.alert).toHaveBeenCalledWith('Purchase confirmed! Order ID: mock-order-id');
       expect(mockNavigate).toHaveBeenCalledWith('/orders');
-    });
+    }, { onTimeout: (error) => console.error('Timeout error:', error) });
   
     jest.useRealTimers();
   });

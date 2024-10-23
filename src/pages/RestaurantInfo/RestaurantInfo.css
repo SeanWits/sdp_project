@@ -14,11 +14,6 @@
     margin-left: 45%;
 }
 
-.back-arrow {
-    left: 0;
-    position: absolute;
-    padding-left: 2%;
-}
 
 #restaurant_img {
     width: 50%;
@@ -80,4 +75,105 @@
 
 .upcoming-event:hover {
     color: #0056b3;
+}
+
+@media screen and (max-width: 600px) {
+    #restaurant-info-section {
+        display: grid;
+
+        grid-template-areas: "nav" "restaurant-details" "review-button";
+        grid-template-rows: 70px auto auto;
+
+        header {
+            h2 {
+                grid-area: title;
+                margin: 0;
+                font-size: 22px;
+            }
+        }
+
+        .resDeets {
+            #reviews {
+                #reviewsReviews {
+                    h2 {
+                        margin: 0;
+                    }
+
+                    margin: 0;
+                    height: 60px;
+                    padding: 0;
+                    display: grid;
+                    align-content: center;
+                }
+
+                #reviewsRating {
+                    display: grid;
+                    grid-template-areas: "restaurant-image" "restaurant-details";
+                    grid-template-rows: 200px auto;
+                    justify-items: center;
+
+                    #restaurant_img {
+                        grid-area: restaurant-image;
+                        width: 100%;
+                        background-color: #003b5c;
+
+                        img {
+                            max-width: 100%;
+                            object-fit: contain;
+                        }
+                    }
+
+                    #nameRes {
+                        grid-area: restaurant-details;
+                        width: 100%;
+                        display: grid;
+                        grid-template-columns: 1fr;
+                        padding-inline: 5%; /* Adjust the value as needed */
+                        box-sizing: border-box;
+
+
+                        ul {
+                            display: grid;
+                            row-gap: 2px;
+                            grid-auto-rows: auto;
+                            width: 100%;
+
+                            li {
+                                display: grid;
+                                grid-template-areas: "key value";
+                                grid-template-columns: 1fr 1fr;
+                                height: auto;
+                                margin: 0;
+                                align-content: center;
+
+                                p {
+                                    margin: 0;
+                                }
+
+                                .key-paragpraph {
+                                    grid-area: key;
+                                    font-weight: bold;
+                                    justify-self: start;
+                                }
+
+                                .value-paragraph {
+                                    grid-area: value;
+                                    justify-self: end;
+                                }
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+        }
+
+        button {
+            grid-area: review-button;
+            justify-self: center;
+            margin-bottom: 20px;
+        }
+    }
 }

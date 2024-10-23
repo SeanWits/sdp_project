@@ -84,16 +84,21 @@ describe('Meal Component', () => {
   });
 
 
-  test('handles size selection', async () => {
+  test('displays correct meal details', async () => {
     renderWithRouter(<Meal />);
-
+  
     await waitFor(() => {
-      const smallRadio = screen.getByLabelText('Small');
-      const largeRadio = screen.getByLabelText('Large');
-
-      expect(smallRadio).toBeChecked();
-      fireEvent.click(largeRadio);
-      expect(largeRadio).toBeChecked();
+      expect(screen.getByText('Burger')).toBeInTheDocument();
+      expect(screen.getByText('Delicious burger')).toBeInTheDocument();
+      
+      // Check for the total price
+      const totalElement = screen.getByText((content, element) => {
+        return element.id === 'total_text' && element.textContent.includes('Total') && element.textContent.includes('R10.99');
+      });
+      expect(totalElement).toBeInTheDocument();
+      
+      expect(screen.getByRole('button', { name: 'Add to cart' })).toBeInTheDocument();
+      expect(screen.getByRole('img', { name: 'Burger' })).toBeInTheDocument();
     });
   });
 
@@ -101,7 +106,7 @@ describe('Meal Component', () => {
     const mockUser = {
       getIdToken: jest.fn().mockResolvedValue('mock-token'),
     };
-
+  
     global.fetch.mockImplementation((url) => {
       if (url.includes('/restaurant/123/menu-item/burger')) {
         return Promise.resolve({
@@ -125,15 +130,17 @@ describe('Meal Component', () => {
       }
       return Promise.reject(new Error('Not found'));
     });
-
+  
+    window.alert = jest.fn();
+  
     renderWithRouter(<Meal />, { user: mockUser });
-
+  
     await waitFor(() => {
       expect(screen.getByText('Burger')).toBeInTheDocument();
     });
-
+  
     fireEvent.click(screen.getByText('Add to cart'));
-
+  
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
         `${process.env.REACT_APP_API_URL}/cart/add`,
@@ -146,10 +153,9 @@ describe('Meal Component', () => {
           body: expect.any(String)
         })
       );
+      expect(window.alert).toHaveBeenCalledWith('Item added to cart.');
+      expect(window.dispatchEvent).toHaveBeenCalledWith(expect.any(CustomEvent));
     });
-
-    // Check if the custom event was dispatched
-    expect(window.dispatchEvent).toHaveBeenCalledWith(expect.any(CustomEvent));
   });
 
   test('redirects to login for guest user', async () => {

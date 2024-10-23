@@ -5,7 +5,7 @@ import LoadModal from './LoadModal';
 // Mock the ClimbingBoxLoader component
 jest.mock('react-spinners/ClimbingBoxLoader', () => {
   return function DummyClimbingBoxLoader(props) {
-    return <div data-testid="mock-loader" {...props} />;
+    return <div data-testid="loader" {...props} />;
   };
 });
 
@@ -24,7 +24,7 @@ describe('LoadModal Component', () => {
 
   test('renders ClimbingBoxLoader with correct props when loading is true', () => {
     const { getByTestId } = render(<LoadModal loading={true} />);
-    const loader = getByTestId('mock-loader');
+    const loader = getByTestId('loader');
     expect(loader).toBeInTheDocument();
     expect(loader).toHaveAttribute('color', '#ffe500');
     expect(loader).toHaveAttribute('size', '15');

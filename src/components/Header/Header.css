@@ -32,7 +32,7 @@ body {
 }
 
 .material-symbols-outlined.icon {
-    font-size: 50px;
+    font-size: 40px;
     color: #003b5c;
     cursor: pointer;
 }
@@ -130,8 +130,53 @@ body {
     border-radius: 8px;
     padding: 10px;
     margin-bottom: 10px;
+    margin-inline: 10px
+}
+
+.modalHeader {
+    display: grid;
+    grid-template-areas: "heading icons";
+    grid-template-columns: 2fr 1fr;
+    align-items: center;
+    padding-inline: 20px;
+    width: auto;
+    background-color: #003B5C;
+    height: 60px;
+
+    h2 {
+        grid-area: heading;
+        margin: 0;
+        font-size: 1.5em;
+        justify-self: start;
+        color: white;
+    }
+
+    .material-symbols-outlined.icon.filled {
+        font-size: 35px;
+        justify-self: end;
+    }
+
 }
 
 .alert-item p {
     margin: 5px 0;
+}
+
+#hint, #restaurant-list {
+    .popup-overlay.reviews {
+        .popup-content.reviews {
+            width: 65%;
+            min-height: auto;
+
+            .close-btn {
+                display: none;
+            }
+
+            @media screen and (max-width: 600px) {
+                width: 86.5%;
+            }
+
+
+        }
+    }
 }

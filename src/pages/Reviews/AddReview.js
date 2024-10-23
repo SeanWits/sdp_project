@@ -4,7 +4,7 @@ import {UserContext} from "../../utils/userContext";
 import "./Reviews.css"
 import LoadModal from "../../components/LoadModal/LoadModal";
 
-export function AddReview({restaurantID, mealID, onReviewAdded}) {
+export function AddReview({restaurantID, mealID, onReviewAdded, onClose}) {
     const [rating, setRating] = useState(0);
     const [review, setReview] = useState("");
     const [loading, setLoading] = useState(false);
@@ -75,7 +75,10 @@ export function AddReview({restaurantID, mealID, onReviewAdded}) {
             <article id={"add_review_page"}>
                 <header className={"header2"} id="reviews_header">
                     <h2 className={"centre_no_margin"}>Review {mealID ? "Meal" : "Restaurant"}</h2>
-                    <img src="" alt={"Restaurant logo."}/>
+
+                    <span id={"cancel-icon"} className="material-symbols-outlined icon filled" onClick={onClose}>
+                            cancel
+                        </span>
                 </header>
                 <section id="add_review_section">
                     <section id="add_rating_section">
@@ -108,6 +111,7 @@ export function AddReview({restaurantID, mealID, onReviewAdded}) {
                             value={review}
                             onChange={(e) => setReview(e.target.value)}
                             placeholder="Enter a review"
+                            maxLength={500}
                         />
                     </section>
                     <button className={"menuButton"}

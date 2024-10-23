@@ -1,12 +1,13 @@
 import "./Menu.css";
-import React, { useState, useEffect } from "react";
-import { useParams, Link, useLocation } from "react-router-dom";
+import React, {useState, useEffect} from "react";
+import {useParams, Link, useLocation} from "react-router-dom";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import LoadModal from "../../components/LoadModal/LoadModal";
+import {NavBar} from "../../components/NavBar/NavBar";
 
 function Menu() {
-    const { restaurantId } = useParams();
+    const {restaurantId} = useParams();
     const location = useLocation();
     const [restaurant, setRestaurant] = useState(location.state?.restaurant || null);
     const [loading, setLoading] = useState(!restaurant);
@@ -43,23 +44,17 @@ function Menu() {
 
     if (error) return <div>Error: {error}</div>;
     if (!restaurant && !loading) return <div>No restaurant data available</div>;
-    if (restaurant && (!restaurant.categories || restaurant.categories.length === 0)) return <div>No menu categories available</div>;
+    if (restaurant && (!restaurant.categories || restaurant.categories.length === 0)) return <div>No menu categories
+        available</div>;
 
     return (
         <>
-            <Header />
-            <LoadModal loading={loading} />
+            <Header/>
+            <LoadModal loading={loading}/>
             <div className="menu-container">
                 {!loading && restaurant && (
                     <>
-                        <header className="menuHeader">
-                            <Link to="/" className="back-arrow">
-                                <span className="material-symbols-outlined icon filled">
-                                    arrow_back_ios_new
-                                </span>
-                            </Link>
-                            {restaurant.name}
-                        </header>
+                        <NavBar Heading={restaurant.name} displayBackButton={true} returnTo={"/"}/>
                         <section className="categories-row">
                             {restaurant.categories.map((category) => (
                                 <section
@@ -85,7 +80,7 @@ function Menu() {
                                     {selectedCategory.menu_items.map((item) => (
                                         <Link
                                             to={`/menu/${restaurantId}/${encodeURIComponent(item.name)}`}
-                                            state={{ item, restaurantName: restaurant.name }}
+                                            state={{item, restaurantName: restaurant.name}}
                                             key={item.name}
                                         >
                                             <section className="food-item">
@@ -94,12 +89,14 @@ function Menu() {
                                                     <p className="description">{item.description}</p>
                                                     <p><b>Price</b>: R{item.price.toFixed(2)}</p>
                                                     <p><b>Rating</b>: {item.rating || "No rating"}</p>
-                                                    <p><b>Availability</b>: {item.is_available ? "In stock" : "Out of stock"}
+                                                    <p>
+                                                        <b>Availability</b>: {item.is_available ? "In stock" : "Out of stock"}
                                                     </p>
                                                 </section>
                                                 <section className="foodPics">
                                                     {item.image_url && (
-                                                        <img src={item.image_url} alt={item.name} className="food-image" />
+                                                        <img src={item.image_url} alt={item.name}
+                                                             className="food-image"/>
                                                     )}
                                                 </section>
                                             </section>
@@ -111,7 +108,7 @@ function Menu() {
                     </>
                 )}
             </div>
-            <Footer />
+            <Footer/>
         </>
     );
 }

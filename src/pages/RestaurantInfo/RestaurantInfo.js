@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { Link, useParams, useLocation } from "react-router-dom";
+import React, {useState, useEffect} from "react";
+import {Link, useParams, useLocation} from "react-router-dom";
 import Modal from 'react-modal';
 import "./RestaurantInfo.css";
 import LoadModal from '../../components/LoadModal/LoadModal';
 import Popup from "../Reviews/Popup/Popup";
-import { Reviews } from "../Reviews/Reviews";
+import {Reviews} from "../Reviews/Reviews";
 import Header from "../../components/Header/Header";
+import Footer from "../../components/Footer/Footer";
 
 Modal.setAppElement('#root');
 
 function RestaurantInfo() {
-    const { id } = useParams();
+    const {id} = useParams();
     const location = useLocation();
     const [restaurant, setRestaurant] = useState(location.state?.restaurant || null);
     const [loading, setLoading] = useState(true);
@@ -90,7 +91,7 @@ function RestaurantInfo() {
     };
 
     const getUpcomingEvent = (restaurantLocation) => {
-        return upcomingEvents.find(event => 
+        return upcomingEvents.find(event =>
             event.venue.includes("West Campus") && restaurantLocation.includes("West Campus")
         );
     };
@@ -122,86 +123,109 @@ function RestaurantInfo() {
     const upcomingEvent = restaurant ? getUpcomingEvent(restaurant.location) : null;
 
     return (
-        <div className="restaurant-info">
-            <Header />
-            <LoadModal loading={loading} />
-            <header className="menuHeader">
-                <Link to="/" className="back-arrow">
+        <>
+            <Header/>
+            <LoadModal loading={loading}/>
+            <section id={"restaurant-info-section"}>
+                <header className="menuHeader">
+                    <Link to="/" className="back-arrow">
                     <span className="material-symbols-outlined icon filled">
                         arrow_back_ios_new
                     </span>
-                </Link>
-                {restaurant?.name}
-            </header>
+                    </Link>
+                    <h2>{restaurant?.name}</h2>
+                </header>
 
-            {!loading && restaurant && (
-                <>
-                    <section className="resDeets">
-                        <section id="reviews">
-                            <section id="reviewsReviews">
-                                <h2>Restaurant Details</h2>
-                            </section>
+                {!loading && restaurant && (
+                    <>
+                        <section className="resDeets">
+                            <section id="reviews">
+                                <section id="reviewsReviews">
+                                    <h2>Restaurant Details</h2>
+                                </section>
 
-                            <section id="reviewsRating">
-                                <article id="nameRes">
-                                    <ul>
-                                        <li>Name: {restaurant.name}</li>
-                                        <li>Location: {restaurant.location}</li>
-                                        <li>Operating Hours: {restaurant.opening_time} - {restaurant.closing_time}</li>
-                                        <li>Contact details: {restaurant.contact_details || 'No Contact Details'}</li>
-                                        <li>Telephone: {restaurant.telephone || 'No Telephone'}</li>
-                                        <li>Email: {restaurant.email || 'No Email'}</li>
-                                        <li>Rating: {restaurant.rating || 'No Rating'}</li>
-                                        {upcomingEvent && (
-                                            <li 
-                                                className="upcoming-event"
-                                                onClick={() => openEventModal(upcomingEvent)}
-                                            >
-                                                <b>Upcoming Event:</b> {upcomingEvent.title}
+                                <section id="reviewsRating">
+                                    <article id="nameRes">
+                                        <ul>
+                                            <li><p className={"key-paragpraph"}>Name:</p> <p
+                                                className={"value-paragraph"}> {restaurant.name}</p></li>
+                                            <li><p className={"key-paragpraph"}>Location: </p> <p
+                                                className={"value-paragraph"}>{restaurant.location}</p></li>
+                                            <li><p className={"key-paragpraph"}>Operating
+                                                Hours:</p> <p
+                                                className={"value-paragraph"}> {restaurant.opening_time} - {restaurant.closing_time}</p>
                                             </li>
+                                            <li><p className={"key-paragpraph"}>Contact
+                                                details: </p> <p
+                                                className={"value-paragraph"}>{restaurant.contact_details || 'No Contact Details'}</p>
+                                            </li>
+                                            <li><p className={"key-paragpraph"}>Telephone: </p> <p
+                                                className={"value-paragraph"}>{restaurant.telephone || 'No Telephone'}</p>
+                                            </li>
+                                            <li><p className={"key-paragpraph"}>Email: </p> <p
+                                                className={"value-paragraph"}>{restaurant.email || 'No Email'}</p></li>
+                                            <li><p className={"key-paragpraph"}>Rating: </p> <p
+                                                className={"value-paragraph"}>{restaurant.rating || 'No Rating'}</p>
+                                            </li>
+                                            <li>
+                                                <p
+                                                    onClick={() => openEventModal(upcomingEvent)}
+                                                    className={"key-paragpraph"}>Upcoming Event:</p>
+                                                {upcomingEvent ? (
+                                                    <p className={"value-paragraph upcoming-event"}>{upcomingEvent
+                                                        .title}</p>
+                                                ) : (<p className={"value-paragraph"}
+                                                        id={"no-event"}>None</p>)}
+                                            </li>
+                                        </ul>
+                                    </article>
+                                    <article id="restaurant_img">
+                                        {restaurant.restImg && (
+                                            <img id="imgRes" src={restaurant.restImg} alt={restaurant.name}/>
                                         )}
-                                    </ul>
-                                </article>
-                                <article id="restaurant_img">
-                                    {restaurant.restImg && (
-                                        <img id="imgRes" src={restaurant.restImg} alt={restaurant.name} />
-                                    )}
-                                </article>
+                                    </article>
+                                </section>
                             </section>
                         </section>
-                    </section>
 
-                    <button onClick={togglePopup} className="menuButton" id="RestaurantInfoButton">
-                        Click For Review
-                    </button>
-                    <Popup isOpen={isPopupOpen} onClose={togglePopup}>
-                        <Reviews restaurantID={restaurant.id} mealID={null} onRatingChanged={handleRatingChanged} />
-                    </Popup>
+                        <button onClick={togglePopup} className="menuButton" id="RestaurantInfoButton">
+                            Click For Review
+                        </button>
 
-                    <Modal
-                        isOpen={eventModalIsOpen}
-                        onRequestClose={closeEventModal}
-                        contentLabel="Event Details"
-                        style={modalStyle}
-                    >
-                        {selectedEvent && (
-                            <div>
-                                <header className="menuHeader">{selectedEvent.title}</header>
-                                <div className="eventModalContent">
-                                    <img src={selectedEvent.imageUrl} alt={selectedEvent.title} style={{maxWidth: '100%', height: 'auto', marginBottom: '15px'}} />
-                                    <p><strong>Venue:</strong> {selectedEvent.venue}</p>
-                                    <p><strong>Date:</strong> {selectedEvent.date}</p>
-                                    <p><strong>Description:</strong> {selectedEvent.description}</p>
-                                    <p><strong>Available Tickets:</strong> {selectedEvent.availableTickets}</p>
-                                    <p>Get some food for the event and checkout <a href="https://example.com" target="_blank" rel="noopener noreferrer">our website</a> for bookings and more info.</p>
+                        <Modal
+                            isOpen={eventModalIsOpen}
+                            onRequestClose={closeEventModal}
+                            contentLabel="Event Details"
+                            style={modalStyle}
+                        >
+                            {selectedEvent && (
+                                <div>
+                                    <header className="menuHeader">{selectedEvent.title}</header>
+                                    <div className="eventModalContent">
+                                        <img src={selectedEvent.imageUrl} alt={selectedEvent.title}
+                                             style={{maxWidth: '100%', height: 'auto', marginBottom: '15px'}}/>
+                                        <p><strong>Venue:</strong> {selectedEvent.venue}</p>
+                                        <p><strong>Date:</strong> {selectedEvent.date}</p>
+                                        <p><strong>Description:</strong> {selectedEvent.description}</p>
+                                        <p><strong>Available Tickets:</strong> {selectedEvent.availableTickets}</p>
+                                        <p>Get some food for the event and checkout <a href="https://example.com"
+                                                                                       target="_blank"
+                                                                                       rel="noopener noreferrer">our
+                                            website</a> for bookings and more info.</p>
+                                    </div>
+                                    <button onClick={closeEventModal} className="modalCloseButton">Close</button>
                                 </div>
-                                <button onClick={closeEventModal} className="modalCloseButton">Close</button>
-                            </div>
-                        )}
-                    </Modal>
-                </>
-            )}
-        </div>
+                            )}
+                        </Modal>
+                    </>
+                )}
+            </section>
+            <Popup isOpen={isPopupOpen} onClose={togglePopup}>
+                <Reviews onClose={togglePopup} restaurantID={restaurant.id} mealID={null}
+                         onRatingChanged={handleRatingChanged}/>
+            </Popup>
+            <Footer/>
+        </>
     );
 }
 
