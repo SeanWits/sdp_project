@@ -12,7 +12,7 @@ import Popup from "../Reviews/Popup/Popup";
 import HistoryPage from "../Reservation/HistoryPage/HistoryPage";
 import {Hint} from "../../components/Hint/hint";
 
-Modal.setAppElement('#root'); // Set the app element for accessibility
+//Modal.setAppElement('#root'); // Set the app element for accessibility
 
 function Restaurant() {
     const [restaurants, setRestaurants] = useState([]);
@@ -267,7 +267,7 @@ function Restaurant() {
                     {selectedEvent && (
                         <div>
                             <header className="modalHeader">
-                                <h2>{selectedEvent.title}</h2>>
+                                <h2>{selectedEvent.title}</h2>
                             </header>
                             <div className="eventModalContent">
                                 <img src={selectedEvent.imageUrl} alt={selectedEvent.title}

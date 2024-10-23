@@ -8,7 +8,7 @@ import {Reviews} from "../Reviews/Reviews";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 
-Modal.setAppElement('#root');
+//Modal.setAppElement('#root');
 
 function RestaurantInfo() {
     const {id} = useParams();
@@ -126,7 +126,7 @@ function RestaurantInfo() {
         <>
             <Header/>
             <LoadModal loading={loading}/>
-            <section id={"restaurant-info-section"}>
+            <section id={"restaurant-info-section"} data-testid="restaurant-info-section">
                 <header className="menuHeader">
                     <Link to="/" className="back-arrow">
                     <span className="material-symbols-outlined icon filled">
@@ -138,7 +138,7 @@ function RestaurantInfo() {
 
                 {!loading && restaurant && (
                     <>
-                        <section className="resDeets">
+                        <section className="resDeets" data-testid="restaurant-details">
                             <section id="reviews">
                                 <section id="reviewsReviews">
                                     <h2>Restaurant Details</h2>
@@ -213,7 +213,13 @@ function RestaurantInfo() {
                                                                                        rel="noopener noreferrer">our
                                             website</a> for bookings and more info.</p>
                                     </div>
-                                    <button onClick={closeEventModal} className="modalCloseButton">Close</button>
+                                    <button 
+  className="modalCloseButton" 
+  data-testid="modal-close-button"
+  onClick={closeEventModal}
+>
+  Close
+</button>
                                 </div>
                             )}
                         </Modal>
@@ -221,8 +227,12 @@ function RestaurantInfo() {
                 )}
             </section>
             <Popup isOpen={isPopupOpen} onClose={togglePopup}>
-                <Reviews onClose={togglePopup} restaurantID={restaurant.id} mealID={null}
-                         onRatingChanged={handleRatingChanged}/>
+            <Reviews 
+  onClose={togglePopup} 
+  restaurantID={restaurant?.id} // Add optional chaining
+  mealID={null}
+  onRatingChanged={handleRatingChanged}
+/>
             </Popup>
             <Footer/>
         </>
