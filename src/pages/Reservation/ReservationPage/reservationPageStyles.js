@@ -14,18 +14,18 @@ export const styles = {
 
     container: {
         backgroundColor: 'white',
-        padding: '30px',
         borderRadius: '10px',
         boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
         width: '100%',
         maxWidth: '800px', // Increased width to better fit the reservations
         textAlign: 'center',
+        paddingBlockEnd: '30px',
     },
     yellowBox: {
         backgroundColor: '#fcb040',
         padding: '10px',
         color: '#003b5c',
-        borderRadius: '15px',
+        borderRadius: '15px 15px 0 0',
         marginBottom: '20px',
     },
     reservationItem: {
@@ -56,16 +56,27 @@ export const styles = {
     },
     input: {
         marginTop: '10px',
+        marginInline: '20px',
         padding: '10px',
-        width: '92.5%',
+        width: '-webkit-fill-available',
         fontSize: '16px',
         border: '1px solid #003b5c',
         borderRadius: '5px',
+        time: {
+            marginInline: '20px',
+            marginTop: '10px',
+            padding: '10px',
+            width: '-webkit-fill-available',
+            fontSize: '16px',
+            border: '1px solid #003b5c',
+            borderRadius: '5px',
+        }
     },
     button: {
+        marginInline: '20px',
         marginTop: '30px',
         padding: '15px',
-        width: '100%',
+        width: '-webkit-fill-available',
         fontSize: '16px',
         backgroundColor: '#003b5c',
         color: 'white',

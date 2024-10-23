@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext, useRef} from 'react';
 import {UserContext} from '../../../utils/userContext';
-import {styles} from '../styles';
+import {styles} from './reservationPageStyles';
 import {useNavigate} from "react-router-dom";
 
 const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
@@ -14,8 +14,6 @@ const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('date').setAttribute('min', today);
-
-
     }, []);
 
     useEffect(() => {
@@ -89,6 +87,34 @@ const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
         }
     };
 
+    const handlePeopleChange = (e) => {
+        const value = e.target.value;
+        
+        // Allow empty input for typing
+        if (value === '') {
+            setPeople('');
+            return;
+        }
+
+        // Convert to number
+        const numValue = parseInt(value, 10);
+
+        // Only update if it's a valid number
+        if (!isNaN(numValue)) {
+            // Allow any number to be typed, but enforce limits on blur
+            setPeople(numValue);
+        }
+    };
+
+    const handlePeopleBlur = () => {
+        // When the input loses focus, enforce the min/max limits
+        if (people === '' || people < 1) {
+            setPeople(1);
+        } else if (people > 8) {
+            setPeople(8);
+        }
+    };
+
     return (
         <div style={styles.pageWrapper}>
             <div style={styles.container}>
@@ -130,7 +156,8 @@ const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
                     max="8"
                     style={styles.input}
                     value={people}
-                    onChange={(e) => setPeople(Math.min(8, Math.max(1, Number(e.target.value))))}
+                    onChange={handlePeopleChange}
+                    onBlur={handlePeopleBlur}
                 />
 
                 <button onClick={handleConfirm} style={styles.button} disabled={!date || !timeSlot}>
