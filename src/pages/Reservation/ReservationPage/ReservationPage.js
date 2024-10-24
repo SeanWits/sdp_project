@@ -16,40 +16,13 @@ const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
         document.getElementById('date').setAttribute('min', today);
     }, []);
 
-  useEffect(() => {
-    if (date && restaurant) {
-      const slots = generateTimeSlots(restaurant.opening_time, restaurant.closing_time, date);
-      setAvailableTimeSlots(slots);
-      setTimeSlot(''); 
-      setTimeSlot(''); 
-    }
-  }, [date, restaurant]);
-
-  const checkActiveReservation = async () => {
-    try {
-      const idToken = await user.getIdToken();
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/reservations/active`, {
-        headers: {
-          'Authorization': `Bearer ${idToken}`
+    useEffect(() => {
+        if (date && restaurant) {
+            const slots = generateTimeSlots(restaurant.opening_time, restaurant.closing_time, date);
+            setAvailableTimeSlots(slots);
+            setTimeSlot(''); // Reset time slot when date changes
         }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to check active reservations');
-      }
-
-      const { hasActiveReservation } = await response.json();
-      if (hasActiveReservation) {
-        alert("You have an active reservation");
-        navigate('/history');
-        navigate('/history');
-        onClose();
-      }
-    } catch (error) {
-      console.error("Error checking active reservations: ", error);
-      alert("Failed to check active reservations. Please try again.");
-    }
-  };
+    }, [date, restaurant]);
 
     const generateTimeSlots = (open, close, selectedDate) => {
         const timeSlots = [];
@@ -83,21 +56,12 @@ const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
             return;
         }
 
-    const reservationData = {
-      restaurantId: restaurant.id,
-      restaurantName: restaurant.name,
-      date: `${date}T${timeSlot}`,
-      numberOfPeople: bookWholeRestaurant ? "Whole Restaurant" : people,
-      duration: duration,
-      wholeRestaurant: bookWholeRestaurant,
-      userId: user.uid,
-      createdAt: new Date()
-      numberOfPeople: bookWholeRestaurant ? "Whole Restaurant" : people,
-      duration: duration,
-      wholeRestaurant: bookWholeRestaurant,
-      userId: user.uid,
-      createdAt: new Date()
-    };
+        const reservationData = {
+            restaurantId: restaurant.id,
+            restaurantName: restaurant.name,
+            date: `${date}T${timeSlot}`,
+            numberOfPeople: people,
+        };
 
         try {
             const idToken = await user.getIdToken();
@@ -120,34 +84,6 @@ const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
         } catch (error) {
             console.error("Error adding reservation: ", error);
             alert("Failed to create reservation. Please try again.");
-        }
-    };
-
-    const handlePeopleChange = (e) => {
-        const value = e.target.value;
-        
-        // Allow empty input for typing
-        if (value === '') {
-            setPeople('');
-            return;
-        }
-
-        // Convert to number
-        const numValue = parseInt(value, 10);
-
-        // Only update if it's a valid number
-        if (!isNaN(numValue)) {
-            // Allow any number to be typed, but enforce limits on blur
-            setPeople(numValue);
-        }
-    };
-
-    const handlePeopleBlur = () => {
-        // When the input loses focus, enforce the min/max limits
-        if (people === '' || people < 1) {
-            setPeople(1);
-        } else if (people > 8) {
-            setPeople(8);
         }
     };
 
