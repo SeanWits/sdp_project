@@ -4,7 +4,7 @@ import {UserContext} from '../../../utils/userContext';
 import {styles} from './historyPageStyles';
 import LoadModal from '../../../components/LoadModal/LoadModal';
 
-const HistoryPage = ({onClose, onReservationCancelled}) => {
+const HistoryPage = ({onClose}) => {
     const [reservations, setReservations] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
@@ -67,7 +67,6 @@ const HistoryPage = ({onClose, onReservationCancelled}) => {
                     throw new Error('Failed to cancel reservation');
                 }
 
-                onReservationCancelled();
                 fetchReservations(); // Refresh the list
                 alert("Reservation cancelled successfully.");
             } catch (error) {

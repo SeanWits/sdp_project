@@ -3,7 +3,7 @@ import {UserContext} from '../../../utils/userContext';
 import {styles} from './reservationPageStyles';
 import {useNavigate} from "react-router-dom";
 
-const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
+const ReservationPage = ({restaurant, onClose}) => {
     const [date, setDate] = useState('');
     const [timeSlot, setTimeSlot] = useState('');
     const [people, setPeople] = useState(1);
@@ -79,7 +79,6 @@ const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
             }
 
             alert('Reservation confirmed');
-            onReservationMade(); // Notify parent component that reservation was made
             onClose(); // Close the modal after successful reservation
         } catch (error) {
             console.error("Error adding reservation: ", error);
@@ -89,7 +88,7 @@ const ReservationPage = ({restaurant, onClose, onReservationMade}) => {
 
     const handlePeopleChange = (e) => {
         const value = e.target.value;
-        
+
         // Allow empty input for typing
         if (value === '') {
             setPeople('');
