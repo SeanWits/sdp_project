@@ -8,7 +8,7 @@ import {Hint} from "../Hint/hint";
 import Popup from "../../pages/Reviews/Popup/Popup";
 import HistoryPage from "../../pages/Reservation/HistoryPage/HistoryPage";
 
-Modal.setAppElement('#root');
+//Modal.setAppElement('#root');
 
 function Header({disableCart = false, disableOrders = false}) {
     const navigate = useNavigate();
