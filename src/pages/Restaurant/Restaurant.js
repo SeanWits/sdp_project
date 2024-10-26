@@ -196,24 +196,10 @@ function Restaurant() {
         }
     };
 
-    const handleReservationMade = () => {
-        checkActiveReservation();
-        setCheckedReservations(true);
-    };
-
-    const handleReservationCancelled = () => {
-        checkActiveReservation();
-        setCheckedReservations(true);
-    };
-
     const handleReservationButtonClick = (restaurant) => {
         if (user) {
-            if (!checkedReservations) {
-                checkActiveReservation();
-                (!isActiveReservation ? (openReservationModal(restaurant)) : (handleActiveReservation()))
-            } else
-                ((!isActiveReservation ? (openReservationModal(restaurant)) : (handleActiveReservation())));
-
+            checkActiveReservation();
+            (!isActiveReservation ? (openReservationModal(restaurant)) : (handleActiveReservation()))
         } else {
             navigate('/login');
         }
@@ -293,8 +279,7 @@ function Restaurant() {
                     style={modalStyle}
                 >
                     {selectedRestaurant && (
-                        <ReservationPage restaurant={selectedRestaurant} onClose={closeReservationModal}
-                                         onReservationMade={handleReservationMade}/>
+                        <ReservationPage restaurant={selectedRestaurant} onClose={closeReservationModal}/>
                     )}
                 </Modal>
 
@@ -366,7 +351,7 @@ function Restaurant() {
             </div>
             <Footer/>
             <Popup isOpen={isPopupOpen} onClose={togglePopup}>
-                <HistoryPage onReservationCancelled={handleReservationCancelled} onClose={togglePopup}/>
+                <HistoryPage onClose={togglePopup}/>
             </Popup>
         </>
     );
