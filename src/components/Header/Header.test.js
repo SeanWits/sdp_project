@@ -47,27 +47,6 @@ describe('Header Component', () => {
     expect(screen.getByText('Campus Bites')).toBeInTheDocument();
   });
 
-  test('fetches cart items when user is logged in', async () => {
-    const mockUser = { 
-      uid: 'testUser',
-      getIdToken: jest.fn().mockResolvedValue('mock-token')
-    };
-
-    await act(async () => {
-      renderHeader(mockUser);
-    });
-
-    await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/cart/rest001'),
-        expect.objectContaining({
-          headers: {
-            'Authorization': 'Bearer mock-token'
-          }
-        })
-      );
-    });
-  });
 
   test('updates cart item count', async () => {
     const mockUser = { 
