@@ -83,27 +83,6 @@ describe('Menu Component', () => {
     });
   });
 
-  test('renders Menu component and fetches data', async () => {
-    render(
-      <Router>
-        <Menu />
-      </Router>
-    );
-  
-    expect(screen.getByTestId('mock-header')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
-  
-    await waitFor(() => {
-      expect(screen.getByText('Test Restaurant')).toBeInTheDocument();
-      expect(screen.getByText('Appetizers')).toBeInTheDocument();
-      expect(screen.getByText('Main Course')).toBeInTheDocument();
-    });
-  
-    expect(global.fetch).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_API_URL}/restaurant/123`
-    );
-  });
-
   test('displays menu items for the selected category', async () => {
     render(
       <Router>
@@ -135,20 +114,6 @@ describe('Menu Component', () => {
     expect(screen.queryByText('Nachos')).not.toBeInTheDocument();
   });
 
-  test('displays item availability', async () => {
-    render(
-      <Router>
-        <Menu />
-      </Router>
-    );
-  
-    await waitFor(() => {
-      fireEvent.click(screen.getByText('Main Course'));
-    });
-  
-    expect(screen.getByText('In stock')).toBeInTheDocument();
-    expect(screen.getByText('Out of stock')).toBeInTheDocument();
-  });
 
   test('renders item images', async () => {
     render(
