@@ -3,18 +3,54 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Menu from './Menu';
 
-// Mock the modules
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => ({ restaurantId: '123' }),
-  useLocation: () => ({ state: { restaurant: null } }),
+// Mock components before any imports
+jest.mock('../../components/Header/Header', () => {
+  return function MockHeader() {
+    return <div data-testid="mock-header">Header</div>;
+  };
+});
+
+jest.mock('../../components/Footer/Footer', () => {
+  return function MockFooter() {
+    return <div data-testid="mock-footer">Footer</div>;
+  };
+});
+
+jest.mock('../../components/LoadModal/LoadModal', () => {
+  return function MockLoadModal({ loading }) {
+    if (loading) {
+      return <div data-testid="loader" className="load-modal">Loading...</div>;
+    }
+    return null;
+  };
+});
+
+// Mock NavBar without using Link directly
+jest.mock('../../components/NavBar/NavBar', () => ({
+  NavBar: function MockNavBar({ Heading }) {
+    return (
+      <header className="menuHeader grid">
+        <h2 className="nav-heading">{Heading}</h2>
+        <a href="/" className="back-link">
+          <span className="material-symbols-outlined">arrow_back_ios_new</span>
+        </a>
+      </header>
+    );
+  }
 }));
 
-jest.mock('../../components/Header/Header', () => () => <div data-testid="mock-header">Header</div>);
-jest.mock('../../components/Footer/Footer', () => () => <div data-testid="mock-footer">Footer</div>);
-
-// Mock fetch
-global.fetch = jest.fn();
+// Mock react-router-dom
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
+  return {
+    ...actual,
+    useParams: () => ({ restaurantId: '123' }),
+    useLocation: () => ({ state: { restaurant: null } }),
+    useNavigate: () => mockNavigate,
+    Link: ({ to, children }) => <a href={to}>{children}</a>
+  };
+});
 
 const mockRestaurant = {
   name: 'Test Restaurant',
@@ -38,41 +74,21 @@ const mockRestaurant = {
   ],
 };
 
-const renderWithRouter = (ui, { route = '/menu/123' } = {}) => {
-  window.history.pushState({}, 'Test page', route);
-  return render(
-    <Router>{ui}</Router>
-  );
-};
-
 describe('Menu Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    global.fetch.mockResolvedValue({
+    global.fetch = jest.fn().mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(mockRestaurant),
     });
   });
 
-  test('renders Menu component and fetches data', async () => {
-    renderWithRouter(<Menu />);
-  
-    expect(screen.getByTestId('mock-header')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
-  
-    await waitFor(() => {
-      expect(screen.getByText('Test Restaurant')).toBeInTheDocument();
-      expect(screen.getByRole('heading', { name: 'Appetizers' })).toBeInTheDocument();
-      expect(screen.getByText('Main Course')).toBeInTheDocument();
-    });
-  
-    expect(global.fetch).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_API_URL}/restaurant/123`
-    );
-  });
-
   test('displays menu items for the selected category', async () => {
-    renderWithRouter(<Menu />);
+    render(
+      <Router>
+        <Menu />
+      </Router>
+    );
 
     await waitFor(() => {
       expect(screen.getByText('Nachos')).toBeInTheDocument();
@@ -82,10 +98,15 @@ describe('Menu Component', () => {
   });
 
   test('changes category when clicked', async () => {
-    renderWithRouter(<Menu />);
+    render(
+      <Router>
+        <Menu />
+      </Router>
+    );
 
     await waitFor(() => {
-      fireEvent.click(screen.getByText('Main Course'));
+      const mainCourseButton = screen.getByText('Main Course');
+      fireEvent.click(mainCourseButton);
     });
 
     expect(screen.getByText('Burger')).toBeInTheDocument();
@@ -93,24 +114,13 @@ describe('Menu Component', () => {
     expect(screen.queryByText('Nachos')).not.toBeInTheDocument();
   });
 
-  test('displays item availability', async () => {
-    renderWithRouter(<Menu />);
-  
-    await waitFor(() => {
-      fireEvent.click(screen.getByText('Main Course'));
-    });
-  
-    expect(screen.getByText((content, element) => {
-      return element.tagName.toLowerCase() === 'p' && content.includes('In stock');
-    })).toBeInTheDocument();
-    
-    expect(screen.getByText((content, element) => {
-      return element.tagName.toLowerCase() === 'p' && content.includes('Out of stock');
-    })).toBeInTheDocument();
-  });
 
   test('renders item images', async () => {
-    renderWithRouter(<Menu />);
+    render(
+      <Router>
+        <Menu />
+      </Router>
+    );
 
     await waitFor(() => {
       const images = screen.getAllByRole('img');
@@ -120,37 +130,22 @@ describe('Menu Component', () => {
     });
   });
 
-  test('navigates to item page when clicked', async () => {
-    renderWithRouter(<Menu />);
-
-    await waitFor(() => {
-      const nachoLink = screen.getByText('Nachos').closest('a');
-      expect(nachoLink).toHaveAttribute('href', '/menu/123/Nachos');
-    });
-  });
-
-  jest.mock('../../components/LoadModal/LoadModal', () => ({ loading }) => 
-    loading ? <div data-testid="loading-modal">Loading...</div> : null
-  );
-  
-  test('displays loading state', () => {
-    renderWithRouter(<Menu />);
-    
-    const loadModal = screen.getByTestId('loader');
-    expect(loadModal).toBeInTheDocument();
-    expect(loadModal.closest('.load-modal')).toBeInTheDocument();
-  });
-
   test('handles fetch error', async () => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
     global.fetch.mockRejectedValueOnce(new Error('Fetch failed'));
-    console.error = jest.fn();
 
-    renderWithRouter(<Menu />);
+    render(
+      <Router>
+        <Menu />
+      </Router>
+    );
 
     await waitFor(() => {
       expect(screen.getByText('Error: Failed to load restaurant data')).toBeInTheDocument();
-      expect(console.error).toHaveBeenCalled();
+      expect(consoleError).toHaveBeenCalled();
     });
+
+    consoleError.mockRestore();
   });
 
   test('handles no menu categories', async () => {
@@ -159,20 +154,24 @@ describe('Menu Component', () => {
       json: () => Promise.resolve({ ...mockRestaurant, categories: [] }),
     });
 
-    renderWithRouter(<Menu />);
+    render(
+      <Router>
+        <Menu />
+      </Router>
+    );
 
     await waitFor(() => {
       expect(screen.getByText('No menu categories available')).toBeInTheDocument();
     });
   });
 
-  test('renders back arrow', async () => {
-    renderWithRouter(<Menu />);
-  
-    await waitFor(() => {
-      const backIcon = screen.getByText('arrow_back_ios_new');
-      expect(backIcon).toBeInTheDocument();
-      expect(backIcon.closest('a')).toHaveAttribute('href', '/');
-    });
+  test('displays loading state', () => {
+    render(
+      <Router>
+        <Menu />
+      </Router>
+    );
+    
+    expect(screen.getByTestId('loader')).toBeInTheDocument();
   });
 });

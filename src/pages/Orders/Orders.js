@@ -29,7 +29,8 @@ const Orders = () => {
             const idToken = await user.getIdToken();
             const response = await fetch(`${process.env.REACT_APP_API_URL}/orders`, {
                 headers: {
-                    'Authorization': `Bearer ${idToken}`
+                    'Authorization': `Bearer ${idToken}`,
+                    'Content-Type': 'application/json'  // Add this for consistency
                 }
             });
             if (!response.ok) {
@@ -37,11 +38,11 @@ const Orders = () => {
             }
             const ordersData = await response.json();
             setOrders(ordersData);
-            setTimeout(() => setLoading(false), 200); // 2-second delay before hiding the loader
+            setTimeout(() => setLoading(false), 200);
         } catch (err) {
             console.error("Error fetching orders:", err);
             setError("Failed to load orders. Please try again.");
-            setTimeout(() => setLoading(false), 200); // 2-second delay even on error
+            setTimeout(() => setLoading(false), 200);
         }
     };
 

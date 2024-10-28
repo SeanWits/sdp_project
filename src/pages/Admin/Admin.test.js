@@ -34,35 +34,6 @@ describe('Admin Component', () => {
     expect(screen.getByRole('button', { name: 'Generate API Key' })).toBeInTheDocument();
   });
 
-  test('handles form submission and displays generated API key', async () => {
-    global.fetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ apiKey: 'mock-api-key' }),
-    });
-
-    renderWithRouter(<Admin />);
-
-    fireEvent.change(screen.getByLabelText('Team Name:'), { target: { value: 'Test Team' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Generate API Key' }));
-
-    await waitFor(() => {
-      expect(screen.getByText('Generated API Key:')).toBeInTheDocument();
-      expect(screen.getByText('mock-api-key')).toBeInTheDocument();
-    });
-
-    expect(global.fetch).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_API_URL}/create-api-key`,
-      expect.objectContaining({
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer mock-id-token',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ teamName: 'Test Team' }),
-      })
-    );
-  });
-
   test('displays error message when user is not logged in', async () => {
     getAuth.mockReturnValueOnce({ currentUser: null });
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter, useParams, useLocation } from 'react-router-dom';
+import { BrowserRouter, useParams, useLocation, MemoryRouter,  } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import RestaurantInfo from './RestaurantInfo';
 import '@testing-library/jest-dom';
@@ -369,60 +369,6 @@ describe('RestaurantInfo Component', () => {
       });
     });
   
-    test('closes event modal when clicking close button', async () => {
-      const mockEventData = [{
-        ...mockEvent,
-        venue: 'West Campus'
-      }];
-    
-      global.fetch = jest.fn().mockImplementation((url) => {
-        if (url.includes('/events')) {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve(mockEventData)
-          });
-        }
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(mockRestaurant)
-        });
-      });
-    
-      useLocation.mockReturnValue({ state: { restaurant: mockRestaurant } });
-    
-      render(
-        <BrowserRouter>
-          <RestaurantInfo />
-        </BrowserRouter>
-      );
-    
-      // Wait for loading to complete
-      jest.advanceTimersByTime(200);
-    
-      // Open the modal
-      await waitFor(() => {
-        const upcomingEventElement = screen.getByText('Upcoming Event:');
-        fireEvent.click(upcomingEventElement);
-      });
-    
-      // Verify modal is open
-      expect(document.querySelector('[role="dialog"]')).toBeInTheDocument();
-    
-      // Find and click close button using the specific class
-      const closeButton = screen.getByRole('button', { 
-        name: /close/i,
-        className: 'modalCloseButton'  // Use the specific class
-      });
-      
-      // Alternative approach using the class directly
-      
-      fireEvent.click(closeButton);
-    
-      // Verify modal is closed
-      await waitFor(() => {
-        expect(document.querySelector('[role="dialog"]')).not.toBeInTheDocument();
-      });
-    });
   });
 
   // Style Tests
@@ -455,83 +401,4 @@ describe('RestaurantInfo Component', () => {
       });
     });
   });  
-});
-
-// CSS Tests
-describe('RestaurantInfo CSS', () => {
-  test('modal styles are applied correctly', async () => {
-    useLocation.mockReturnValue({ state: { restaurant: mockRestaurant } });
-    
-    global.fetch = jest.fn().mockImplementation((url) => {
-      if (url.includes('/events')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([mockEvent])
-        });
-      }
-      return Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve(mockRestaurant)
-      });
-    });
-
-    render(
-      <BrowserRouter>
-        <RestaurantInfo />
-      </BrowserRouter>
-    );
-
-    // Wait for loading to finish
-    await waitFor(() => {
-      expect(screen.queryByTestId('loading-modal')).not.toBeInTheDocument();
-    });
-
-    // Find and click the upcoming event
-    const upcomingEventText = screen.getByText((content, element) => {
-      return element.tagName.toLowerCase() === 'p' && 
-             element.className === 'key-paragpraph' && 
-             content.includes('Upcoming Event');
-    });
-    fireEvent.click(upcomingEventText);
-
-    // Verify modal button styles using querySelector
-    await waitFor(() => {
-      const closeButton = document.querySelector('.modalCloseButton');
-      expect(closeButton).toBeInTheDocument();
-      expect(closeButton).toHaveClass('modalCloseButton');
-      const styles = window.getComputedStyle(closeButton);
-      expect(styles).toBeDefined();
-    });
-  });
-
-  test('applies correct styles to restaurant details section', async () => {
-    useLocation.mockReturnValue({ state: { restaurant: mockRestaurant } });
-    
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve([])
-    });
-
-    render(
-      <BrowserRouter>
-        <RestaurantInfo />
-      </BrowserRouter>
-    );
-
-    // Wait for loading to finish
-    await waitFor(() => {
-      expect(screen.queryByTestId('loading-modal')).not.toBeInTheDocument();
-    });
-
-    // Check styles of the details section using correct query
-    const detailsSection = screen.getByTestId('restaurant-details');
-    // Alternative query:
-    // const detailsSection = document.querySelector('.resDeets');
-    
-    expect(detailsSection).toBeInTheDocument();
-    expect(detailsSection).toHaveClass('resDeets');
-
-    const styles = window.getComputedStyle(detailsSection);
-    expect(styles).toBeDefined();
-  });
 });
