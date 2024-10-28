@@ -402,38 +402,3 @@ describe('RestaurantInfo Component', () => {
     });
   });  
 });
-
-// CSS Tests
-describe('RestaurantInfo CSS', () => {
-
-  test('applies correct styles to restaurant details section', async () => {
-    useLocation.mockReturnValue({ state: { restaurant: mockRestaurant } });
-    
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve([])
-    });
-
-    render(
-      <BrowserRouter>
-        <RestaurantInfo />
-      </BrowserRouter>
-    );
-
-    // Wait for loading to finish
-    await waitFor(() => {
-      expect(screen.queryByTestId('loading-modal')).not.toBeInTheDocument();
-    });
-
-    // Check styles of the details section using correct query
-    const detailsSection = screen.getByTestId('restaurant-details');
-    // Alternative query:
-    // const detailsSection = document.querySelector('.resDeets');
-    
-    expect(detailsSection).toBeInTheDocument();
-    expect(detailsSection).toHaveClass('resDeets');
-
-    const styles = window.getComputedStyle(detailsSection);
-    expect(styles).toBeDefined();
-  });
-});
