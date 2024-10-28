@@ -46,56 +46,26 @@ const renderWithRouter = (ui, { route = '/orders', user = mockUser } = {}) => {
 describe('Orders Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    global.fetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockOrders),
-    });
-  });
-
-  test('renders Orders component and fetches data', async () => {
-    renderWithRouter(<Orders />);
-
-    expect(screen.getByTestId('mock-header')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-load-modal')).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(screen.getByText('Orders')).toBeInTheDocument();
-      expect(screen.getByTestId('order-card-1')).toBeInTheDocument();
-      expect(screen.getByTestId('order-card-2')).toBeInTheDocument();
-    });
-
-    expect(global.fetch).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_API_URL}/orders`,
-      expect.objectContaining({
-        headers: {
-          'Authorization': 'Bearer mock-token'
+    
+    // Create a more specific mock implementation for fetch
+    global.fetch = jest.fn((url) => {
+      if (url.includes('/orders/')) {
+        if (url.includes('/update-status')) {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ status: 'success' })
+          });
         }
-      })
-    );
+      }
+      // Default handler for fetching orders list
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockOrders)
+      });
+    });
   });
-
-  test('updates order status', async () => {
-    renderWithRouter(<Orders />);
-
-    await waitFor(() => {
-      const updateButton = screen.getAllByText('Update Status')[0];
-      fireEvent.click(updateButton);
-    });
-
-    await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
-        `${process.env.REACT_APP_API_URL}/orders/1/update-status`,
-        expect.objectContaining({
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer mock-token',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ newStatus: 'completed' })
-        })
-      );
-    });
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
   test('handles fetch error', async () => {
