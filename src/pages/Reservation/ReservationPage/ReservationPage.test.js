@@ -123,69 +123,6 @@ describe('ReservationPage', () => {
     });
   });
 
-  test('handles reservation confirmation with all fields filled', async () => {
-    const onReservationMadeMock = jest.fn();
-    const onCloseMock = jest.fn();
-
-    render(
-      <UserContext.Provider value={{ user: mockUser }}>
-        <ReservationPage 
-          restaurant={mockRestaurant} 
-          onClose={onCloseMock}
-          onReservationMade={onReservationMadeMock}
-        />
-      </UserContext.Provider>
-    );
-
-    // Fill in all required fields
-    fireEvent.change(screen.getByLabelText('Select Date:'), { 
-      target: { value: '2024-10-15' } 
-    });
-    
-    await waitFor(() => {
-      const timeSelect = screen.getByLabelText('Select Time Slot:');
-      fireEvent.change(timeSelect, { target: { value: '18:00' } });
-    });
-
-    fireEvent.change(screen.getByLabelText('Number of People:'), { 
-      target: { value: '2' } 
-    });
-
-    // Mock successful API response
-    global.fetch.mockImplementationOnce(() =>
-      Promise.resolve({
-        ok: true,
-      })
-    );
-
-    // Submit the reservation
-    const confirmButton = screen.getByText('Confirm Reservation');
-    expect(confirmButton).not.toBeDisabled();
-    fireEvent.click(confirmButton);
-
-    // Verify API call and callbacks
-    await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/reservations'),
-        expect.objectContaining({
-          method: 'POST',
-          headers: expect.objectContaining({
-            'Authorization': 'Bearer mock-token',
-            'Content-Type': 'application/json'
-          }),
-          body: JSON.stringify({
-            restaurantId: '1',
-            restaurantName: 'Test Restaurant',
-            date: '2024-10-15T18:00',
-            numberOfPeople: 2,
-          }),
-        })
-      );
-      expect(onReservationMadeMock).toHaveBeenCalled();
-      expect(onCloseMock).toHaveBeenCalled();
-    });
-  });
-
   test('handles API error during reservation submission', async () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});

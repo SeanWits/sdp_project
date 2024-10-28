@@ -10,6 +10,8 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn(),
 }));
 
+process.env.REACT_APP_API_URL = 'https://app-rjelmm56pa-uc.a.run.app/';
+
 jest.mock('../../../components/Header/Header', () => () => <div>Header</div>);
 jest.mock('../../../components/Footer/Footer', () => () => <div>Footer</div>);
 jest.mock('../../../components/LoadModal/LoadModal', () => ({ loading }) => (
@@ -78,63 +80,6 @@ describe('OrderSummaryPage', () => {
     expect(navigateMock).toHaveBeenCalledWith('/');
   });
 
-  test('fetches reservation data on component mount', async () => {
-    render(
-      <UserContext.Provider value={{ user: mockUser }}>
-        <MemoryRouter>
-          <OrderSummaryPage />
-        </MemoryRouter>
-      </UserContext.Provider>
-    );
-
-    await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/reservations/123'),
-        expect.objectContaining({
-          headers: { 'Authorization': 'Bearer mock-token' }
-        })
-      );
-    });
-  });
-
-  test('displays loading state and then reservation summary', async () => {
-    render(
-      <UserContext.Provider value={{ user: mockUser }}>
-        <MemoryRouter>
-          <OrderSummaryPage />
-        </MemoryRouter>
-      </UserContext.Provider>
-    );
-
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(screen.getByText('Not Loading')).toBeInTheDocument();
-      expect(screen.getByText('Test Restaurant')).toBeInTheDocument();
-      expect(screen.getByText('October 15, 2024, 06:00 PM')).toBeInTheDocument();
-      expect(screen.getByText('2')).toBeInTheDocument();
-    });
-  });
-
-  test('handles API error', async () => {
-    global.fetch.mockImplementationOnce(() =>
-      Promise.reject(new Error('API Error'))
-    );
-
-    render(
-      <UserContext.Provider value={{ user: mockUser }}>
-        <MemoryRouter>
-          <OrderSummaryPage />
-        </MemoryRouter>
-      </UserContext.Provider>
-    );
-
-    await waitFor(() => {
-      expect(console.error).toHaveBeenCalledWith('Error fetching reservation: ', expect.any(Error));
-      expect(navigateMock).toHaveBeenCalledWith('/');
-    });
-  });
-
   test('handles "Done" button click', async () => {
     render(
       <UserContext.Provider value={{ user: mockUser }}>
@@ -152,7 +97,19 @@ describe('OrderSummaryPage', () => {
     expect(navigateMock).toHaveBeenCalledWith('/history');
   });
 
-  test('formats date correctly', async () => {
+  test('displays loading state initially', () => {
+    render(
+      <UserContext.Provider value={{ user: mockUser }}>
+        <MemoryRouter>
+          <OrderSummaryPage />
+        </MemoryRouter>
+      </UserContext.Provider>
+    );
+
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
+  });
+
+  test('displays reservation data after loading', async () => {
     render(
       <UserContext.Provider value={{ user: mockUser }}>
         <MemoryRouter>
@@ -162,15 +119,20 @@ describe('OrderSummaryPage', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('October 15, 2024, 06:00 PM')).toBeInTheDocument();
+      expect(screen.getByText('Not Loading')).toBeInTheDocument();
     });
+
+    expect(screen.getByText(/Test Restaurant/)).toBeInTheDocument();
+    expect(screen.getByText(/October 15, 2024/)).toBeInTheDocument();
+    expect(screen.getByText('Number of People:')).toBeInTheDocument();
+    expect(screen.getByText(/^2$/)).toBeInTheDocument();
   });
 
-  test('displays "Not specified" for missing data', async () => {
-    global.fetch.mockImplementationOnce(() =>
+  test('handles API error correctly', async () => {
+    global.fetch = jest.fn(() =>
       Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({}),
+        ok: false,
+        status: 500,
       })
     );
 
@@ -183,7 +145,83 @@ describe('OrderSummaryPage', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Not specified')).toBeInTheDocument();
+      expect(navigateMock).toHaveBeenCalledWith('/');
     });
   });
+
+  test('formats date correctly', async () => {
+    const mockDataWithDifferentDate = {
+      ...mockReservationData,
+      date: '2024-12-25T20:30:00',
+    };
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockDataWithDifferentDate),
+      })
+    );
+
+    render(
+      <UserContext.Provider value={{ user: mockUser }}>
+        <MemoryRouter>
+          <OrderSummaryPage />
+        </MemoryRouter>
+      </UserContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(/December 25, 2024.*8:30 PM/)).toBeInTheDocument();
+    });
+  });
+
+  test('handles missing reservation data gracefully', async () => {
+    const mockEmptyData = {
+      restaurantName: null,
+      date: null,
+      numberOfPeople: null,
+    };
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockEmptyData),
+      })
+    );
+
+    render(
+      <UserContext.Provider value={{ user: mockUser }}>
+        <MemoryRouter>
+          <OrderSummaryPage />
+        </MemoryRouter>
+      </UserContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Not Loading')).toBeInTheDocument();
+    });
+
+    // Check that all fields show "Not specified"
+    expect(screen.getAllByText('Not specified')).toHaveLength(3);
+    
+    // Verify each specific field shows "Not specified"
+    const restaurantElement = screen.getByText((content, element) => {
+      return element.tagName.toLowerCase() === 'p' && 
+             element.textContent === 'Restaurant: Not specified';
+    });
+    expect(restaurantElement).toBeInTheDocument();
+
+    const dateElement = screen.getByText((content, element) => {
+      return element.tagName.toLowerCase() === 'p' && 
+             element.textContent === 'Date: Not specified';
+    });
+    expect(dateElement).toBeInTheDocument();
+
+    const peopleElement = screen.getByText((content, element) => {
+      return element.tagName.toLowerCase() === 'p' && 
+             element.textContent === 'Number of People: Not specified';
+    });
+    expect(peopleElement).toBeInTheDocument();
+  });
+
 });

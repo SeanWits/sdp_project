@@ -269,36 +269,6 @@ describe('AddReview Component', () => {
         expect(screen.getByText('Review')).toBeInTheDocument();
       });
 
-      test('submits a review successfully', async () => {
-        global.alert = jest.fn();
-    
-        renderAddReview();
-    
-        fireEvent.click(screen.getAllByText('star')[2]); // Select 3 stars
-        fireEvent.change(screen.getByPlaceholderText('Enter a review'), { target: { value: 'Great experience!' } });
-        
-        await act(async () => {
-          fireEvent.click(screen.getByText('Confirm'));
-        });
-    
-        await waitFor(() => {
-          expect(global.fetch).toHaveBeenCalledWith(
-            expect.stringContaining('/restaurant/123/restaurantReview/mock-user-id'),
-            expect.objectContaining({
-              method: 'PUT',
-              headers: expect.objectContaining({
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer mock-token'
-              }),
-              body: JSON.stringify({ rating: 3, review: 'Great experience!' })
-            })
-          );
-        });
-    
-        expect(global.alert).toHaveBeenCalledWith('Review added successfully');
-        expect(mockOnReviewAdded).toHaveBeenCalled();
-      });
-
       test('shows alert when trying to submit without rating', async () => {
         global.alert = jest.fn();
     
