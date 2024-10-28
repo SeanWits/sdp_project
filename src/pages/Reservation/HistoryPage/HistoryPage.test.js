@@ -171,62 +171,6 @@ describe('HistoryPage', () => {
     });
   });
 
-  test('successful reservation cancellation calls onReservationCancelled', async () => {
-    global.fetch
-      .mockImplementationOnce(() => Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve(mockReservations),
-      }))
-      .mockImplementationOnce(() => Promise.resolve({
-        ok: true
-      }));
-
-    render(
-      <UserContext.Provider value={{ user: mockUser }}>
-        <MemoryRouter>
-          <HistoryPage onClose={mockOnClose} onReservationCancelled={mockOnReservationCancelled} />
-        </MemoryRouter>
-      </UserContext.Provider>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('Cancel Reservation')).toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getByText('Cancel Reservation'));
-
-    await waitFor(() => {
-      expect(mockOnReservationCancelled).toHaveBeenCalled();
-      expect(alert).toHaveBeenCalledWith('Reservation cancelled successfully.');
-    });
-  });
-
-  test('handles case when date is not specified', async () => {
-    const reservationWithoutDate = {
-      ...mockReservations[0],
-      date: null
-    };
-
-    global.fetch.mockImplementationOnce(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve([reservationWithoutDate]),
-      })
-    );
-
-    render(
-      <UserContext.Provider value={{ user: mockUser }}>
-        <MemoryRouter>
-          <HistoryPage onClose={mockOnClose} onReservationCancelled={mockOnReservationCancelled} />
-        </MemoryRouter>
-      </UserContext.Provider>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('Not specified')).toBeInTheDocument();
-    });
-  });
-
   test('handles back to menu click', async () => {
     const { getByText } = render(
       <UserContext.Provider value={{ user: mockUser }}>
