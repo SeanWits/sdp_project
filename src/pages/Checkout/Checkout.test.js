@@ -24,7 +24,7 @@ jest.mock('react-router-dom', () => ({
 global.fetch = jest.fn();
 
 const mockUser = {
-  getIdToken: jest.fn().mockResolvedValue('mock-token'),
+  getIdToken: jest.fn().mockImplementation(() => Promise.resolve('mock-token')), // Make sure this returns a Promise
 };
 
 const mockCartItems = [
@@ -32,7 +32,7 @@ const mockCartItems = [
   { productId: '2', name: 'Item 2', priceAtPurchase: 15, quantity: 1, imageSrc: 'item2.jpg' },
 ];
 
-
+// Update the renderWithContext function to properly provide the mock user
 const renderWithContext = (ui, { user = mockUser } = {}) => {
   return render(
     <UserContext.Provider value={{ user }}>
@@ -45,22 +45,28 @@ describe('Checkout Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
-    global.fetch.mockImplementation((url) => {
-      if (url.includes('/cart/')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ items: mockCartItems }),
-        });
-      }
-      if (url.includes('/user')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ wallet: 100 }),
-        });
-      }
-      return Promise.reject(new Error('Not found'));
+    
+    const mockToken = 'mock-token';
+    mockUser.getIdToken.mockResolvedValue(mockToken);
+    
+    const mockFetch = jest.fn().mockImplementation((url) => {
+        if (url.includes('/cart/')) {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ items: mockCartItems }),
+            });
+        }
+        if (url.includes('/user')) {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ wallet: 100 }),
+            });
+        }
+        return Promise.reject(new Error('Not found'));
     });
-  });
+    
+    global.fetch = mockFetch;
+});
 
   afterEach(() => {
     jest.useRealTimers();
@@ -95,143 +101,176 @@ describe('Checkout Component', () => {
   });
 
   test('handles item removal from cart', async () => {
-    let fetchCallCount = 0;
-    global.fetch.mockImplementation((url) => {
-      fetchCallCount++;
-      if (url.includes('/cart/')) {
-        if (fetchCallCount === 1) {
-          // Initial cart fetch
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ items: mockCartItems }),
-          });
-        } else {
-          // After item removal
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ items: [mockCartItems[1]] }),
-          });
+    // Create a more stable mock implementation
+    const mockToken = 'mock-token';
+    mockUser.getIdToken.mockResolvedValue(mockToken);
+
+    const mockFetch = jest.fn().mockImplementation((url) => {
+        if (url.includes('/cart/rest001/1')) {
+            // Specific DELETE request
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ items: [mockCartItems[1]] }),
+            });
         }
-      }
-      if (url.includes('/user')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ wallet: 100 }),
-        });
-      }
-      return Promise.reject(new Error('Not found'));
+        if (url.includes('/cart/rest001')) {
+            // Initial cart fetch
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ items: mockCartItems }),
+            });
+        }
+        if (url.includes('/user')) {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ wallet: 100 }),
+            });
+        }
+        return Promise.reject(new Error(`Not found: ${url}`));
     });
+
+    global.fetch = mockFetch;
 
     await act(async () => {
-      renderWithContext(<Checkout />);
+        renderWithContext(<Checkout />);
     });
 
-    // Wait for the cart items to be rendered
+    // Wait for initial render
     await waitFor(() => {
-      expect(screen.getByText('Item 1 (x2)')).toBeInTheDocument();
+        expect(screen.getByText('Item 1 (x2)')).toBeInTheDocument();
     });
 
+    // Click remove button
     const removeButton = screen.getByLabelText('Remove Item 1 from cart');
     await act(async () => {
-      fireEvent.click(removeButton);
+        fireEvent.click(removeButton);
     });
 
+    // Wait for and verify the DELETE request
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/cart/rest001/1'),
-        expect.objectContaining({
-          method: 'DELETE',
-          headers: expect.objectContaining({
-            'Authorization': 'Bearer mock-token'
-          })
-        })
-      );
+        const deleteCall = mockFetch.mock.calls.find(call => 
+            call[0].includes('/cart/rest001/1') && 
+            call[1].method === 'DELETE'
+        );
+        expect(deleteCall).toBeTruthy();
+        expect(deleteCall[1]).toMatchObject({
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${mockToken}` // Use the exact token
+            }
+        });
     });
 
-    // Check if the item has been removed from the display
+    // Verify item removal from display
     await waitFor(() => {
-      expect(screen.queryByText('Item 1 (x2)')).not.toBeInTheDocument();
-      expect(screen.getByText('Total: R15.00')).toBeInTheDocument(); // Updated total
+        expect(screen.queryByText('Item 1 (x2)')).not.toBeInTheDocument();
+        expect(screen.getByText('Total: R15.00')).toBeInTheDocument();
     });
-  });
+});
 
   test('handles successful checkout', async () => {
     jest.useFakeTimers();
-    global.fetch.mockImplementation((url) => {
+    
+    // Create a standalone mock implementation for fetch
+    const mockFetch = jest.fn().mockImplementation((url) => {
+        if (url.includes('/checkout')) {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ orderId: 'mock-order-id' }),
+            });
+        }
+        if (url.includes('/cart/')) {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ items: mockCartItems }),
+            });
+        }
+        if (url.includes('/user')) {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({ wallet: 100 }),
+            });
+        }
+        return Promise.reject(new Error('Not found'));
+    });
+
+    global.fetch = mockFetch;
+    global.alert = jest.fn();
+
+    await act(async () => {
+        renderWithContext(<Checkout />);
+    });
+
+    await act(async () => {
+        fireEvent.click(screen.getByText('Confirm Purchase'));
+    });
+
+    act(() => {
+        jest.advanceTimersByTime(2000); // Changed from 5000 to match the component's timeout
+    });
+
+    await waitFor(() => {
+        expect(global.alert).toHaveBeenCalledWith('Purchase confirmed! Order ID: mock-order-id');
+        expect(mockNavigate).toHaveBeenCalledWith('/orders');
+    });
+
+    jest.useRealTimers();
+});
+
+test('handles checkout failure', async () => {
+  jest.useFakeTimers();
+  
+  const mockToken = 'mock-token';
+  mockUser.getIdToken.mockResolvedValue(mockToken);
+  
+  const mockFetch = jest.fn().mockImplementation((url) => {
       if (url.includes('/checkout')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ orderId: 'mock-order-id' }),
-        });
+          return Promise.resolve({
+              ok: false,
+              json: () => Promise.resolve({ error: 'Checkout failed' }),
+          });
       }
       if (url.includes('/cart/')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ items: mockCartItems }),
-        });
+          return Promise.resolve({
+              ok: true,
+              json: () => Promise.resolve({ items: mockCartItems }),
+          });
       }
       if (url.includes('/user')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ wallet: 100 }),
-        });
+          return Promise.resolve({
+              ok: true,
+              json: () => Promise.resolve({ wallet: 100 }),
+          });
       }
       return Promise.reject(new Error('Not found'));
-    });
-  
-    global.alert = jest.fn();
-  
-    await act(async () => {
-      renderWithContext(<Checkout />);
-    });
-  
-    await act(async () => {
-      fireEvent.click(screen.getByText('Confirm Purchase'));
-    });
-  
-    act(() => {
-      jest.advanceTimersByTime(5000);
-    });
-  
-    await waitFor(() => {
-      expect(global.alert).toHaveBeenCalledWith('Purchase confirmed! Order ID: mock-order-id');
-      expect(mockNavigate).toHaveBeenCalledWith('/orders');
-    }, { onTimeout: (error) => console.error('Timeout error:', error) });
-  
-    jest.useRealTimers();
   });
-  test('handles checkout failure', async () => {
-    jest.useFakeTimers();
-    global.fetch.mockImplementation((url) => {
-      if (url.includes('/checkout')) {
-        return Promise.resolve({
-          ok: false,
-          json: () => Promise.resolve({ error: 'Checkout failed' }),
-        });
-      }
-      return global.fetch(url);
-    });
-  
-    global.alert = jest.fn();
-  
-    await act(async () => {
+
+  global.fetch = mockFetch;
+  global.alert = jest.fn();
+
+  await act(async () => {
       renderWithContext(<Checkout />);
-    });
-  
-    await act(async () => {
+  });
+
+  await waitFor(() => {
+      expect(screen.getByText('Confirm Purchase')).toBeInTheDocument();
+  });
+
+  await act(async () => {
       fireEvent.click(screen.getByText('Confirm Purchase'));
-    });
-  
-    act(() => {
+  });
+
+  // Advance timers
+  await act(async () => {
       jest.advanceTimersByTime(2000);
-    });
-  
-    await waitFor(() => {
-      expect(global.alert).toHaveBeenCalledWith('An error occurred while processing your order: Checkout failed');
-    });
-  
-    jest.useRealTimers();
   });
+
+  await waitFor(() => {
+      expect(global.alert).toHaveBeenCalledWith('An error occurred while processing your order: Checkout failed');
+  });
+
+  jest.useRealTimers();
+});
 
   test('disables purchase button when wallet balance is insufficient', async () => {
     global.fetch.mockImplementation((url) => {
