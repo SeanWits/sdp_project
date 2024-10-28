@@ -61,6 +61,7 @@ const Register = () => {
                 <img
                     id="logo_login_img"
                     src={require("../../assets/logo outline transparent.png")}
+                    alt="logo"
                 />
             </section>
             <section id="signup_article_section">

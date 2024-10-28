@@ -66,14 +66,22 @@ describe('Register Component', () => {
   test('displays error for mismatched passwords', async () => {
     renderWithRouter(<Register />);
     
+    // Fill in all required fields with valid data
+    fireEvent.change(screen.getByPlaceholderText('Name'), { target: { value: 'John' } });
+    fireEvent.change(screen.getByPlaceholderText('Surname'), { target: { value: 'Doe' } });
+    fireEvent.change(screen.getByPlaceholderText('Person Number'), { target: { value: '12345' } });
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'john@example.com' } }); // Add valid email
+    
+    // Set mismatched passwords
     fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'password123' } });
     fireEvent.change(screen.getByPlaceholderText('Confirm Password'), { target: { value: 'password456' } });
+    
     fireEvent.click(screen.getByRole('button', { name: 'Register' }));
 
     await waitFor(() => {
-      expect(screen.getByText("Passwords don't match")).toBeInTheDocument();
+        expect(screen.getByText("Passwords don't match")).toBeInTheDocument();
     });
-  });
+});
 
   test('calls registerUser with correct data on successful form submission', async () => {
     const mockNavigate = jest.fn();
