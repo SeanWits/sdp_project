@@ -262,7 +262,7 @@ function Restaurant() {
                                 <p><strong>Date:</strong> {selectedEvent.date}</p>
                                 <p><strong>Description:</strong> {selectedEvent.description}</p>
                                 <p><strong>Available Tickets:</strong> {selectedEvent.availableTickets}</p>
-                                <p>Get some food for the event and checkout <a href="https://example.com"
+                                <p>Get some food for the event and checkout <a href="https://witslivelycampus.web.app/"
                                                                                target="_blank"
                                                                                rel="noopener noreferrer">our
                                     website</a> for bookings and more info.</p>
