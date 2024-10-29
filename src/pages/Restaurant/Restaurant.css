@@ -9,8 +9,32 @@
     margin-block: 1.5%;
     padding: 1.5%;
     margin-inline: 5%;
-    display: flex;
     height: 200px;
+    display: grid;
+    grid-template-areas: "details image";
+    grid-template-columns: 2fr 1fr;
+
+    #main-section {
+        grid-area: details;
+        display: grid;
+        grid-template-areas: "details buttons";
+        grid-template-columns: 2fr 1fr;
+
+        #restaurant-summary {
+            grid-area: details;
+        }
+
+        .composite-buttons {
+            grid-area: buttons;
+        }
+    }
+
+    .restaurant-image {
+        grid-area: image;
+        display: grid;
+    }
+
+
 }
 
 .menuHeader {
@@ -26,8 +50,7 @@
 
 
 .restaurant-details h2 {
-    margin-block-start: 10%;
-    margin-block-end: 1%;
+    margin: 0;
 }
 
 .restaurant-article {
@@ -41,8 +64,7 @@
 #main-section {
     background-color: #fcb040;
     border-radius: 15px 0 0 15px;
-    width: 75%;
-    height: 100%;
+    height: inherit;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -100,9 +122,9 @@ span.material-symbols-outlined.icon.filled.menu-icon {
 }
 
 .restaurant-image {
+    height: inherit;
     display: flex;
     justify-content: center;
-    width: 25%;
     background-color: #003b5c;
     border-radius: 0 15px 15px 0;
 }
@@ -111,23 +133,26 @@ span.material-symbols-outlined.icon.filled.menu-icon {
     display: flex;
     flex-direction: column;
     height: 100%;
-    width: 30%;
     align-items: center;
     justify-content: space-evenly;
+
+    .menuButton, a {
+        width: -webkit-fill-available;
+        max-width: 200px;
+    }
 }
 
 .restaurant-image img {
     width: 100%;
-    height: 100%;
+    height: inherit;
     object-fit: contain;
 }
 
 #restaurant-summary {
     height: 100%;
-    width: 30%;
     padding-inline: 4%;
     display: grid;
-    grid-template-rows: 2fr repeat(6, 1fr);
+    grid-template-rows: repeat(5, 1fr);
     grid-template-columns: 1fr 1fr;
     grid-template-areas: "restaurant-summary-heading restaurant-summary-heading"
     "restaurant-details-heading restaurant-details"
@@ -150,7 +175,10 @@ span.material-symbols-outlined.icon.filled.menu-icon {
 
     p {
         margin-block: 3%;
-        margin-left: 10%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: -webkit-fill-available;
     }
 
     #upcoming-event-section {
