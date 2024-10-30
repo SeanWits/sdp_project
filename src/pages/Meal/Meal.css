@@ -27,7 +27,8 @@
     margin: 0;
     padding-block-end: 5.5px;
     white-space: nowrap;
-    overflow: scroll;
+    overflow: hidden;
+    text-overflow: ellipsis;
     max-width: 95%;
 }
 
