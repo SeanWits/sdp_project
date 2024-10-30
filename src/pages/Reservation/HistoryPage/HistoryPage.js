@@ -55,6 +55,8 @@ const HistoryPage = ({onClose}) => {
 
         if (hoursDifference > 1) {
             try {
+                setLoading(true);
+
                 const idToken = await user.getIdToken();
                 const response = await fetch(`${process.env.REACT_APP_API_URL}/reservations/${reservationId}`, {
                     method: 'DELETE',
@@ -63,15 +65,18 @@ const HistoryPage = ({onClose}) => {
                     }
                 });
 
+
                 if (!response.ok) {
                     throw new Error('Failed to cancel reservation');
                 }
 
                 fetchReservations(); // Refresh the list
                 alert("Reservation cancelled successfully.");
+                setTimeout(() => setLoading(false), 300);
             } catch (error) {
                 console.error("Error cancelling reservation: ", error);
                 alert("Failed to cancel reservation. Please try again.");
+                setTimeout(() => setLoading(false), 300);
             }
         } else {
             alert("Reservations can only be cancelled more than 1 hour before the scheduled time.");
@@ -114,7 +119,7 @@ const HistoryPage = ({onClose}) => {
                     </div>
                     {!loading && (
                         <div>
-                            {reservations.map((reservation) => (
+                            {reservations.length > 0 ? reservations.map((reservation) => (
                                 <div key={reservation.id} style={styles.reservationItem}>
                                     <p>
                                         <strong>Restaurant:</strong> {reservation.restaurantName}
@@ -134,7 +139,7 @@ const HistoryPage = ({onClose}) => {
                                         </button>
                                     )}
                                 </div>
-                            ))}
+                            )) : <div id={"no-reservatons"}>No current reservations</div>}
                         </div>
                     )}
                     <button onClick={handleClose} style={styles.button}>Back to Menu</button>

@@ -177,7 +177,7 @@ const Dashboard = () => {
                             type="number"
                             value={walletAmount}
                             onChange={(e) => setWalletAmount(e.target.value)}
-                            placeholder="Enter amount"
+                            placeholder="Enter amount in Rands"
                             min="10"
                             max="5000"
                             step="0.01"

@@ -1,15 +1,15 @@
 .back-arrow {
     left: 0;
-    position: absolute;
-    padding-left: 2%;
+    padding-left: 30px;
 }
 
 .grid {
     display: grid;
 
-    grid-template-columns: 30px auto 30px;
+    grid-template-columns: 80px 1fr 80px;
     grid-template-areas: "back-button title filter-button";
     justify-content: space-evenly;
+    align-items: center;
 
     .back-arrow {
         grid-area: back-button;
@@ -22,5 +22,6 @@
 
     #dietary-filter {
         grid-area: filter-button;
+        padding-right: 30px;
     }
 }

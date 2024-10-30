@@ -2,14 +2,16 @@ import React, {useState, useEffect, useContext, useRef} from 'react';
 import {UserContext} from '../../../utils/userContext';
 import {styles} from './reservationPageStyles';
 import {useNavigate} from "react-router-dom";
+import LoadModal from "../../../components/LoadModal/LoadModal";
 
-const ReservationPage = ({restaurant, onClose}) => {
+const ReservationPage = ({restaurant, onClose, onReservationComplete}) => {
     const [date, setDate] = useState('');
     const [timeSlot, setTimeSlot] = useState('');
     const [people, setPeople] = useState(1);
     const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
     const {user} = useContext(UserContext);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
@@ -50,9 +52,24 @@ const ReservationPage = ({restaurant, onClose}) => {
         return timeSlots;
     };
 
+    const isValidDateTime = (selectedDate, selectedTime) => {
+        const now = new Date();
+        const [hours, minutes] = selectedTime.split(':').map(Number);
+        const reservationDateTime = new Date(selectedDate);
+        reservationDateTime.setHours(hours, minutes, 0, 0);
+
+        return reservationDateTime > now;
+    };
+
     const handleConfirm = async () => {
         if (!date || !timeSlot) {
             alert('Please select a date and time slot.');
+            return;
+        }
+
+        // Check if selected date and time is valid
+        if (!isValidDateTime(date, timeSlot)) {
+            alert('You have selected past dates and times. Please select dates and times after the current time.');
             return;
         }
 
@@ -64,6 +81,7 @@ const ReservationPage = ({restaurant, onClose}) => {
         };
 
         try {
+            setLoading(true);
             const idToken = await user.getIdToken();
             const response = await fetch(`${process.env.REACT_APP_API_URL}/reservations`, {
                 method: 'POST',
@@ -79,10 +97,13 @@ const ReservationPage = ({restaurant, onClose}) => {
             }
 
             alert('Reservation confirmed');
+            onReservationComplete(); // Notify parent component that reservation is complete
+            setTimeout(() => setLoading(false), 500);
             onClose(); // Close the modal after successful reservation
         } catch (error) {
             console.error("Error adding reservation: ", error);
             alert("Failed to create reservation. Please try again.");
+            setTimeout(() => setLoading(false), 500);
         }
     };
 
@@ -116,6 +137,8 @@ const ReservationPage = ({restaurant, onClose}) => {
 
     return (
         <div style={styles.pageWrapper}>
+            <LoadModal loading={loading}/>
+
             <div style={styles.container}>
                 <div style={styles.yellowBox}>
                     <h1>Reservation for {restaurant.name}</h1>

@@ -1,8 +1,115 @@
 #nameRes {
     background-color: #FCB040;
     height: 290px;
-    width: 760px;
-    width: 50%;
+}
+
+
+#restaurant-info-section {
+    display: grid;
+    grid-template-areas: "nav" "restaurant-details" "review-button";
+    row-gap: 30px;
+
+    .menuHeader {
+        grid-area: nav;
+
+        h2 {
+            font-size: 22px;
+        }
+    }
+
+    .resDeets {
+        grid-area: restaurant-details;
+        display: flex;
+        width: 100%;
+        margin: 0;
+        justify-content: center;
+
+        #reviews {
+            display: grid;
+            max-width: 774.719px;
+            margin: 0;
+            width: 100%;
+            margin-inline: min(30px, 5%);
+
+            #reviewsReviews {
+                margin: 0;
+                height: 60px;
+                padding: 0;
+                display: grid;
+                align-content: center;
+            }
+
+
+            #reviewsRating {
+                display: grid;
+                grid-template-areas:
+                    "restaurant-details restaurant-image";
+                grid-template-columns: auto auto;
+                justify-items: center;
+                min-width: 323px;
+
+
+                #nameRes {
+                    grid-area: restaurant-details;
+                    width: 100%;
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    padding-inline: min(5%, 20px);
+                    box-sizing: border-box;
+                    max-width: 484.219px;
+
+                    ul {
+                        display: grid;
+                        row-gap: 2px;
+                        grid-auto-rows: auto;
+                        width: 100%;
+
+                        li {
+                            display: grid;
+                            grid-template-areas: "key value";
+                            grid-template-columns: 1fr 1fr;
+                            height: auto;
+                            margin: 0;
+                            align-content: center;
+
+                            .key-paragpraph {
+                                grid-area: key;
+                                font-weight: bold;
+                                justify-self: start;
+                            }
+
+                            .value-paragraph {
+                                grid-area: value;
+                                justify-self: end;
+                            }
+
+                            p {
+                                margin: 0;
+                            }
+                        }
+                    }
+                }
+
+                #restaurant_img {
+                    grid-area: restaurant-image;
+                    width: 100%;
+                    background-color: #003b5c;
+
+                    img {
+                        max-width: 100%;
+                        object-fit: contain;
+                    }
+                }
+
+            }
+        }
+    }
+
+    #RestaurantInfoButton {
+        grid-area: review-button;
+        justify-self: center;
+        margin-bottom: 20px;
+    }
 }
 
 .resDeets {
@@ -110,7 +217,9 @@
                     display: grid;
                     grid-template-areas: "restaurant-image" "restaurant-details";
                     grid-template-rows: 200px auto;
+                    grid-template-columns: 1fr;
                     justify-items: center;
+                    min-width: 322px;
 
                     #restaurant_img {
                         grid-area: restaurant-image;
@@ -130,7 +239,7 @@
                         grid-template-columns: 1fr;
                         padding-inline: 5%; /* Adjust the value as needed */
                         box-sizing: border-box;
-
+                        max-width: none;
 
                         ul {
                             display: grid;

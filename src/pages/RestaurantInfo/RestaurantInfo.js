@@ -7,6 +7,7 @@ import Popup from "../Reviews/Popup/Popup";
 import {Reviews} from "../Reviews/Reviews";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import {NavBar} from "../../components/NavBar/NavBar";
 
 //Modal.setAppElement('#root');
 
@@ -127,14 +128,7 @@ function RestaurantInfo() {
             <Header/>
             <LoadModal loading={loading}/>
             <section id={"restaurant-info-section"} data-testid="restaurant-info-section">
-                <header className="menuHeader">
-                    <Link to="/" className="back-arrow">
-                    <span className="material-symbols-outlined icon filled">
-                        arrow_back_ios_new
-                    </span>
-                    </Link>
-                    <h2>{restaurant?.name}</h2>
-                </header>
+                <NavBar displayBackButton={true} returnTo={"/"} Heading={restaurant.name}/>
 
                 {!loading && restaurant && (
                     <>
@@ -213,13 +207,13 @@ function RestaurantInfo() {
                                                                                        rel="noopener noreferrer">our
                                             website</a> for bookings and more info.</p>
                                     </div>
-                                    <button 
-  className="modalCloseButton" 
-  data-testid="modal-close-button"
-  onClick={closeEventModal}
->
-  Close
-</button>
+                                    <button
+                                        className="modalCloseButton"
+                                        data-testid="modal-close-button"
+                                        onClick={closeEventModal}
+                                    >
+                                        Close
+                                    </button>
                                 </div>
                             )}
                         </Modal>
@@ -227,12 +221,12 @@ function RestaurantInfo() {
                 )}
             </section>
             <Popup isOpen={isPopupOpen} onClose={togglePopup}>
-            <Reviews 
-  onClose={togglePopup} 
-  restaurantID={restaurant?.id} // Add optional chaining
-  mealID={null}
-  onRatingChanged={handleRatingChanged}
-/>
+                <Reviews
+                    onClose={togglePopup}
+                    restaurantID={restaurant?.id} // Add optional chaining
+                    mealID={null}
+                    onRatingChanged={handleRatingChanged}
+                />
             </Popup>
             <Footer/>
         </>
