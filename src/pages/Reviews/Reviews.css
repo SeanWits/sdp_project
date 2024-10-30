@@ -11,7 +11,6 @@ body {
     justify-self: center;
     height: 100%;
     min-height: 375px;
-    min-width: 662px;
 }
 
 .material-symbols-outlined.icon.filled {
@@ -94,6 +93,15 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    p {
+        font-size: 1.3em;
+        margin-inline: min(15px, 2%);
+    }
+
+    h3 {
+        font-size: 1.4em;
+    }
 }
 
 #review_text_heading_section {
@@ -116,6 +124,12 @@ body {
     outline-width: 1px;
     border-radius: 10px;
     outline-color: #003b5c;
+
+    h3 {
+        padding-block: unset;
+        font-size: revert;
+        color: black;
+    }
 }
 
 #review_text_input {
