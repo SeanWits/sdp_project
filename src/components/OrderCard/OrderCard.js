@@ -32,8 +32,9 @@ const OrderCard = ({order, onStatusUpdate}) => {
         });
     };
 
-    const handleStatusClick = () => {
-        setShowStatusOptions(!showStatusOptions);
+    const handleStatusClick = (status) => {
+        if (status === "ongoing") setShowStatusOptions(!showStatusOptions);
+        else alert(`Order status "${status}" cannot be changed`);
     };
 
     const handleStatusUpdate = (newStatus) => {
@@ -55,11 +56,9 @@ const OrderCard = ({order, onStatusUpdate}) => {
                 <h2 className="restaurant-name">{order.restaurantDetails.name || 'Unknown Restaurant'}</h2>
                 <div className="order-info-container">
                     <p className="order-info">
-                        {order.items.length} items, Purchased on: {formatDate(order.createdAt)}
+                        {order.items.length} items, Purchased
+                        on: {new Date(order.createdAt).toLocaleString("en-ZA")}
                     </p>
-                    <button className="receipt-button" onClick={handleReceiptClick}>
-                        View receipt
-                    </button>
                 </div>
                 <ul className="order-items">
                     {order.items.map((item, index) => (
@@ -75,7 +74,7 @@ const OrderCard = ({order, onStatusUpdate}) => {
                 <div className="status-container">
                     <p
                         className={`order-status ${getStatusClass(order.status)}`}
-                        onClick={handleStatusClick}
+                        onClick={() => handleStatusClick(order.status)}
                     >
                         {order.status}
                     </p>
