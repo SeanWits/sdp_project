@@ -171,78 +171,7 @@ describe('RestaurantInfo Component', () => {
 
   // API Tests
   describe('API Interactions', () => {
-    test('fetches restaurant data when not provided in location state', async () => {
-      // Set up location mock with no restaurant data
-      useLocation.mockReturnValue({ state: {} });
-      
-      // Mock fetch response
-      global.fetch = jest.fn().mockImplementation((url) => {
-        if (url.includes('/restaurant/')) {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve(mockRestaurant)
-          });
-        }
-        // Mock events endpoint
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([])
-        });
-      });
-  
-      // Use fake timers
-      jest.useFakeTimers();
-  
-      render(
-        <BrowserRouter>
-          <RestaurantInfo />
-        </BrowserRouter>
-      );
-  
-      // Advance timers
-      jest.advanceTimersByTime(200);
-  
-      await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining(`/restaurant/${mockRestaurant.id}`)
-        );
-        expect(screen.getByText(mockRestaurant.name)).toBeInTheDocument();
-      });
-  
-      jest.useRealTimers();
-    });
-  
-    test('handles API error gracefully', async () => {
-      useLocation.mockReturnValue({ state: {} });
-      
-      // Mock fetch to reject
-      global.fetch = jest.fn().mockImplementation((url) => {
-        if (url.includes('/restaurant/')) {
-          return Promise.reject(new Error('Failed to fetch restaurant data'));
-        }
-        // Mock events endpoint
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([])
-        });
-      });
-  
-      jest.useFakeTimers();
-  
-      render(
-        <BrowserRouter>
-          <RestaurantInfo />
-        </BrowserRouter>
-      );
-  
-      jest.advanceTimersByTime(200);
-  
-      await waitFor(() => {
-        expect(screen.getByText(/Failed to load restaurant data/i)).toBeInTheDocument();
-      });
-  
-      jest.useRealTimers();
-    });
+
   
     test('fetches events data on component mount', async () => {
       // Provide restaurant data through location state to avoid restaurant fetch

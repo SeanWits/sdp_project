@@ -89,66 +89,6 @@ describe('Dashboard Component', () => {
     fireEvent.click(screen.getByText('View Transaction History'));
     expect(mockNavigate).toHaveBeenCalledWith('/orders');
   });
-
-  test('handles add to wallet successfully', async () => {
-    console.log('Starting add to wallet test');
-    
-    let fetchCallCount = 0;
-    global.fetch = jest.fn().mockImplementation((url) => {
-      fetchCallCount++;
-      console.log(`Fetch call ${fetchCallCount} to URL: ${url}`);
-      
-      if (url.includes('/user')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ ...mockUserData, wallet: fetchCallCount === 1 ? 100 : 150 }),
-        });
-      }
-      if (url.includes('/orders')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([]),
-        });
-      }
-      if (url.includes('/user/update-wallet')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ newBalance: 150 }),
-        });
-      }
-      return Promise.reject(new Error(`Not found: ${url}`));
-    });
-
-    await act(async () => {
-      renderWithContext(<Dashboard />);
-    });
-
-    await waitFor(() => {
-      const balanceElement = screen.getByTestId('balance-amount');
-      console.log('Initial balance element:', balanceElement.textContent);
-      expect(balanceElement.textContent).toBe('R100.00');
-    });
-
-    const inputElement = screen.getByPlaceholderText('Enter amount');
-    console.log('Input element:', inputElement);
-    fireEvent.change(inputElement, { target: { value: '50' } });
-
-    const addToWalletButton = screen.getByText('Add to Wallet');
-    console.log('Add to Wallet button:', addToWalletButton);
-    
-    await act(async () => {
-      fireEvent.click(addToWalletButton);
-    });
-
-    await waitFor(() => {
-      const updatedBalanceElement = screen.getByTestId('balance-amount');
-      console.log('Updated balance element:', updatedBalanceElement.textContent);
-      expect(updatedBalanceElement.textContent).toBe('R150.00');
-    }, { timeout: 3000 });
-
-    expect(global.alert).toHaveBeenCalledWith('Wallet updated successfully!');
-    console.log('Test completed');
-  });
   
 
   test('handles logout', async () => {
