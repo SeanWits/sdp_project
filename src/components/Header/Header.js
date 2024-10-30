@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {useNavigate, useLocation, Link} from "react-router-dom";
+import {useNavigate, useLocation} from "react-router-dom";
 import Modal from 'react-modal';
 import "./Header.css";
 import {UserContext} from '../../utils/userContext';
@@ -7,8 +7,6 @@ import Cart from '../Cart/Cart';
 import {Hint} from "../Hint/hint";
 import Popup from "../../pages/Reviews/Popup/Popup";
 import HistoryPage from "../../pages/Reservation/HistoryPage/HistoryPage";
-
-//Modal.setAppElement('#root');
 
 function Header({disableCart = false, disableOrders = false}) {
     const navigate = useNavigate();
@@ -21,44 +19,59 @@ function Header({disableCart = false, disableOrders = false}) {
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [alerts, setAlerts] = useState([]);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-
+    const [totalAlertCount, setTotalAlertCount] = useState(0);
 
     useEffect(() => {
         if (user && !disableCart) {
             fetchCart();
         }
 
+        fetchSafetyAlerts();
         window.addEventListener('cartUpdated', fetchCart);
-
-        // Mock alerts
-        setAlerts([
-            {
-                date: '2024-10-05',
-                time: '14:30',
-                incident: 'Suspicious activity',
-                area: 'East Campus Matrix',
-                affectedVenues: 'Matrix Cafeteria'
-            },
-            {
-                date: '2024-10-05',
-                time: '15:45',
-                incident: 'Power outage',
-                area: 'East Campus Matrix',
-                affectedVenues: 'All restaurants in East Campus Matrix'
-            },
-            {
-                date: '2024-10-05',
-                time: '16:20',
-                incident: 'Water supply issue',
-                area: 'East Campus Matrix',
-                affectedVenues: 'Matrix Food Court'
-            }
-        ]);
 
         return () => {
             window.removeEventListener('cartUpdated', fetchCart);
         };
     }, [user, disableCart]);
+
+    const fetchSafetyAlerts = async () => {
+        try {
+            const response = await fetch('https://sdp-campus-safety.azurewebsites.net/reports');
+            if (!response.ok) {
+                throw new Error('Failed to fetch safety alerts');
+            }
+            const data = await response.json();
+            
+            // Transform the data to include only required fields and format timestamp
+            const transformedAlerts = data.map(alert => {
+                const date = new Date(alert.timestamp._seconds * 1000);
+                return {
+                    date: date.toLocaleDateString(),
+                    time: date.toLocaleTimeString(),
+                    incident: alert.description,
+                    area: alert.location,
+                    urgencyLevel: alert.urgencyLevel,
+                    status: alert.status,
+                    timestamp: date // Keep the full date object for sorting
+                };
+            });
+
+            // Filter out removed alerts and sort by timestamp (most recent first)
+            const activeAlerts = transformedAlerts
+                .filter(alert => !alert.removed)
+                .sort((a, b) => b.timestamp - a.timestamp);
+
+            // Store total count of active alerts
+            setTotalAlertCount(activeAlerts.length);
+            
+            // Take only the latest 4 alerts
+            setAlerts(activeAlerts.slice(0, 4));
+        } catch (error) {
+            console.error("Error fetching safety alerts:", error);
+            setAlerts([]);
+            setTotalAlertCount(0);
+        }
+    };
 
     const fetchCart = async () => {
         if (!user) return;
@@ -78,12 +91,10 @@ function Header({disableCart = false, disableOrders = false}) {
                 setCartItems(cartData.items);
                 updateCartItemCount(cartData.items);
                 setCurrentCartRestaurantId(cartData.restaurantId);
-                // console.log("Cart mounted:", cartData.restaurantId);
             } else {
                 setCartItems([]);
                 setCartItemCount(0);
                 setCurrentCartRestaurantId(null);
-                console.log("Cart is empty");
             }
         } catch (error) {
             console.error("Error fetching cart:", error);
@@ -148,6 +159,18 @@ function Header({disableCart = false, disableOrders = false}) {
         setIsPopupOpen((prev) => !prev);
     };
 
+    const getUrgencyLevelStyle = (level) => {
+        switch (level.toLowerCase()) {
+            case 'high':
+                return { color: '#ff0000' };
+            case 'medium':
+                return { color: '#ffa500' };
+            case 'low':
+                return { color: '#008000' };
+            default:
+                return {};
+        }
+    };
 
     return (
         <>
@@ -174,7 +197,11 @@ function Header({disableCart = false, disableOrders = false}) {
                         <span className="material-symbols-outlined icon">
                             notifications
                         </span>
-                            {alerts.length > 0 && <span className="alert-counter">{alerts.length}</span>}
+                            {totalAlertCount > 0 && (
+                                <span className="alert-counter">
+                                    {4}
+                                </span>
+                            )}
                         </div>
                     </Hint>
                     <Hint hintText={"View your reservations"}>
@@ -234,10 +261,10 @@ function Header({disableCart = false, disableOrders = false}) {
                 <div>
                     <header className={"modalHeader"}>
                         <h2>Safety Alerts</h2>
-
                         <span className="material-symbols-outlined icon filled" onClick={toggleAlertModal}>
                             cancel
-                        </span></header>
+                        </span>
+                    </header>
                     <div className="alertModalContent">
                         {alerts.map((alert, index) => (
                             <div key={index} className="alert-item">
@@ -245,9 +272,20 @@ function Header({disableCart = false, disableOrders = false}) {
                                 <p><strong>Time:</strong> {alert.time}</p>
                                 <p><strong>Incident:</strong> {alert.incident}</p>
                                 <p><strong>Area:</strong> {alert.area}</p>
-                                <p><strong>Affected Venues:</strong> {alert.affectedVenues}</p>
+                                <p style={getUrgencyLevelStyle(alert.urgencyLevel)}>
+                                    <strong>Urgency Level:</strong> {alert.urgencyLevel}
+                                </p>
+                                <p><strong>Status:</strong> {alert.status}</p>
                             </div>
                         ))}
+                        {alerts.length === 0 && (
+                            <p className="no-alerts">No active safety alerts at this time.</p>
+                        )}
+                        {totalAlertCount > 4 && (
+                            <p className="more-alerts">
+                                alerts
+                            </p>
+                        )}
                     </div>
                 </div>
             </Modal>
