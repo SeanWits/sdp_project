@@ -3,6 +3,7 @@ import {registerUser} from "../../utils/authFunctions";
 import {Link, useNavigate} from "react-router-dom";
 import UserStatus from "../../utils/userStatus";
 import "./Register.css"
+import LoadModal from "../../components/LoadModal/LoadModal";
 
 const Register = () => {
     const [name, setName] = useState("");
@@ -13,6 +14,7 @@ const Register = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     const validateEmail = (email) => {
         const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -34,9 +36,13 @@ const Register = () => {
         }
 
         try {
+            setLoading(true);
             await registerUser(name, surname, email, personNum, password);
+            setTimeout(() => setLoading(false), 200);
+            alert("Registration successful!");
             navigate("/"); // Redirect to home page after successful registration
         } catch (error) {
+            setLoading(false);
             console.error("Registration error:", error);
             if (error.code === "auth/invalid-email") {
                 setError(
@@ -57,6 +63,7 @@ const Register = () => {
 
     return (
         <div id="signup">
+            <LoadModal loading={loading}/>
             <section id="signup_logo">
                 <img
                     id="logo_login_img"
@@ -89,7 +96,7 @@ const Register = () => {
                             type="text"
                             value={personNum}
                             onChange={(e) => setPersonNum(e.target.value)}
-                            placeholder="Person Number"
+                            placeholder="Student/Staff Number"
                             required
                         />
                         <input
