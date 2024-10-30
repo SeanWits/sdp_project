@@ -134,7 +134,7 @@ const HistoryPage = ({onClose}) => {
                                         </button>
                                     )}
                                 </div>
-                            ))}
+                            )) : <div id={"no-reservatons"}>No current reservations</div>}
                         </div>
                     )}
                     <button onClick={handleClose} style={styles.button}>Back to Menu</button>
