@@ -121,14 +121,14 @@ const Checkout = () => {
                 throw new Error(errorData.error || 'Checkout failed');
             }
             const result = await response.json();
-setTimeout(() => {
-    setLoading(false);
-    alert(`Purchase confirmed! Order ID: ${result.orderId}`); // Add the order ID
-    setCartItems([]);
-    setTotal(0);
-    setWalletBalance(prevBalance => prevBalance - total);
-    navigate('/orders');
-}, 2000);
+            setTimeout(() => {
+                setLoading(false);
+                alert(`Purchase confirmed!`); // Add the order ID
+                setCartItems([]);
+                setTotal(0);
+                setWalletBalance(prevBalance => prevBalance - total);
+                navigate('/orders');
+            }, 2000);
         } catch (error) {
             console.error("Error during checkout:", error);
             setTimeout(() => {
