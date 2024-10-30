@@ -12,8 +12,6 @@ import Popup from "../Reviews/Popup/Popup";
 import HistoryPage from "../Reservation/HistoryPage/HistoryPage";
 import {Hint} from "../../components/Hint/hint";
 
-//Modal.setAppElement('#root'); // Set the app element for accessibility
-
 function Restaurant() {
     const [restaurants, setRestaurants] = useState([]);
     const [filteredRestaurants, setFilteredRestaurants] = useState([]);
@@ -153,14 +151,12 @@ function Restaurant() {
             }
 
             const {hasActiveReservation} = await response.json();
-            if (hasActiveReservation) {
-                setIsActiveReservation(true);
-            } else {
-                setIsActiveReservation(false);
-            }
+            setIsActiveReservation(hasActiveReservation);
+            return hasActiveReservation; // Return the value for immediate use
         } catch (error) {
             console.error("Error checking active reservations: ", error);
             alert("Failed to check active reservations. Please try again.");
+            return false;
         }
     };
 
@@ -196,13 +192,28 @@ function Restaurant() {
         }
     };
 
-    const handleReservationButtonClick = (restaurant) => {
-        if (user) {
-            checkActiveReservation();
-            (!isActiveReservation ? (openReservationModal(restaurant)) : (handleActiveReservation()))
-        } else {
+    const handleReservationButtonClick = async (restaurant) => {
+        setLoading(true);
+
+        if (!user) {
             navigate('/login');
+            return;
         }
+
+        const hasActiveReservation = await checkActiveReservation();
+        if (hasActiveReservation) {
+            handleActiveReservation();
+        } else {
+            openReservationModal(restaurant);
+        }
+
+        setTimeout(() => setLoading(false), 200);
+
+    };
+
+    const handleReservationComplete = async () => {
+        await checkActiveReservation(); // Update the active reservation status
+        closeReservationModal();
     };
 
 
@@ -211,7 +222,7 @@ function Restaurant() {
             <Header/>
             <LoadModal loading={loading}/>
             <div className="restaurants-div">
-                <NavBar Heading="Restaurants/Dining Halls" displayBackButton={false} displayIcon={true}
+                <NavBar Heading="Restaurants" displayBackButton={false} displayIcon={true}
                         openModal={openModal}/>
                 <Modal
                     isOpen={modalIsOpen}
@@ -279,7 +290,11 @@ function Restaurant() {
                     style={modalStyle}
                 >
                     {selectedRestaurant && (
-                        <ReservationPage restaurant={selectedRestaurant} onClose={closeReservationModal}/>
+                        <ReservationPage
+                            restaurant={selectedRestaurant}
+                            onClose={closeReservationModal}
+                            onReservationComplete={handleReservationComplete} // Add this new prop
+                        />
                     )}
                 </Modal>
 
