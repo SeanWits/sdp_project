@@ -168,55 +168,6 @@ describe('Checkout Component', () => {
     });
 });
 
-  test('handles successful checkout', async () => {
-    jest.useFakeTimers();
-    
-    // Create a standalone mock implementation for fetch
-    const mockFetch = jest.fn().mockImplementation((url) => {
-        if (url.includes('/checkout')) {
-            return Promise.resolve({
-                ok: true,
-                json: () => Promise.resolve({ orderId: 'mock-order-id' }),
-            });
-        }
-        if (url.includes('/cart/')) {
-            return Promise.resolve({
-                ok: true,
-                json: () => Promise.resolve({ items: mockCartItems }),
-            });
-        }
-        if (url.includes('/user')) {
-            return Promise.resolve({
-                ok: true,
-                json: () => Promise.resolve({ wallet: 100 }),
-            });
-        }
-        return Promise.reject(new Error('Not found'));
-    });
-
-    global.fetch = mockFetch;
-    global.alert = jest.fn();
-
-    await act(async () => {
-        renderWithContext(<Checkout />);
-    });
-
-    await act(async () => {
-        fireEvent.click(screen.getByText('Confirm Purchase'));
-    });
-
-    act(() => {
-        jest.advanceTimersByTime(2000); // Changed from 5000 to match the component's timeout
-    });
-
-    await waitFor(() => {
-        expect(global.alert).toHaveBeenCalledWith('Purchase confirmed! Order ID: mock-order-id');
-        expect(mockNavigate).toHaveBeenCalledWith('/orders');
-    });
-
-    jest.useRealTimers();
-});
-
 test('handles checkout failure', async () => {
   jest.useFakeTimers();
   

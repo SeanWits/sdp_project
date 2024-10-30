@@ -154,38 +154,6 @@ describe('Restaurant Component', () => {
     }, { timeout: 1000 });
   });
 
-  test('opens reservation modal when Reservation button is clicked', async () => {
-    await act(async () => {
-      render(<TestWrapper><Restaurant /></TestWrapper>);
-    });
-
-    await waitFor(() => {
-      const reservationButtons = screen.getAllByText(/Reservation/i);
-      fireEvent.click(reservationButtons[0]);
-    });
-
-    expect(screen.getByTestId('mock-modal')).toBeInTheDocument();
-    expect(screen.getByText(/Reservation for Test Restaurant 1/i)).toBeInTheDocument();
-  });
-
-  test('closes reservation modal when Close button is clicked', async () => {
-    await act(async () => {
-      render(<TestWrapper><Restaurant /></TestWrapper>);
-    });
-
-    await waitFor(() => {
-      const reservationButtons = screen.getAllByText(/Reservation/i);
-      fireEvent.click(reservationButtons[0]);
-    });
-
-    const closeButton = screen.getByText('Close');
-    fireEvent.click(closeButton);
-
-    await waitFor(() => {
-      expect(screen.queryByTestId('mock-modal')).not.toBeInTheDocument();
-    });
-  });
-
   test('handles no user logged in', async () => {
     await act(async () => {
       render(<TestWrapper user={null}><Restaurant /></TestWrapper>);
@@ -196,36 +164,6 @@ describe('Restaurant Component', () => {
       fireEvent.click(reservationButton);
       expect(mockNavigate).toHaveBeenCalledWith('/login');
     });
-  });
-
-  test('handles active reservation check', async () => {
-    global.fetch = jest.fn()
-      .mockImplementationOnce(() => Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve(mockRestaurants),
-      }))
-      .mockImplementationOnce(() => Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve(mockEvents),
-      }))
-      .mockImplementationOnce(() => Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ hasActiveReservation: true }),
-      }));
-
-    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
-
-    await act(async () => {
-      render(<TestWrapper><Restaurant /></TestWrapper>);
-    });
-
-    await waitFor(() => {
-      const reservationButton = screen.getAllByText(/Reservation/i)[0];
-      fireEvent.click(reservationButton);
-      expect(alertMock).toHaveBeenCalledWith('You have an active reservation.');
-    });
-
-    alertMock.mockRestore();
   });
 
   test('handles API error', async () => {

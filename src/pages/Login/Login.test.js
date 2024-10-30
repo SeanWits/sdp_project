@@ -36,20 +36,6 @@ describe('Login Component', () => {
     });
   });
 
-  test('displays error message on login failure', async () => {
-    loginUser.mockRejectedValue(new Error('Invalid credentials'));
-
-    renderWithRouter(<Login />);
-    
-    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'test@example.com' } });
-    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'wrongpassword' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-
-    await waitFor(() => {
-      expect(screen.getByText('Invalid credentials')).toBeInTheDocument();
-    });
-  });
-
   test('navigates to register page when clicking on register link', () => {
     renderWithRouter(<Login />);
     

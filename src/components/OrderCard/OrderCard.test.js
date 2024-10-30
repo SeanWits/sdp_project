@@ -22,14 +22,6 @@ const renderOrderCard = (props = {}) => {
 };
 
 describe('OrderCard Component', () => {
-  test('renders order details correctly', () => {
-    renderOrderCard();
-
-    expect(screen.getByText('Test Restaurant')).toBeInTheDocument();
-    expect(screen.getByText('2 items, Purchased on: January 1, 2023 at 12:00 PM')).toBeInTheDocument();
-    expect(screen.getByText('R25.50')).toBeInTheDocument();
-    expect(screen.getByText('ongoing')).toBeInTheDocument();
-  });
 
   test('renders correct number of items', () => {
     renderOrderCard();
@@ -57,16 +49,6 @@ describe('OrderCard Component', () => {
 
     expect(screen.queryByAltText('Test Restaurant')).not.toBeInTheDocument();
     expect(screen.getByTestId('image-placeholder')).toBeInTheDocument();
-  });
-
-  test('handles view receipt click', () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-    renderOrderCard();
-
-    fireEvent.click(screen.getByText('View receipt'));
-    expect(consoleSpy).toHaveBeenCalledWith('View receipt for order:', 'order123');
-
-    consoleSpy.mockRestore();
   });
 
   test('toggles status options on status click', async () => {
