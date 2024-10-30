@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { loginUser } from "../../utils/authFunctions";
-import { useNavigate, Link } from "react-router-dom";
+import React, {useState} from "react";
+import {loginUser} from "../../utils/authFunctions";
+import {useNavigate, Link} from "react-router-dom";
 import "./Login.css";
 
 const Login = () => {
@@ -33,7 +33,7 @@ const Login = () => {
                     <section id="login_heading_section">
                         <h2 className="centre_no_margin">Login</h2>
                     </section>
-                    {error && <p style={{ color: "red" }}>{error}</p>}
+                    {error && <p style={{color: "red"}}>Incorrect credentials. Please try again.</p>}
                     <form id="form" onSubmit={handleSubmit}>
                         <input
                             className="form_input"
