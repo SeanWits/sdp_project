@@ -11,61 +11,47 @@ export function Reviews({restaurantID, mealID, onRatingChanged, onClose}) {
     const {user} = useContext(UserContext);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchReviews = async () => {
-            try {
-                let url;
-                if (mealID) {
-                    url = `/restaurant/${restaurantID}/mealReviews/${mealID}`;
-                } else {
-                    url = `/restaurant/${restaurantID}/restaurantReviews`;
-                }
+    // Helper function to sort reviews by date
+    const sortReviewsByDate = (reviewsToSort) => {
+        return reviewsToSort.sort((a, b) => {
+            const dateA = new Date(a.dateCreated._seconds * 1000);
+            const dateB = new Date(b.dateCreated._seconds * 1000);
+            return dateB - dateA; // Descending order (newest first)
+        });
+    };
 
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/${url}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch reviews');
-                }
-                const data = await response.json();
-                setReviews(data);
-            } catch (error) {
-                console.error('Error fetching reviews:', error);
-                alert('Failed to fetch reviews');
+    const fetchReviews = async () => {
+        try {
+            let url;
+            if (mealID) {
+                url = `/restaurant/${restaurantID}/mealReviews/${mealID}`;
+            } else {
+                url = `/restaurant/${restaurantID}/restaurantReviews`;
             }
-            setTimeout(() => setLoading(false), 200);
-        };
 
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/${url}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch reviews');
+            }
+            const data = await response.json();
+            const sortedReviews = sortReviewsByDate(data);
+            setReviews(sortedReviews);
+        } catch (error) {
+            console.error('Error fetching reviews:', error);
+            alert('Failed to fetch reviews');
+        }
+        setTimeout(() => setLoading(false), 200);
+    };
 
+    useEffect(() => {
         fetchReviews();
-
     }, [restaurantID, mealID]);
 
     const handleReviewAdded = () => {
-        const fetchReviews = async () => {
-            try {
-                let url;
-                if (mealID) {
-                    url = `/restaurant/${restaurantID}/mealReviews/${mealID}`;
-                } else {
-                    url = `/restaurant/${restaurantID}/restaurantReviews`;
-                }
-
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/${url}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch reviews');
-                }
-                const data = await response.json();
-                setReviews(data);
-            } catch (error) {
-                console.error('Error fetching reviews:', error);
-                alert('Failed to fetch reviews');
-            }
-        };
-
-        fetchReviews();
+        fetchReviews(); // Reuse the same fetch and sort logic
         onRatingChanged();
         togglePopup();
     };
-
 
     const togglePopup = () => {
         setIsPopupOpen((prev) => !prev);
@@ -78,7 +64,6 @@ export function Reviews({restaurantID, mealID, onRatingChanged, onClose}) {
             togglePopup();
         }
     };
-
 
     return (
         <>
@@ -123,7 +108,7 @@ export function Reviews({restaurantID, mealID, onRatingChanged, onClose}) {
                                         >
                                             <h3 className="centre_no_margin">Date Posted:</h3>
                                             <p id="date_posted_paragraph">
-                                                {review.dateCreated ? new Date(review.dateCreated._seconds * 1000).toLocaleDateString() : 'N/A'}
+                                                {review.dateCreated ? new Date(review.dateCreated._seconds * 1000).toLocaleString("en-ZA") : 'N/A'}
                                             </p>
                                         </section>
                                     </section>
